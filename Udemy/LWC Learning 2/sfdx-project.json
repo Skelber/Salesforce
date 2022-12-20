@@ -2,10 +2,11 @@
   "packageDirectories": [
     {
       "path": "force-app",
-      "default": true
+      "default": true,
+      "path": "utils"
     }
   ],
-  "name": "Udemycourse",
+  "name": "LWC Learning 2",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "55.0"

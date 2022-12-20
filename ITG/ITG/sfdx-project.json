@@ -1,11 +1,11 @@
 {
   "packageDirectories": [
     {
-      "path": "/src",
+      "path": "force-app",
       "default": true
     }
   ],
-  "name": "lwc learning",
+  "name": "ITG",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "55.0"
