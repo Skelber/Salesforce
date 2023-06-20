@@ -5,11 +5,9 @@
     <targets>
     <target>lightning__FlowScreen</target>
     </targets>
-
     <targetConfigs>
         <targetConfig targets="lightning__FlowScreen">
-        <property name="maxCharacters" type="Integer" default="0"></property>
-        <property name="richTextValue" type="String" default="" />
+        <property name="recordId" type="String" default="" />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
