@@ -1,7 +1,7 @@
 <template>
     <lightning-card>
         <lightning-textarea label="Enter Text" value={richTextValue}
-            onchange={handleRichTextChange}></lightning-textarea>
+            onchange={handleRichTextChange} max-length={maxCharacters}></lightning-textarea>
        <p style={characterCountStyle}>
             {characterCount} / {maxCharacters} karakters ingevoerd.
         </p>

@@ -5,15 +5,16 @@ export default class RichTextCounter extends LightningElement {
     @api richTextValue;
     characterCount = 0;
     characterCountExceeded = false;
+    disableRichTextField = false;
 
      get characterCountStyle() {
         return this.characterCountExceeded ? 'color: red;' : '';
     }
-
-   handleRichTextChange(event) {
+    
+    handleRichTextChange(event) {
         this.richTextValue = event.detail.value;
         this.characterCount = this.richTextValue.length;
-        this.characterCountExceeded = this.characterCount > this.maxCharacters;
+        this.characterCountExceeded = this.characterCount >= this.maxCharacters;
         
         // Pass the richTextValue to the flow
         this.dispatchEvent(new CustomEvent('flowvaluechanged', {
