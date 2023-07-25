@@ -3,22 +3,32 @@ import { getObjectInfo, getPicklistValues } from 'lightning/uiObjectInfoApi';
 import PREFERRED_EDUCATION_INSTITUTION_FIELD from '@salesforce/schema/Preferred_Education__c.Preferred_Education_Institution__c';
 import PREFERRED_EDUCATION_DOMAIN_FIELD from '@salesforce/schema/Preferred_Education__c.Preferred_Education_Domain__c';
 import PREFERRED_EDUCATION_OBJECT from '@salesforce/schema/Preferred_Education__c';
+import { getFieldValue, getRecord} from 'lightning/uiRecordApi';
 
+const fields = [PREFERRED_EDUCATION_DOMAIN_FIELD, PREFERRED_EDUCATION_INSTITUTION_FIELD]
 export default class MyComponent extends LightningElement {
-    @api recordId;
     @track preferredInstitution;
     @track preferredDomain
-    educationList;
-    @track institutionOptions
+    @api institutionOptions
+    @api recordId;
+    @track domainvalue
 
     const
      columns = [
-        { label: 'Education', fieldName: 'label' }
+        { label: 'Kennisinstellingen', fieldName: 'label' }
     ];
 
 
     @wire(getObjectInfo, {objectApiName: PREFERRED_EDUCATION_OBJECT})
     objectInfo;
+
+    @wire(getRecord, {recordId: '$recordId', fields})
+    Domain;
+
+    get initialdomainvalue(){
+        return getFieldValue(this.Domain.data, PREFERRED_EDUCATION_DOMAIN_FIELD)
+    }
+
 
     @wire(getPicklistValues, {recordTypeId: "012000000000000AAA", fieldApiName : PREFERRED_EDUCATION_DOMAIN_FIELD})
     preferredDmainValues({ error, data }) {
@@ -44,6 +54,6 @@ export default class MyComponent extends LightningElement {
         let key = this.preferredInstitutionData.controllerValues[event.target.value];
         this.institutionOptions = this.preferredInstitutionData.values.filter(opt => opt.validFor.includes(key));
     }
-    
+
 }
 

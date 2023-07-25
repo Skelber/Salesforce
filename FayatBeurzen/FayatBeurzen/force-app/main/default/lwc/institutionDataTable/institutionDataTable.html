@@ -1,7 +1,12 @@
 <template>
-    <lightning-combobox options={preferredDomain} onchange={handleDomainChange}>
-    </lightning-combobox>
+    <p>test 3</p>
+    <div class="combobox slds-m-bottom_medium" >
+        
+        <lightning-combobox options={preferredDomain} placeholder="Selecteer een studiedomein" value={initialdomainvalue} onchange={handleDomainChange}>
+        </lightning-combobox>
+    </div>
     <lightning-datatable
+        hide-checkbox-column="true"
         data={institutionOptions}
         columns={columns}
         key-field="value"
