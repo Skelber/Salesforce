@@ -1,6 +1,8 @@
 <template>
+    <lightning-combobox options={preferredDomain} onchange={handleDomainChange}>
+    </lightning-combobox>
     <lightning-datatable
-        data={preferredEducation}
+        data={institutionOptions}
         columns={columns}
         key-field="value"
     ></lightning-datatable>
