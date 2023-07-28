@@ -1,8 +1,8 @@
 <template>
-    <p>test 3</p>
+    <p>test 9</p>
     <div class="combobox slds-m-bottom_medium" >
         
-        <lightning-combobox options={preferredDomain} placeholder="Selecteer een studiedomein" value={initialdomainvalue} onchange={handleDomainChange}>
+        <lightning-combobox options={preferredDomain} placeholder="Selecteer een studiedomein" onload={handleOnLoad} value={initialdomainvalue} onchange={handleDomainChange}>
         </lightning-combobox>
     </div>
     <lightning-datatable

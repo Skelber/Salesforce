@@ -19,17 +19,18 @@ export default class MyComponent extends LightningElement {
     ];
 
 
+    
     @wire(getObjectInfo, {objectApiName: PREFERRED_EDUCATION_OBJECT})
     objectInfo;
 
-    @wire(getRecord, {recordId: '$recordId', fields})
-    Domain;
-
     get initialdomainvalue(){
-        return getFieldValue(this.Domain.data, PREFERRED_EDUCATION_DOMAIN_FIELD)
+        if(this.Domain){
+            return getFieldValue(this.Domain, PREFERRED_EDUCATION_DOMAIN_FIELD)
+        }
     }
 
-
+    
+    
     @wire(getPicklistValues, {recordTypeId: "012000000000000AAA", fieldApiName : PREFERRED_EDUCATION_DOMAIN_FIELD})
     preferredDmainValues({ error, data }) {
         console.log('Data '+ JSON.stringify(data));
@@ -39,6 +40,9 @@ export default class MyComponent extends LightningElement {
 
         }
     }
+    
+
+//"012000000000000AAA" refers to the default recordtype 
     
     @wire(getPicklistValues, { recordTypeId: "012000000000000AAA", fieldApiName: PREFERRED_EDUCATION_INSTITUTION_FIELD})
     wiredPicklistValues({ error, data }) {
@@ -50,10 +54,24 @@ export default class MyComponent extends LightningElement {
         }
     }
 
-    handleDomainChange(event){
+        //The get record is used retrieving the picklistvalues below
+    @wire(getRecord, {recordId: '$recordId', fields})
+    wiredDomain({error, data}) {
+        if(data) {
+            this.Domain = data;
+            if(this.preferredInstitutionData.controllerValues[this.initialdomainvalue]){
+                let key = this.preferredInstitutionData.controllerValues[this.initialdomainvalue];
+                this.institutionOptions = this.preferredInstitutionData.values.filter(opt => opt.validFor.includes(key));
+            }
+            
+        }
+    }
+
+        handleDomainChange(event){
         let key = this.preferredInstitutionData.controllerValues[event.target.value];
         this.institutionOptions = this.preferredInstitutionData.values.filter(opt => opt.validFor.includes(key));
-    }
+        }
+
 
 }
 
