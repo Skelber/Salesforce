@@ -5,7 +5,27 @@
     <targets>
     <target>lightning__FlowScreen</target>
     <target>lightning__RecordPage</target>
+    
     </targets>
+        <targetConfigs>
+            <targetConfig targets="lightning__FlowScreen">
+                <property
+                name="initialdomainvalue"
+                type="String"
+                label='preferred Domain'
+            />
+                <property
+                name="domainName"
+                type="String"
+                label='preferred Domain'
+            />
+                <property
+                name="newDomainValue"
+                type="String"
+                label='preferred Domain'
+            />
+            </targetConfig>
+        </targetConfigs>
     
     
 </LightningComponentBundle>

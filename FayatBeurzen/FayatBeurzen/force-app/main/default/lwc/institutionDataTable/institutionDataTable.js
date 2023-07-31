@@ -3,15 +3,19 @@ import { getObjectInfo, getPicklistValues } from 'lightning/uiObjectInfoApi';
 import PREFERRED_EDUCATION_INSTITUTION_FIELD from '@salesforce/schema/Preferred_Education__c.Preferred_Education_Institution__c';
 import PREFERRED_EDUCATION_DOMAIN_FIELD from '@salesforce/schema/Preferred_Education__c.Preferred_Education_Domain__c';
 import PREFERRED_EDUCATION_OBJECT from '@salesforce/schema/Preferred_Education__c';
-import { getFieldValue, getRecord} from 'lightning/uiRecordApi';
+import { getFieldValue, getRecord, updateRecord} from 'lightning/uiRecordApi';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent'
 
 const fields = [PREFERRED_EDUCATION_DOMAIN_FIELD, PREFERRED_EDUCATION_INSTITUTION_FIELD]
 export default class MyComponent extends LightningElement {
     @track preferredInstitution;
-    @track preferredDomain
+    @api preferredDomain
     @api institutionOptions
     @api recordId;
     @track domainvalue
+    @api initialdomainvalue
+    @api domainName
+    @api newDomainValue
 
     const
      columns = [
@@ -70,8 +74,13 @@ export default class MyComponent extends LightningElement {
         handleDomainChange(event){
         let key = this.preferredInstitutionData.controllerValues[event.target.value];
         this.institutionOptions = this.preferredInstitutionData.values.filter(opt => opt.validFor.includes(key));
-        }
-
+        console.log("============ This is the value " + event.target.value)
+        this.newDomainValue = event.target.value;
+        console.log("============ This is the initialdomainvalue  " + this.newDomainValue)
+    }
 
 }
+        
 
+
+        
