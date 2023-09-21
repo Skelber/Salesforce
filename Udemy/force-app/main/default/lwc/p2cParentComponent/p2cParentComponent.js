@@ -29,4 +29,3 @@ export default class P2cParentComponent extends LightningElement {
     this.template.querySelector('c-p2c-slider-component').resetSlider()
   }
 }
-
