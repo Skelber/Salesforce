@@ -1,7 +1,7 @@
 public class BankAccount {
-	public Decimal accountBalance = 0;
+	private Decimal accountBalance = 0;
     
-    public static Decimal totalAccountBalance = 0;
+    private static Decimal totalAccountBalance = 0;
     
     public void deposit(Decimal depositValue) {
         accountBalance += depositValue;
