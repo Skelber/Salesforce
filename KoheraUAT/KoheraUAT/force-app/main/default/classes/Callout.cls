@@ -36,7 +36,7 @@ public class Callout {
         return (AccountResult) JSON.deserialize(response.getBody().replace('VAT__c', 'VAT').replace('Email_for_invoices__c', 'InvoiceEmail').replace('FullAddress__c', 'FullAddress').replace('Register_of_legal_entities_department__c', 'Register_of_legal_entities_department').replace('Register_of_legal_entities__c', 'Register_of_legal_entities'), AccountResult.class);
     }
     
-    public static String createAccount(String naam, String btwnummer, String billingstreet, String billingcity, String billingpostalcode, String billingstate, String billingcountry, String Register_of_legal_entities, String Register_of_legal_entities_department) {            
+    public static String createAccount(String naam, String btwnummer, String billingstreet, String billingcity, String billingpostalcode, String billingstate, String billingcountry, String Register_of_legal_entities, String Register_of_legal_entities_department, String InvoiceEmail) {            
         
         Callout_CreateAccount__c co = Callout_CreateAccount__c.getOrgDefaults();
         
@@ -48,10 +48,10 @@ public class Callout {
         req.setHeader('Authorization', 'Bearer ' + getAccessToken());
         System.debug('{"Name" : "' + naam + '","VAT__c" : "' + btwnummer + '","BillingStreet" : "' + billingstreet + '","BillingCity" : "' + billingcity 
                     + '","BillingPostalCode" : "' + billingpostalcode + '","BillingState" : "' + billingstate + '","BillingCountry" : "' + billingcountry 
-                    + '","Register_of_legal_entities__c" : "' + Register_of_legal_entities + '","Register_of_legal_entities_department__c" : "' + Register_of_legal_entities_department +'"}');
+                    + '","Register_of_legal_entities__c" : "' + Register_of_legal_entities + '","Register_of_legal_entities_department__c" : "' + Register_of_legal_entities_department +'","Email_for_invoices__c" : "' + InvoiceEmail +'"}');
         req.setBody('{"Name" : "' + naam + '","VAT__c" : "' + btwnummer + '","BillingStreet" : "' + billingstreet + '","BillingCity" : "' + billingcity 
                     + '","BillingPostalCode" : "' + billingpostalcode + '","BillingState" : "' + billingstate + '","BillingCountry" : "' + billingcountry 
-                    + '","Register_of_legal_entities__c" : "' + Register_of_legal_entities + '","Register_of_legal_entities_department__c" : "' + Register_of_legal_entities_department +'"}');
+                    + '","Register_of_legal_entities__c" : "' + Register_of_legal_entities + '","Register_of_legal_entities_department__c" : "' + Register_of_legal_entities_department +'","Email_for_invoices__c" : "' + InvoiceEmail +'"}');
         
         Http http = new Http();
         HttpResponse response = http.send(req);
@@ -224,7 +224,7 @@ public class Callout {
                 oij.ExtProdName = oi.Product2.Name;
                 oij.Description = oi.Description;
                 oij.ServiceDate = oi.ServiceDate.year() + '-' + oi.ServiceDate.month() + '-' + oi.ServiceDate.day();
-                oij.EndDate = oi.EndDate.year() + '-' + oi.EndDate.month() + '-' + oi.EndDate.day();
+                oij.EndDate = oi.EndDate <> null ? oi.EndDate.year() + '-' + oi.EndDate.month() + '-' + oi.EndDate.day() : '';
                 oij.IcCompany = oi.IC_Company__r.Crosspoint_Id__c;
                 oij.ExternalCompany = oi.External_company__c;
                 oij.PurchasePrice = oi.Purchase_Price__c;
@@ -306,7 +306,7 @@ public class Callout {
                 oij.Description = oi.Description;
                 oij.ResourceType = oi.Resource_Type__c;
                 oij.ServiceDate = oi.ServiceDate.year() + '-' + oi.ServiceDate.month() + '-' + oi.ServiceDate.day();
-                oij.EndDate = oi.EndDate.year() + '-' + oi.EndDate.month() + '-' + oi.EndDate.day();
+                oij.EndDate = oi.EndDate <> null ? oi.EndDate.year() + '-' + oi.EndDate.month() + '-' + oi.EndDate.day() : '';
                 oij.ExternalCompany = oi.External_company__c;
                 oij.IcCompany = oi.IC_Company__r.Crosspoint_Id__c;
                 oij.PurchasePrice = oi.Purchase_Price__c;

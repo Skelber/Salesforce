@@ -38,6 +38,8 @@ public class createAccountsInvocable {
         public String Register_of_legal_entities;
         @InvocableVariable
         public String Register_of_legal_entities_department;
+        @InvocableVariable
+        public String InvoiceEmail;
         
     }
     
