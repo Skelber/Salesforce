@@ -4,7 +4,7 @@ public class createAccountsInvocable {
     public static List<AccountResult> createAccount(List<AccountRequest> AccountRequests){
         String res = callout.createAccount(AccountRequests[0].naam, AccountRequests[0].btwnummer, AccountRequests[0].billingstreet,
                                            AccountRequests[0].billingcity ,AccountRequests[0].billingpostalcode, AccountRequests[0].billingstate, 
-                                           AccountRequests[0].billingcountry, AccountRequests[0].Register_of_legal_entities, AccountRequests[0].Register_of_legal_entities_department);
+                                           AccountRequests[0].billingcountry, AccountRequests[0].Register_of_legal_entities, AccountRequests[0].Register_of_legal_entities_department, AccountRequests[0].InvoiceEmail);
         
         AccountResult ar = new AccountResult();
         if(res.length() > 18 && res <> null) {

@@ -24,7 +24,7 @@ public class Callout {
         Callout__c co = Callout__c.getOrgDefaults();                            
         HttpRequest req = new HttpRequest();
         req.setEndpoint(co.baseURL__c + '/services/data/v59.0/query/?q='
-                        + 'SELECT+Id,Name,BillingAddress,VAT__c,ShippingAddress,Email_for_invoices__c,FullAddress__c,Register_of_legal_entities__c,Register_of_legal_entities_department__c+FROM+Account+WHERE+VAT__c=\'' + btwnummer + '\'');
+                        + 'SELECT+Id,Name,BillingAddress,VAT__c,ShippingAddress,Email_for_invoices__c,FullAddress__c,CSPSResponsibleEmail__c,Register_of_legal_entities__c,Register_of_legal_entities_department__c+FROM+Account+WHERE+VAT__c=\'' + btwnummer + '\'');
         req.setMethod('GET');
         req.setHeader('Authorization', 'Bearer ' + getAccessToken());
         Http http = new Http();
@@ -33,7 +33,7 @@ public class Callout {
         System.debug('REST response is :: '+response);
         System.debug(response.getBody());
         
-        return (AccountResult) JSON.deserialize(response.getBody().replace('VAT__c', 'VAT').replace('Email_for_invoices__c', 'InvoiceEmail').replace('FullAddress__c', 'FullAddress').replace('Register_of_legal_entities_department__c', 'Register_of_legal_entities_department').replace('Register_of_legal_entities__c', 'Register_of_legal_entities'), AccountResult.class);
+        return (AccountResult) JSON.deserialize(response.getBody().replace('VAT__c', 'VAT').replace('Email_for_invoices__c', 'InvoiceEmail').replace('FullAddress__c', 'FullAddress').replace('Register_of_legal_entities_department__c', 'Register_of_legal_entities_department').replace('Register_of_legal_entities__c', 'Register_of_legal_entities').replace('CSPSResponsibleEmail__c', 'ResponsibleMail'), AccountResult.class);
     }
     
     public static String createAccount(String naam, String btwnummer, String billingstreet, String billingcity, String billingpostalcode, String billingstate, String billingcountry, String Register_of_legal_entities, String Register_of_legal_entities_department, String InvoiceEmail) {            
@@ -224,7 +224,7 @@ public class Callout {
                 oij.ExtProdName = oi.Product2.Name;
                 oij.Description = oi.Description;
                 oij.ServiceDate = oi.ServiceDate.year() + '-' + oi.ServiceDate.month() + '-' + oi.ServiceDate.day();
-                oij.EndDate = oi.EndDate <> null ? oi.EndDate.year() + '-' + oi.EndDate.month() + '-' + oi.EndDate.day() : '';
+                oij.EndDate = oi.EndDate <> null ? oi.EndDate.year() + '-' + oi.EndDate.month() + '-' + oi.EndDate.day() : null;
                 oij.IcCompany = oi.IC_Company__r.Crosspoint_Id__c;
                 oij.ExternalCompany = oi.External_company__c;
                 oij.PurchasePrice = oi.Purchase_Price__c;
@@ -306,7 +306,7 @@ public class Callout {
                 oij.Description = oi.Description;
                 oij.ResourceType = oi.Resource_Type__c;
                 oij.ServiceDate = oi.ServiceDate.year() + '-' + oi.ServiceDate.month() + '-' + oi.ServiceDate.day();
-                oij.EndDate = oi.EndDate <> null ? oi.EndDate.year() + '-' + oi.EndDate.month() + '-' + oi.EndDate.day() : '';
+                oij.EndDate = oi.EndDate <> null ? oi.EndDate.year() + '-' + oi.EndDate.month() + '-' + oi.EndDate.day() : null;
                 oij.ExternalCompany = oi.External_company__c;
                 oij.IcCompany = oi.IC_Company__r.Crosspoint_Id__c;
                 oij.PurchasePrice = oi.Purchase_Price__c;
@@ -521,6 +521,7 @@ public class Callout {
         public String VAT;
         public String InvoiceEmail;
         public String FullAddress;
+        public String ResponsibleMail;
         public FullAddress BillingAddress;
         public FullAddress ShippingAddress;
         public String Register_of_legal_entities;

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>56.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>flowFinishAndNavToRecordWithId</masterLabel>
+    <description>This will NOT work when a flow is called from a link e.g. a list button. Only in a Quick Action or when the flow is called directly.</description>
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <property name="recordId" label="recordId" type="String" role="inputOnly" />
+            <property name="objectApiName" label="objectApiName" type="String" role="inputOnly" />
+            <property name="action" label="action" type="String" role="inputOnly"
+                description="This can be clone, edit, or view" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

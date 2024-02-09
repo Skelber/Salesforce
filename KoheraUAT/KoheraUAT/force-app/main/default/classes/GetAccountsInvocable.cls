@@ -12,6 +12,7 @@ public class GetAccountsInvocable {
                     Vat__c = rec.VAT,
                     FullAddress__c = rec.FullAddress,
                     Email_for_invoices__c = rec.InvoiceEmail,
+                    CSPSResponsibleEmail__c = rec.ResponsibleMail,
                     Register_of_legal_entities__c = rec.Register_of_legal_entities,
                     Register_of_legal_entities_department__c = rec.Register_of_legal_entities_department,
                     
@@ -35,6 +36,7 @@ public class GetAccountsInvocable {
         AccountResult res = new AccountResult();
         res.accounts = accList;
         res.aantal = accList.size();
+        res.ResponsibleMail = accList[0].CSPSResponsibleEmail__c;
         System.debug('Result: ' + new List<AccountResult>{res});
         return new List<AccountResult>{res};
     }
@@ -54,6 +56,9 @@ public class GetAccountsInvocable {
         
         @InvocableVariable
         public Integer aantal;
+
+        @InvocableVariable
+        public string ResponsibleMail;
         
     }
 
