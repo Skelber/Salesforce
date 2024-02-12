@@ -37,6 +37,7 @@ public class GetAccountsInvocable {
         res.accounts = accList;
         res.aantal = accList.size();
         res.ResponsibleMail = accList[0].CSPSResponsibleEmail__c;
+        res.FirstAccountName = accList[0].name;
         System.debug('Result: ' + new List<AccountResult>{res});
         return new List<AccountResult>{res};
     }
@@ -59,6 +60,9 @@ public class GetAccountsInvocable {
 
         @InvocableVariable
         public string ResponsibleMail;
+        
+        @InvocableVariable
+        public string FirstAccountName;
         
     }
 
