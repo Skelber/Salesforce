@@ -36,8 +36,8 @@ public class GetAccountsInvocable {
         AccountResult res = new AccountResult();
         res.accounts = accList;
         res.aantal = accList.size();
-        res.ResponsibleMail = accList[0].CSPSResponsibleEmail__c;
-        res.FirstAccountName = accList[0].name;
+        res.ResponsibleMail = ((accList.size() > 0 ) ? accList[0].CSPSResponsibleEmail__c : null);
+        res.FirstAccountName = ((accList.size() > 0 ) ? accList[0].name : null);
         System.debug('Result: ' + new List<AccountResult>{res});
         return new List<AccountResult>{res};
     }

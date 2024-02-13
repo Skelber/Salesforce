@@ -113,7 +113,7 @@ public class Callout {
                           Ord.Division = o.Division__r.Crosspoint_Id__c;
                           Ord.EffectiveDate = o.EffectiveDate.year() + '-' + O.EffectiveDate.month() + '-' + o.EffectiveDate.day();
                           Ord.PODate = o.EffectiveDate.year() + '-' + O.EffectiveDate.month() + '-' + o.EffectiveDate.day();
-                          Ord.EndDate = o.EndDate.year() + '-' + O.EndDate.month() + '-' + o.EndDate.day();
+                          Ord.EndDate = o.EndDate <> null ? o.EndDate.year() + '-' + O.EndDate.month() + '-' + o.EndDate.day(): null;
                           //Ord.Status = status <> null && o.Status <> 'Draft' ? status : o.Status;
                           Ord.Status = 'Draft';
                           Ord.Name = o.OrderNumber;
