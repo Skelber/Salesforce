@@ -223,7 +223,8 @@ public class Callout {
                 oij.UnitPrice = oi.UnitPrice;
                 oij.ExtProdName = oi.Product2.Name;
                 oij.Description = oi.Description;
-                oij.ServiceDate = oi.ServiceDate.year() + '-' + oi.ServiceDate.month() + '-' + oi.ServiceDate.day();
+                oij.ResourceType = oi.Resource_Type__c;
+                oij.ServiceDate = oi.ServiceDate <> null ?  oi.ServiceDate.year() + '-' + oi.ServiceDate.month() + '-' + oi.ServiceDate.day() : null;
                 oij.EndDate = oi.EndDate <> null ? oi.EndDate.year() + '-' + oi.EndDate.month() + '-' + oi.EndDate.day() : null;
                 oij.IcCompany = oi.IC_Company__r.Crosspoint_Id__c;
                 oij.ExternalCompany = oi.External_company__c;
@@ -305,7 +306,7 @@ public class Callout {
                 oij.ExtProdName = oi.Product2.Name;
                 oij.Description = oi.Description;
                 oij.ResourceType = oi.Resource_Type__c;
-                oij.ServiceDate = oi.ServiceDate.year() + '-' + oi.ServiceDate.month() + '-' + oi.ServiceDate.day();
+                oij.ServiceDate = oi.ServiceDate <> null ? oi.ServiceDate.year() + '-' + oi.ServiceDate.month() + '-' + oi.ServiceDate.day() : null;
                 oij.EndDate = oi.EndDate <> null ? oi.EndDate.year() + '-' + oi.EndDate.month() + '-' + oi.EndDate.day() : null;
                 oij.ExternalCompany = oi.External_company__c;
                 oij.IcCompany = oi.IC_Company__r.Crosspoint_Id__c;
