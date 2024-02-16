@@ -100,7 +100,7 @@ public class Callout {
     public static List<Order> sendOrderFunction(List<Id> orderIds, String status, String token) {
         OrderList oList = new OrderList();
         oList.records = new List<orderJson>();
-        for(Order o: [SELECT Id, Account_Crosspoint_Id__c, EffectiveDate, Status, Name, OrderNumber, Description, EndDate, End_Customer__r.Crosspoint_Id__c, Division__r.Crosspoint_Id__c, Type, Payment_Terms__c, Owner.FirstName, Owner.LastName, Pricebook2.Crosspoint_Id__c, Signed_TS_Required__c, PoNumber, Account.Email_for_invoices__c
+        for(Order o: [SELECT Id, Account_Crosspoint_Id__c, EffectiveDate, Status, Name, OrderNumber, Description, EndDate, End_Customer__r.Crosspoint_Id__c, Division__r.Crosspoint_Id__c, Type, Payment_Terms__c, Owner.FirstName, Owner.LastName, Pricebook2.Crosspoint_Id__c, Signed_TS_Required__c, PoNumber, Account.Email_for_invoices__c, Sales_Manager__r.FirstName, Sales_Manager__r.LastName
                       FROM Order 
                       WHERE Id in :orderIds]){
                           Attribute a = new Attribute();
@@ -122,7 +122,7 @@ public class Callout {
                           Ord.Type = o.Type;
                           Ord.PaymentTerms = o.Payment_terms__c;
                           Ord.PriceBook2Id = o.Pricebook2.Crosspoint_Id__c;
-                          Ord.OwnerName = o.Owner.FirstName + ' ' + o.Owner.lastName;
+                          Ord.OwnerName = o.Sales_Manager__r.FirstName + ' ' + o.Sales_Manager__r.lastName;
                           Ord.TS = o.Signed_TS_Required__c;
                           Ord.PoNumber = o.PoNumber;
                           Ord.InvoiceEmail = o.Account.Email_for_invoices__c;
