@@ -244,7 +244,7 @@ public class Callout {
             req.setHeader('Accept', co.accept__c);
             req.setHeader('Authorization', 'Bearer ' + token);
             //req.setBody('{"records":[{"attributes" : {"type" : "Order", "referenceId" : "test1"}, "AccountId":"0012600001qnie6AAA","EffectiveDate":"2023-12-10", "Status":"Draft", "Name": "Test integration", "External_id__c": "test1"},{"attributes" : {"type" : "Order", "referenceId" : "test2"}, "AccountId":"0012600001qnie6AAA","EffectiveDate":"2023-10-10", "Status":"Draft", "Name": "Test integration 3", "External_id__c": "test2"}]}');
-            req.setBody(Json.serialize(oiList).replace('type1', 'type').replace('EndSalesPrice', 'End_Sales_Price__c').replace('ExternalCompany','External_company__c' ).replace('ResourceType', 'Resource_Type__c').replace('ExtProdName', 'External_Product_Name__c').replace('IcCompany', 'IC_Company__c').replace('PurchasePrice', 'Purchase_Price__c').replace('OrderUnit', 'Unit__c'));
+            req.setBody(Json.serialize(oiList).replace('type1', 'type').replace('EndSalesPrice', 'End_Sales_Price__c').replace('ExternalCompany','External_company__c' ).replace('ResourceType', 'Resource_Type__c').replace('ExtProdName', 'External_Product_Name__c').replace('IcCompany', 'IC_Company__c').replace('PurchasePrice', 'Purchase_Price__c').replace('OrderUnit', 'Unit__c').replace('PONumber', 'Customer_Reference__c'));
 
             system.debug(req.getBody());
             
@@ -325,7 +325,7 @@ public class Callout {
             req.setHeader('Content-Type', co.contentType__c);
             req.setHeader('Accept', co.accept__c);
             req.setHeader('Authorization', 'Bearer ' + getAccessToken());
-            req.setBody(Json.serialize(oiList).replace('type1', 'type').replace('EndSalesPrice', 'End_Sales_Price__c').replace('ExternalCompany','External_company__c' ).replace('ResourceType', 'Resource_Type__c').replace('ExtProdName', 'External_Product_Name__c').replace('IcCompany', 'IC_Company__c').replace('PurchasePrice', 'Purchase_Price__c').replace('OrderUnit', 'Unit__c'));
+            req.setBody(Json.serialize(oiList).replace('type1', 'type').replace('EndSalesPrice', 'End_Sales_Price__c').replace('ExternalCompany','External_company__c' ).replace('ResourceType', 'Resource_Type__c').replace('ExtProdName', 'External_Product_Name__c').replace('IcCompany', 'IC_Company__c').replace('PurchasePrice', 'Purchase_Price__c').replace('OrderUnit', 'Unit__c').replace('PONumber', 'Customer_Reference__c'));
             system.debug(req.getBody());
             
             Http http = new Http();
@@ -379,7 +379,7 @@ public class Callout {
     public static void sendOrderItem(List<Id> orderItemIds) {
         
         String token = getAccessToken();
-        List<OrderItem> orderItems = new List<OrderItem>([Select Id, Crosspoint_Id__c, order.Crosspoint_Id__c, Product2.CrosspointId__c, Product2.Name, Quantity, PricebookEntry.Crosspoint_Id__c, UnitPrice, resource_Type__c, ServiceDate, EndDate, Description, External_company__c, IC_Company__r.Crosspoint_Id__c, Purchase_Price__c, End_sales_price__c, Unit__c 
+        List<OrderItem> orderItems = new List<OrderItem>([Select Id, Crosspoint_Id__c, order.Crosspoint_Id__c, Product2.CrosspointId__c, Product2.Name, Quantity, PricebookEntry.Crosspoint_Id__c, UnitPrice, resource_Type__c, ServiceDate, EndDate, Description, External_company__c, IC_Company__r.Crosspoint_Id__c, Purchase_Price__c, End_sales_price__c, Unit__c, PO_Number__c
                                                            FROM OrderItem WHERE Id IN :orderItemIds]);
         List<OrderItem> toUpdate = sendOrderItemFunction(orderItems, token, null);
         update toUpdate;
@@ -389,7 +389,7 @@ public class Callout {
     public static void sendOrderItemUpdate(List<Id> orderItemIds) {
         
         String token = getAccessToken();
-        List<OrderItem> orderItems = new List<OrderItem>([Select Id, Crosspoint_Id__c, order.Crosspoint_Id__c, Product2.CrosspointId__c, Product2.Name, Quantity, PricebookEntry.Crosspoint_Id__c, UnitPrice, resource_Type__c, ServiceDate, EndDate, Description, External_company__c, IC_Company__r.Crosspoint_Id__c, Purchase_Price__c, End_sales_price__c, Unit__c
+        List<OrderItem> orderItems = new List<OrderItem>([Select Id, Crosspoint_Id__c, order.Crosspoint_Id__c, Product2.CrosspointId__c, Product2.Name, Quantity, PricebookEntry.Crosspoint_Id__c, UnitPrice, resource_Type__c, ServiceDate, EndDate, Description, External_company__c, IC_Company__r.Crosspoint_Id__c, Purchase_Price__c, End_sales_price__c, Unit__c, PO_Number__c
                                                            FROM OrderItem WHERE Id IN :orderItemIds]);
         List<OrderItem> toUpdate = sendOrderItemFunction(orderItems, token, null);
         update toUpdate;       
@@ -411,7 +411,7 @@ public class Callout {
         
         //Orderproducts        
         List<OrderItem> items = new List<OrderItem>([SELECT Id, Integration_Status__c, Crosspoint_Id__c, order.Crosspoint_Id__c, Product2.CrosspointId__c, Product2.Name, 
-                                                     Quantity, PricebookEntry.Crosspoint_Id__c, UnitPrice, OrderId, resource_Type__c, ServiceDate, EndDate,Description, External_company__c, IC_Company__r.Crosspoint_Id__c, Purchase_Price__c, End_sales_price__c, Unit__c
+                                                     Quantity, PricebookEntry.Crosspoint_Id__c, UnitPrice, OrderId, resource_Type__c, ServiceDate, EndDate,Description, External_company__c, IC_Company__r.Crosspoint_Id__c, Purchase_Price__c, End_sales_price__c, Unit__c, PO_Number__c
                                                      FROM OrderItem WHERE OrderId IN :orderIds]);
         List<OrderItem> toUpdateOI = sendOrderItemFunction(items, token, idMap);
        
@@ -481,6 +481,7 @@ public class Callout {
         String EndDate;
         String IcCompany;
         String OrderUnit;
+        String PONumber;
         Attribute attributes;
     }
     
@@ -502,6 +503,7 @@ public class Callout {
         String EndDate;
         String IcCompany;
         String OrderUnit;
+        String PONumber;
         Attribute attributes;
     }
     
