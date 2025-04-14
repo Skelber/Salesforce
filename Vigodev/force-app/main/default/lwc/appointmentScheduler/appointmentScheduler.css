@@ -1,0 +1,14 @@
+.slds-form-element__help{
+            color:blue !important;
+}
+
+body {
+    background-color: #fff;
+}
+
+.sticky-div {
+  position: sticky;
+  top: 140px;
+  z-index: 1;
+  background-color: #fff;
+}

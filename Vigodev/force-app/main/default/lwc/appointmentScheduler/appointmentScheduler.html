@@ -1,0 +1,368 @@
+<!-- LLP-1573 -->
+
+<template> 
+    <lightning-card class="slds-p-around_medium">
+<div>
+
+ <div class="slds-grid slds-wrap">
+     <div class="slds-col slds-size_1-of-5 sticky-div" style="box-shadow: 0px 2px 5px silver; border-radius: 5px">
+
+             <div class="header slds-p-around_small slds-m-around_medium" style="background-color: #F3F3F3; border-radius: 15px">
+                 <h2>{label.AccountName}: {accName}</h2>
+                 <p>{label.AccountMobile}: {accMobile}</p>
+                 <p>{label.AccountEmail}: {accEmail}</p>
+                </div>
+                
+
+         <div class="slds-p-around_medium">
+                 
+                <lightning-combobox class="slds-p-around_small" label={label.BusinessUnit} options={BUOptions} onchange={handleBUChange} value={buVal} disabled={disableBU}></lightning-combobox>
+                <lightning-combobox class="slds-p-around_small" label={label.ProductGroup} options={PGOptionsCopy} onchange={handlePGChange} value={pgVal} disabled={disablePG}></lightning-combobox>
+                <lightning-combobox class="slds-p-around_small" label={label.ProductSubGroup} options={PSGOptionsCopy} onchange={handlePSGChange} value={psgVal} disabled={disablePSG}></lightning-combobox>
+                <lightning-combobox class="slds-p-around_small" label={label.AppointmentType} options={ATOptionsCopy} onchange={handleATChange} value={atVal} disabled={disableAT}></lightning-combobox>
+                 
+                 <lightning-record-picker
+                    lwc:ref="userPicker"   
+                    class="slds-p-around_medium"
+                    value={user}
+                    label={label.PrimaryProvider}
+                    disabled={disablePrimaryProvider}
+                    placeholder={label.Lookup}
+                    object-api-name="ServiceResource"
+                    onchange={handleUserChange}
+                >
+                </lightning-record-picker>
+
+                    <lightning-record-picker
+                    lwc:ref="userPicker2"   
+                    class="slds-p-around_medium"
+                    value={user2}
+                    label={label.SecondaryProvider}
+                    disabled={disableSecondaryResource}
+                    placeholder={label.Lookup}
+                    object-api-name="ServiceResource"
+                    onchange={handleUser2Change}
+                >
+                </lightning-record-picker>
+
+                <lightning-record-picker
+                    lwc:ref="locationPicker"
+                    class="slds-p-around_medium"
+                    value={location}
+                    label={label.Location}
+                    placeholder={label.Lookup}
+                    object-api-name="ServiceTerritory"
+                    onchange={handleSTChange}
+                    disabled={disableServiceTerritory}
+                    required=""
+                >
+                </lightning-record-picker>
+            
+            <div class="buttons slds-p-around_medium">
+                <lightning-button class="slds-button_neutral" label="Reset filters" onclick={resetFilter}></lightning-button>
+            </div>
+            </div>
+            
+        </div>
+
+
+<div class="slds-col slds-size_4-of-5 slds-p-left_medium slds-p-right_medium">
+
+
+<div class="slds-grid slds-wrap header sticky-div" style="box-shadow: 0px 2px 5px silver; border-radius: 5px"> 
+    <div class="slds-col slds-size_5-of-5">
+        <div class="slds-grid slds-col slds-size_12-of-12 slds-p-left_medium slds-p-right_medium" >
+
+            <div class="slds-col slds-size_5-of-12">
+                <lightning-layout horizontal-align="left">
+                    <lightning-radio-group name="Scheduled day(s)"
+                    label={label.ScheduledDays}
+                    options={dayOptions}
+                    value={dayValue}
+                    onchange={setDayValues}
+                    type="button"></lightning-radio-group>
+                </lightning-layout>
+            </div>
+            <div class="slds-col slds-size_3-of-12" >
+                <lightning-layout horizontal-align="left">
+                   <lightning-radio-group name="Time"
+                    label={label.Time}
+                    options={timeOptions}
+                    value={timeValue}
+                    onchange={setTimeValues}
+                    type="button"></lightning-radio-group>
+                </lightning-layout>
+            </div>
+            <div class="slds-col slds-size_4-of-12">
+                <lightning-layout>
+                    <lightning-button title="Previous" value="Previous" label="<" onclick={handleNext} class="slds-m-horizontal_xx-small slds-p-top_large"></lightning-button>
+                    <lightning-input class="date-format-hide" type="date" value={currentDate} label={label.DatePicker} onchange={setCurrentDate}></lightning-input>
+                    <lightning-button name="Next" title="Next" value="Next" label=">" onclick={handleNext} class="slds-m-horizontal_xx-small slds-p-top_large" ></lightning-button>
+                    <lightning-button name="Today" title="Today" value="Today" label={label.Today} onclick={jumpToToday} class="slds-m-horizontal_xx-small slds-p-top_large" ></lightning-button>
+                </lightning-layout>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="slds-col slds-size_5-of-5">
+        <div class="slds-grid slds-col slds-size_12-of-12">
+
+            <div class="slds-col slds-size_10-of-12">
+                <lightning-layout horizontal-align="center">
+                   <lightning-record-picker
+                    lwc:ref="workTypePicker"   
+                    class="slds-p-around_medium"
+                    value={workType}
+                    label={label.WorkType}
+                    style="width: 100%"
+                    placeholder={label.Lookup}
+                    object-api-name="WorkType"
+                    onchange={handleWTChange}
+                >
+                </lightning-record-picker>
+                </lightning-layout>
+            </div>
+            <div class="slds-col slds-size_2-of-12">
+                <lightning-layout horizontal-align="left">
+                   <lightning-input
+                   type="number"
+                   class="slds-p-around_medium slds-p-top_large"
+                   style="width: 100%"
+                   onchange={handleDurationChange}
+                   value={workTypeDuration}
+                   min-length="2"
+                   label={label.DurationInMinutes}>
+                    </lightning-input>
+                </lightning-layout>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>   
+        <template if:false={showCalendar}>
+            <div>
+            <div class="slds-align_absolute-center slds-m-top_xx-large" style="margin-top: 200px;">
+                <p style="font-size: 25px">{guidingText}</p>
+            </div>
+            <!-- <div class="slds-align_absolute-center">
+                <p style="font-size: 15px">{guidingSubText}</p>
+            </div> -->
+           
+            </div>
+        </template>
+
+        <template if:true={showCalendar}>
+
+         <template if:true={showSpinner}>
+
+             <div class="exampleHolder">
+                 <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+                </div>
+            </template>   
+
+        <template if:false={multiResourceBooking}>
+         <template for:each={resourceMap} for:item="resource">
+            <div class="resourceEventContainer slds-m-top_xx-large" key={resource.id}>
+
+            <div class="slds-card slds-card_boundary slds-m-top_medium" key={resource.id} icon-name="standard:contact" style="box-shadow: 0px 2px 5px silver; border-radius: 5px">
+                <div class="header slds-p-around_small slds-list_horizontal" style="background-color: #F3F3F3;">
+                    <lightning-icon icon-name="standard:service_resource" size="medium" alternative-text="service resource icon"></lightning-icon>
+                    <h2 style="font-size: 14px; margin-left:5px">{resource.title} - {resource.territoryName}</h2>
+                </div>
+                <template if:false={resource.weekWithSlots}>
+                    <div class="slds-align_absolute-center" style="Padding: 20px">{label.FirstAvailableLabel}<span style="text-decoration: underline; cursor: pointer; color: #0000EE; padding-left: 3px"><lightning-formatted-date-time onclick={jumpToDate} value={resource.firstAvailableDate} month="long" day="2-digit" weekday="long" time-zone={locale}></lightning-formatted-date-time></span></div>
+                </template>
+                <template if:true={resource.weekWithSlots}>
+                <div class="slds-grid slds-wrap eventcontainer" data-id={resource.id} style="border: none; border-radius:5px; max-height: 25rem; overflow:auto;"> 
+                        <div class="slds-col slds-size_1-of-5 slds-p-top_medium slds-p-bottom_medium slds-text-align_center"  style="border-bottom:1px solid grey"><lightning-formatted-date-time value={colOneHeader} month="short" day="2-digit" weekday="long"></lightning-formatted-date-time></div>
+                        <div class="slds-col slds-size_1-of-5 slds-p-top_medium slds-p-bottom_medium slds-text-align_center"  style="border-bottom:1px solid grey"><lightning-formatted-date-time value={colTwoHeader} month="short" day="2-digit" weekday="long"></lightning-formatted-date-time></div>
+                        <div class="slds-col slds-size_1-of-5 slds-p-top_medium slds-p-bottom_medium slds-text-align_center"  style="border-bottom:1px solid grey"><lightning-formatted-date-time value={colThreeHeader} month="short" day="2-digit" weekday="long"></lightning-formatted-date-time></div>
+                        <div class="slds-col slds-size_1-of-5 slds-p-top_medium slds-p-bottom_medium slds-text-align_center"  style="border-bottom:1px solid grey"><lightning-formatted-date-time value={colFourHeader} month="short" day="2-digit" weekday="long"></lightning-formatted-date-time></div>
+                        <div class="slds-col slds-size_1-of-5 slds-p-top_medium slds-p-bottom_medium slds-text-align_center"  style="border-bottom:1px solid grey"><lightning-formatted-date-time value={colFiveHeader} month="short" day="2-digit" weekday="long"></lightning-formatted-date-time></div>
+
+                    
+                    <div class="slds-col slds-size_1-of-5">
+                        <template for:each={resource.events} for:item="event">
+                                <template if:true={event.isForColOne}>
+                                    <div key={event.id} class="slds-m-around_small slds-align_absolute-center">
+                                        <button class="slds-button slds-button_neutral slds-button_stretch" label={event.buttonLabel} style="padding: 1px" onclick={showEvent} data-id={event.buttonValue}>{event.buttonLabel}</button>
+                                    </div>
+                                </template>
+                        </template>
+                    </div>
+                    <div class="slds-col slds-size_1-of-5">
+                        <template for:each={resource.events} for:item="event">
+                                <template if:true={event.isForColTwo}>
+                                    <div key={event.id} class="slds-m-around_small slds-align_absolute-center" >
+                                        <button class="slds-button slds-button_neutral slds-button_stretch" label={event.buttonLabel} style="padding: 1px" onclick={showEvent} data-id={event.buttonValue}>{event.buttonLabel}</button>
+                                    </div>
+                                </template>
+                        </template>
+                    </div>
+                    <div class="slds-col slds-size_1-of-5">
+                        <template for:each={resource.events} for:item="event">
+                                <template if:true={event.isForColThree}>
+                                    <div key={event.id} class="slds-m-around_small slds-align_absolute-center">
+                                        <button class="slds-button slds-button_neutral slds-button_stretch" label={event.buttonLabel} style="padding: 1px" onclick={showEvent} data-id={event.buttonValue}>{event.buttonLabel}</button>
+                                    </div>
+                                </template>
+                        </template>
+                    </div>
+                    <div class="slds-col slds-size_1-of-5">
+                        <template for:each={resource.events} for:item="event">
+                                <template if:true={event.isForColFour}>
+                                    <div key={event.id} class="slds-m-around_small slds-align_absolute-center">
+                                        <button class="slds-button slds-button_neutral slds-button_stretch" label={event.buttonLabel} style="padding: 1px" onclick={showEvent} data-id={event.buttonValue}>{event.buttonLabel}</button>
+                                    </div>
+                                </template>
+                        </template>
+                    </div>
+                    <div class="slds-col slds-size_1-of-5">
+                        <template for:each={resource.events} for:item="event">
+                            <template if:true={colFiveHeader}>
+                                <template if:true={event.isForColFive}>
+                                    <div key={event.id} class="slds-m-around_small slds-align_absolute-center">
+                                        <button class="slds-button slds-button_neutral slds-button_stretch" label={event.buttonLabel} style="padding: 1px" onclick={showEvent} data-id={event.buttonValue}>{event.buttonLabel}</button>
+                                    </div>
+                                </template>
+                            </template>
+                            <!-- <template if:false={colFiveHeader}>
+                                <div style="color: lightgrey; background: lightgrey" key={event.id}>no data</div>
+                            </template> -->
+                        </template>
+                    </div>
+
+                </div> 
+                </template>
+                <template if:true={resource.weekWithSlots}>
+                <div class="footer">
+                    <template if:false={isExpanded}>
+                        <lightning-button variant="brand-outline" value={resource.id} label="View more" onclick={handleHeight}></lightning-button>
+                    </template>
+                    <template if:true={isExpanded}>
+                        <lightning-button variant="brand-outline" value={resource.id} label="Show less" onclick={handleHeight}></lightning-button>
+                    </template>
+                </div>
+                </template>
+            </div>
+            </div>
+         </template>
+         
+    </template>
+   
+
+    <template if:true={multiResourceBooking}>
+        <template for:each={multipleResourceMap} for:item="resource">
+            <div class="resourceEventContainer slds-m-top_xx-large" key={resource.id}>
+
+            <div class="slds-card slds-card_boundary slds-m-top_medium"  icon-name="standard:contact" style="box-shadow: 0px 2px 5px silver; border-radius: 5px">
+                <div class="header slds-p-around_small slds-list_horizontal" style="background-color: #F3F3F3;">
+                    <lightning-icon icon-name="standard:service_resource" size="medium" alternative-text="service resource icon"></lightning-icon>
+                    <h2 style="font-size: 14px; margin-left:5px">{primaryServiceResourceName} - {secondaryServiceResourceName} - {resource.territoryName}</h2>
+                </div>
+
+               <template if:false={resource.weekWithSlots}>
+                    <div class="slds-align_absolute-center" style="Padding: 20px">{label.FirstAvailableLabel}<span style="text-decoration: underline; cursor: pointer; color: #0000EE; padding-left: 3px"><lightning-formatted-date-time onclick={jumpToDate} value={resource.firstAvailableDate} month="long" day="2-digit" weekday="long"></lightning-formatted-date-time></span></div>
+                </template>
+                <template if:true={resource.weekWithSlots}>
+                <div class="slds-grid slds-wrap eventcontainer" style="border: none; border-radius:5px; height: 30rem; overflow:auto;"> 
+                        <div class="slds-col slds-size_1-of-5 slds-p-top_medium slds-p-bottom_medium slds-text-align_center"  style="border-bottom:1px solid grey"><lightning-formatted-date-time value={colOneHeader} month="short" day="2-digit" weekday="long"></lightning-formatted-date-time></div>
+                        <div class="slds-col slds-size_1-of-5 slds-p-top_medium slds-p-bottom_medium slds-text-align_center"  style="border-bottom:1px solid grey"><lightning-formatted-date-time value={colTwoHeader} month="short" day="2-digit" weekday="long"></lightning-formatted-date-time></div>
+                        <div class="slds-col slds-size_1-of-5 slds-p-top_medium slds-p-bottom_medium slds-text-align_center"  style="border-bottom:1px solid grey"><lightning-formatted-date-time value={colThreeHeader} month="short" day="2-digit" weekday="long"></lightning-formatted-date-time></div>
+                        <div class="slds-col slds-size_1-of-5 slds-p-top_medium slds-p-bottom_medium slds-text-align_center"  style="border-bottom:1px solid grey"><lightning-formatted-date-time value={colFourHeader} month="short" day="2-digit" weekday="long"></lightning-formatted-date-time></div>
+                        <div class="slds-col slds-size_1-of-5 slds-p-top_medium slds-p-bottom_medium slds-text-align_center"  style="border-bottom:1px solid grey"><lightning-formatted-date-time value={colFiveHeader} month="short" day="2-digit" weekday="long"></lightning-formatted-date-time></div>
+
+                
+                    
+                
+                    <div class="slds-col slds-size_1-of-5">
+                        <template for:each={resource.events} for:item="event">
+                            <template if:true={event.isForCurrentTerritory}>
+                                <template if:true={event.isForColOne}>
+                                    <div key={event.id} class="slds-m-around_small slds-align_absolute-center">
+                                        <button class="slds-button slds-button_neutral slds-button_stretch" label={event.buttonLabel} style="padding: 1px" onclick={showEvent} data-id={event.buttonValue}>{event.buttonLabel}</button>
+                                    </div>
+                                </template>
+                            </template>
+                        </template>
+                    </div>
+                    <div class="slds-col slds-size_1-of-5">
+                        <template for:each={resource.events} for:item="event">
+                            <template if:true={event.isForCurrentTerritory}>
+                                <template if:true={event.isForColTwo}>
+                                    <div key={event.id} class="slds-m-around_small slds-align_absolute-center" >
+                                        <button class="slds-button slds-button_neutral slds-button_stretch" label={event.buttonLabel} style="padding: 1px" onclick={showEvent} data-id={event.buttonValue}>{event.buttonLabel}</button>
+                                    </div>
+                                </template>
+                                </template>
+                        </template>
+                    </div>
+                    <div class="slds-col slds-size_1-of-5">
+                        <template for:each={resource.events} for:item="event">
+                            <!-- <template if:true={event.isForCurrentWeek}> -->
+                            <template if:true={event.isForCurrentTerritory}>
+                                <template if:true={event.isForColThree}>
+                                    <div key={event.id} class="slds-m-around_small slds-align_absolute-center">
+                                        <button class="slds-button slds-button_neutral slds-button_stretch" label={event.buttonLabel} style="padding: 1px" onclick={showEvent} data-id={event.buttonValue}>{event.buttonLabel}</button>
+                                    </div>
+                                </template>
+                            </template>
+                            <!-- </template> -->
+                            <!-- <template if:false={event.isForCurrentWeek}>
+                                <p key={event.id}>Eerst volgende beschikbaarheid op: {resource.firstAvailableDate}</p>
+                            </template> -->
+                        </template>
+                    </div>
+                    <div class="slds-col slds-size_1-of-5">
+                        <template for:each={resource.events} for:item="event">
+                            <template if:true={event.isForCurrentTerritory}>
+                                <template if:true={event.isForColFour}>
+                                    <div key={event.id} class="slds-m-around_small slds-align_absolute-center">
+                                        <button class="slds-button slds-button_neutral slds-button_stretch" label={event.buttonLabel} style="padding: 1px" onclick={showEvent} data-id={event.buttonValue}>{event.buttonLabel}</button>
+                                    </div>
+                                </template>
+                                </template>
+                        </template>
+                    </div>
+                    <div class="slds-col slds-size_1-of-5">
+                        <template for:each={resource.events} for:item="event">
+                            <template if:true={event.isForCurrentTerritory}>
+                            <template if:true={colFiveHeader}>
+                                <template if:true={event.isForColFive}>
+                                    <div key={event.id} class="slds-m-around_small slds-align_absolute-center">
+                                        <button class="slds-button slds-button_neutral slds-button_stretch" label={event.buttonLabel} style="padding: 1px" onclick={showEvent} data-id={event.buttonValue}>{event.buttonLabel}</button>
+                                    </div>
+                                </template>
+                                </template>
+                            </template>
+                        </template>
+                    </div>
+                </div> 
+                </template>
+
+            </div>
+            </div>
+
+        </template>
+    </template>
+
+ </template>
+
+    <template if:true={showCalendar}>
+        <template if:true={showNoDataAvailable}>
+            <div class="slds-align_absolute-center slds-m-top_xx-large">
+                <h2 style="font-size: 25px; color: #00157a; font-weight: 600">{label.NoSlotsAvailable}</h2>
+            </div>
+            <div class="slds-align_absolute-center slds-m-top_xx-large">
+                <img src={notFoundImg} alt="no records found" width="300px" height="auto">
+            </div>
+        </template>
+    </template>
+</div>
+</div>
+ </div>
+ </lightning-card>
+</template>

@@ -1,0 +1,66 @@
+<!-- LLP-1573 -->
+
+<template>
+    <lightning-modal-header label="Service Appointment"></lightning-modal-header>
+    <lightning-modal-body>
+        <div class="slds-grid">
+            <div class="slds-col slds-size_2-of-4">
+                <div class="slds-m-around_small slds-p-around_small" style="border: 1px solid lightgrey; height: 100px; border-radius: 5px">
+                    <h2 style="font-size: 15px; font-weight: bold">{PatientLABEL}</h2>
+                    <p>{accountName}</p>
+                </div>
+
+                <template if:false={multiRsourceBooking}>
+                    <div class="slds-m-around_small slds-p-around_small" style="border: 1px solid lightgrey; height: 100px; border-radius: 5px">
+                        <h2 style="font-size: 15px; font-weight: bold">{ServiceProviderLABEL}</h2>
+                        <p>{ServiceResource}</p>
+                    </div>
+                </template>
+                <template if:true={multiRsourceBooking}>
+                    <div class="slds-m-around_small slds-p-around_small" style="border: 1px solid lightgrey; height: 100px; border-radius: 5px">
+                        <h2 style="font-size: 15px; font-weight: bold">{ServiceProviderLABEL}</h2>
+                        <p>{primaryServiceResourceName}</p>
+                        <p>{secondaryServiceResourceName}</p>
+                    </div>
+                </template>
+
+                <div class="slds-m-around_small slds-p-around_small" style="border: 1px solid lightgrey; height: 100px; border-radius: 5px">
+                    <h2 style="font-size: 15px; font-weight: bold">{ServiceLocationLABEL}</h2>
+                    <p>{locationName}</p>
+                </div>
+            </div>
+            <div class="slds-col slds-size_2-of-4">
+                <div class="slds-m-around_small slds-p-around_small" style="border: 1px solid lightgrey; height: 100px; border-radius: 5px">
+                    <h2 style="font-size: 15px; font-weight: bold">{WorkTypeLABEL}</h2>
+                    <p>{workTypeName}</p>
+                </div>
+                <div class="slds-m-around_small slds-p-around_small" style="border: 1px solid lightgrey; height: 100px; border-radius: 5px">
+                    <h2 style="font-size: 15px; font-weight: bold">{StartTimeLABEL}</h2>
+                    <lightning-formatted-date-time value={Start} month="short" day="2-digit" weekday="long" hour="numeric" minute="2-digit"></lightning-formatted-date-time>
+                    <!-- <lightning-input type="datetime-local" value={Start}></lightning-input> -->
+                </div>
+                <div class="slds-m-around_small slds-p-around_small" style="border: 1px solid lightgrey; height: 100px; border-radius: 5px">
+                    <h2 style="font-size: 15px; font-weight: bold">{EndTimeLABEL}</h2>
+                    <lightning-formatted-date-time value={End} month="short" day="2-digit" weekday="long" hour="numeric" minute="2-digit"></lightning-formatted-date-time>
+                    <!-- <lightning-input type="datetime-local" value={End}></lightning-input> -->
+                </div>
+                
+            </div>
+        </div>
+
+            <div class="slds-grid">
+                <div class="slds-col slds-size_4-of-4">
+                    <div class="slds-m-around_small slds-p-around_small" style="border: 1px solid lightgrey; min-height: 100px; border-radius: 5px">
+                        <lightning-textarea name="Comment" label={DescriptionLABEL} onchange={handleDescription}></lightning-textarea>
+                    </div>
+                </div>
+            </div>
+
+
+      
+
+    </lightning-modal-body>
+    <lightning-modal-footer>
+        <lightning-button label={ButtonLabelLABEL} onclick={handleOkay}></lightning-button>
+    </lightning-modal-footer>
+</template>
