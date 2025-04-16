@@ -1,0 +1,304 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId" controller="PlanningWizardController">
+    
+    <ltng:require scripts="{!join(',',
+                           $Resource.SchedulerV5   	+ '/core/main.js',
+                           $Resource.SchedulerV5   	+ '/timeline/main.js',
+                           $Resource.SchedulerV5   	+ '/resource-common/main.js',
+                           $Resource.SchedulerV5   	+ '/resource-timeline/main.js'
+                           )}"
+                   />
+    <link href="{!$Resource.SchedulerV5  + '/core/main.css'}" rel="stylesheet"/>
+    <link href="{!$Resource.SchedulerV5  + '/timeline/main.css'}" rel="stylesheet" />
+    <link href="{!$Resource.SchedulerV5  + '/resource-timeline/main.css'}" rel="stylesheet" />
+    
+    
+    <aura:attribute name="toDate" type="Date" />
+    <aura:attribute name="Plannings" type="Map" />
+    <aura:attribute name="Opportunity" type="Opportunity" />
+    <aura:attribute name="resourceLst" type="Room__c[]" />
+    <aura:attribute name="newPlanning" type="Planning__c" default="{'sobjectType' : 'Planning__c'}"/>
+    <aura:attribute name="current" default="1" type="String"/>
+    <aura:attribute name="hasError" default="false" type="Boolean"/>
+    <aura:attribute name="recordMode" type="String" default="new"/>
+    <aura:attribute name="searchTerm" type="string" default="" />
+    <aura:attribute name="calendar" type="object" />
+    <aura:attribute name="HoveredRec" type="Sobject" />
+    <aura:attribute name="filterConditionR" type="String" default="Type__c='Zalen'"/>
+    <aura:attribute name="PlanToDelete" type="Planning__c"/>
+    
+    <!-- Conditional -->
+    <aura:attribute name="isDataLoaded" type="Boolean" default="false" />
+    <aura:attribute name="isNewPlanningModalOpen" type="Boolean" default="false" />
+    <aura:attribute name="isLoaded" type="Boolean" default="false" />
+    <aura:attribute name="roomSelectDisabled" type="Boolean" default="false" />
+    <aura:attribute name="isCalenderLoaded" type="Boolean" default="false" />
+    <aura:attribute name="showTooltip" type="boolean" default="false"/>
+    <aura:attribute name="isDeleteModelOpen" type="Boolean" default="false" />
+    
+    <!-- Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="force:refreshView" action="{! c.refreshCmp}" />
+    <aura:attribute name="editError" type="Boolean" default="false" />
+    <aura:attribute name="errorMessage" type="String" default="" />
+
+    
+    <lightning:card aura:id="lightCard" class="slds-card_boundary" title="Planningen" iconName="custom:custom95">    
+        <aura:set attribute="actions">
+            <lightning:button variant="brand" label="Nieuw" title="New" onclick="{!c.newRecord}" disabled="{!(!v.isLoaded)}"/>
+        </aura:set>
+        
+        <div style="overflow-x: auto;">
+            <table class="slds-table slds-table--bordered slds-cell-wrap slds-table--cell-buffer" style="table-layout: fixed;" width="606px">
+                <thead>
+                    <tr class="slds-text-title--caps"> 
+                        <th class="slds-is-sortable slds-text-title--caps" scope="col" style="width:101px;">
+                            <span class="slds-truncate" title="Datum">
+                                Datum
+                            </span>  
+                        </th>
+                        <th class="slds-is-sortable slds-text-title--caps" scope="col" style="width:101px;">
+                            <span class="slds-truncate" title="Beginuur">
+                                Beginuur
+                            </span>  
+                        </th> 
+                        <th class="slds-is-sortable slds-text-title--caps" scope="col" style="width:101px;">
+                            <span class="slds-truncate" title="Einduur">
+                                Einduur
+                            </span>  
+                        </th> 
+                        <th class="slds-is-sortable slds-text-title--caps" scope="col" style="width:101px;">
+                            <span class="slds-truncate"  title="Omschrijving">
+                                Omschrijving
+                            </span>  
+                        </th> 
+                        <th class="slds-is-sortable slds-text-title--caps" scope="col" style="width:101px;">
+                            <span class="slds-truncate"  title="Zaal">
+                                Zaal
+                            </span>  
+                        </th>
+                        <th class="slds-is-sortable slds-text-title--caps" scope="col" style="width:101px;">
+                            <span class="slds-truncate"  title="Actie">
+                                Actie
+                            </span>  
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+            
+            <aura:iteration items="{!v.Plannings}" var="plan" indexVar="key" >
+                <div class="slds-box slds-p-around_xxx-small" >
+                    <div class="slds-p-around_xxx-small">
+                        <table style="table-layout: fixed;" width="606px">
+                            <aura:iteration items="{!plan.value}" var="p" indexVar="pKey" >
+                                <tr style="margin-top:5px;border:1px solid #f3f3f3">
+                                    <aura:if isTrue="{!p.firstItem}">
+                                        <td style="width:101px;" rowspan="{!plan.value.length}">   
+                                            <div class="slds-truncate" >
+                                                <!-- {!p.startDate} -->
+                                                <lightning:formattedDateTime 
+                                                                             value="{!p.startDate}" 
+                                                                             day="numeric"
+                                                                             month="numeric" 
+                                                                             year="numeric" 
+                                                                             />
+                                            </div>
+                                        </td>
+                                    </aura:if>
+                                    
+                                    <td style="width:101px;"> 
+                                        <div class="slds-truncate" >
+                                            {!p.startTime}
+                                        </div>
+                                    </td>
+                                    <td style="width:101px;">   
+                                        <div class="slds-truncate" >
+                                            {!p.endTime}
+                                        </div>
+                                    </td>
+                                    <td class="slds-cell-wrap" style="width:101px;word-break: break-all;">   
+                                        <div class="slds-line-clamp">
+                                            {!p.description}
+                                        </div>
+                                    </td>
+                                    <td style="width:101px;word-break: break-all;">    
+                                        <div class="slds-truncate" >
+                                            {!p.Room}
+                                        </div>
+                                    </td>
+                                    <td style="width:101px;">   
+                                        <div class="slds-truncate" >
+                                            <lightning:buttonIcon iconName="utility:edit" value="{!p.recordId}" variant="border-filled" alternativeText="Edit" title="Edit" onclick="{!c.editRecord}"/>
+                                            <lightning:buttonIcon iconName="utility:delete" value="{!p.recordId}"  variant="border-filled" alternativeText="Delete" title="Delete" onclick="{!c.deleteRecord}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </table>
+                    </div>
+                </div>
+            </aura:iteration>
+            
+        </div>
+    </lightning:card>
+    
+    <aura:if isTrue="{!v.isNewPlanningModalOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:70rem !important">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closePModel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Nieuw Planningselement
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning:progressIndicator currentStep="{!v.current}" type="path" hasError="{!v.hasError}">
+                        <lightning:progressStep label="Nieuw Planning" value="1"/>
+                        <lightning:progressStep label="Reservatie zaal" value="2"/>
+                    </lightning:progressIndicator>
+                    
+                    <div class="slds-box slds-m-top_small">
+                        <aura:if isTrue="{!v.editError}">
+                            <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                                <h2>{!v.errorMessage}</h2>
+                            </div>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!v.current=='1'}">
+                            <lightning:layout multipleRows="true">
+                                <lightning:layoutItem padding="around-small" size="6">
+                                    <div class="row">
+                                        <h2 class="header">
+                                            <span class="slds-text-color_destructive">*</span>
+                                            Startdatum tijd
+                                        </h2>
+                                        <lightning:input aura:id="field" name="input3"  type="datetime" variant="label-hidden"
+                                                         label="Startdatum tijd" value="{!v.newPlanning.Start__c}" required="true" />
+                                    </div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem padding="around-small" size="6">
+                                    <div class="row">
+                                        <h2 class="header">Einddatum tijd</h2>
+                                        <lightning:input aura:id="field" name="input3"  type="datetime" variant="label-hidden"
+                                                         label="Einddatum tijd"  value="{!v.newPlanning.End__c}" />                        
+                                    </div>
+                                </lightning:layoutItem>
+                                <lightning:layoutItem padding="around-small" size="12">
+                                    <lightning:textarea aura:id="field" name="Beschrijving" label="Beschrijving" value="{!v.newPlanning.Description__c}" maxlength="255" required="true" />
+                                </lightning:layoutItem>
+                            </lightning:layout>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!v.current=='2'}">
+                            <div class="">
+                                <aura:if isTrue="{!v.roomSelectDisabled}">
+                                    <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                                        Geef de einddatum/-tijd op om een kamer te selecteren.
+                                    </div>        
+                                </aura:if>
+                                
+                                <aura:if isTrue="{!(!v.roomSelectDisabled)}">
+                                    <lightning:layout multipleRows="true">
+                                        <lightning:layoutItem size="12">
+                                            <div onkeyup="{! c.handleKeyUp }">
+                                                <lightning:input aura:id="enter-search" name="enter-search" label="Filter zalen" type="search" value="{!v.searchTerm}" />
+                                            </div>
+                                        </lightning:layoutItem>
+                                        
+                                        <lightning:layoutItem size="6">
+                                            <c:lookupField aura:id="roomLookup" objectAPIName="Room__c" label="Zaal"
+                                                           returnFields="['Name']" queryFields="['Name']"
+                                                           selectedId="{!v.newPlanning.Room__c}" filter="{!v.filterCondition}"
+                                                           showAddNew="false" showRecent="false" disabled="{!v.roomSelectDisabled}"
+                                                           />
+                                        </lightning:layoutItem>
+                                        
+                                    </lightning:layout>
+                                    
+                                    <div class="slds-m-top--small" style="min-height:60px">
+                                        <article class="slds-tile slds-media slds-card__tile slds-hint-parent">
+                                            <div class="slds-media__body">
+                                                <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+                                                    <h3 class="slds-tile__title slds-truncate" title="Title">
+                                                        <aura:if isTrue="{!v.showTooltip}"> <b>Info</b> </aura:if>
+                                                    </h3>
+                                                </div>
+                                                <div class="slds-tile__detail">
+                                                    <dl class="slds-list_horizontal slds-wrap">
+                                                        <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Type">
+                                                            <aura:if isTrue="{!v.showTooltip}"> KMSKA Activity: </aura:if>
+                                                        </dt>
+                                                        <dd class="slds-item_detail slds-truncate" title="Type">
+                                                            <aura:if isTrue="{!v.showTooltip}"> {!v.HoveredRec.KMSKA_Activity__r.Name} </aura:if>
+                                                        </dd>
+                                                        <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Opportunity">
+                                                            <aura:if isTrue="{!v.showTooltip}"> Planning info: </aura:if>
+                                                        </dt>
+                                                        <dd class="slds-item_detail slds-truncate" title="Opportunity">
+                                                            <aura:if isTrue="{!v.showTooltip}">{!v.HoveredRec.Description__c} </aura:if>
+                                                        </dd>
+                                                    </dl>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    </div>
+                                    
+                                    <div aura:id="calendar"></div>
+                                </aura:if>
+                            </div>
+                        </aura:if>
+                    </div>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <div class="slds-grid slds-grid_align-center">
+                        <lightning:button variant="neutral" label="Annuleer" title="Cancel" onclick="{! c.closePModel }"/>
+                        <aura:if isTrue="{!v.current!='1'}">
+                            <lightning:button label="Vorige" onclick="{!c.backStep}"/>
+                        </aura:if>
+                        <aura:if isTrue="{!v.current=='2'}">
+                            <lightning:button label="Opslaan" onclick="{!c.handleSave}"/>
+                            <aura:set attribute="else">
+                                <lightning:button label="Volgende" onclick="{!c.nextStep}"/>
+                            </aura:set>
+                        </aura:if>
+                    </div>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.isDeleteModelOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container" style="min-width:70rem !important">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeDModel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Verwijderen Planning
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <div class="slds-text-align_center">
+                        <p class="slds-m-top_small slds-text-heading_medium">
+                            Ben je zeker dat deze beschikbaarheid wilt verwijderen? 
+                        </p>
+                        <span class="slds-text-color_error">
+                            *het zal ook al de gerelateerde records verwijderen.
+                        </span>
+                    </div>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <div class="slds-grid slds-grid_align-center">
+                        <lightning:button variant="neutral" label="Annuleer" title="Cancel" onclick="{!c.closeDModel}"/>
+                        <lightning:button label="Verwijderen" onclick="{!c.handleDelete}"/>
+                    </div>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+</aura:component>

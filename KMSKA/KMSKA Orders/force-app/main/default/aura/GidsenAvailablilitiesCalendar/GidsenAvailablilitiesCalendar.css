@@ -1,0 +1,20 @@
+.THIS .calendarHome, .THIS .slds-page-header {
+    margin: 0;
+    padding: 1rem;
+}
+
+.THIS .calColorCircle {
+    border-radius:50%;
+    height: 30px;
+    width: 30px;
+    line-height: 30px;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.THIS .calColorText{
+    height: 30px;
+    line-height: 30px;
+    display: inline-block;
+    margin-right: 6px;
+}

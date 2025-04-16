@@ -1,0 +1,196 @@
+<aura:component controller="GuideSelectionAPController" implements="force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <aura:html tag="style">
+        .slds-p-around--medium {
+        padding: 0rem !important;
+        }   
+        .slds-modal__content{
+        overflow-y:hidden !important;
+        height:unset !important;
+        max-height:unset !important;
+        max-width: unset !important;
+        }
+        .cuf-content {
+        padding: 0 0rem !important;
+        }
+        .slds-modal__container{
+        width: 90% !important;
+        max-width: 90% !important;
+        }
+    </aura:html>
+    
+    
+    
+    <aura:attribute name="LanguageLst" type="Map"/> 
+    <aura:attribute name="TargetAudienceLst" type="Map"/> 
+    <aura:attribute name="Language" type="String" default=""/> 
+    <aura:attribute name="TargetAudience" type="String" default=""/> 
+    <aura:attribute name="ActivityProduct" type="Activity_Product__c" />
+    <aura:attribute name="AvailableGuide" type="List"/> 
+    
+    <aura:attribute name="isProcess" type="Boolean" default="true"/>
+    <aura:attribute name="isError" type="Boolean" default="false"/>
+    <aura:attribute name="errorMessage" type="List" />
+    <aura:attribute name="loading" type="Boolean" default="true"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:if isTrue="{!v.loading}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    
+    
+    
+    <div class="modal-header slds-modal__header slds-size_1-of-1">
+        <h2 class="title slds-text-heading--medium">
+            Ken gids toe
+        </h2>
+    </div>
+    
+    <div class="slds-modal__content slds-p-around--x-small slds-align_absolute-center slds-size_1-of-1 slds-is-relative">
+        <div aura:id="sectionInformation" class="slds-section slds-size_1-of-1 slds-is-open">
+            <h3 class="slds-section__title">
+                <button class="slds-button slds-section__title-action">
+                    Information
+                </button>
+            </h3>
+            <div class="slds-section__content">
+                <div style="padding:7px;">
+                    <aura:if isTrue="{!v.isError}">
+                        <div class="demo-only" style="padding:0.5rem;background:#fdedea">
+                            <aura:iteration items="{!v.errorMessage}" var="msg">
+                                <p>
+                                    {!msg}
+                                </p>
+                            </aura:iteration>
+                            
+                        </div>
+                    </aura:if>
+                    
+                    <div class="slds-grid slds-wrap slds-m-bottom_small">
+                        <div class="slds-col slds-size_5-of-12">
+                            <lightning:select aura:id="reqField" name="select" value="{!v.Language}" label="Taal" onchange="{!c.filterChangeHandler}">
+                                <aura:iteration items="{!v.LanguageLst}" var="i" indexVar="key">
+                                    <option text="{!i.value}" value="{!i.label}" selected="{!(i.label==v.Language)}"/>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                        <div class="slds-col slds-size_2-of-12"></div>
+                        <div class="slds-col slds-size_5-of-12">
+                            <lightning:select aura:id="reqField" name="select" value="{!v.TargetAudience}" label="Doelgroep" onchange="{!c.filterChangeHandler}">
+                                <aura:iteration items="{!v.TargetAudienceLst}" var="i" indexVar="key">
+                                    <option text="{!i.value}" value="{!i.label}" selected="{!(i.label==v.TargetAudience)}"/>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                    </div>
+                                        
+                    
+                    <div class="slds-size_1-of-1">
+                        <table class="slds-table slds-table_cell-buffer slds-table_fixed-layout slds-table_resizable-cols ">
+                            <thead class="">
+                                <tr class="slds-line-height_reset">
+                                    <th class="slds-cell-wrap" scope="col" style="width:50px;">
+                                        <div class="" title="#" style="text-align:left;padding-left:10px;">
+                                            
+                                        </div>
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col" style="width:200px;">
+                                        <div class="" title="Guide" style="text-align:left;padding-left:10px;">
+                                            Gids
+                                        </div>
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col" style="width:200px;">
+                                        <div class="" title="Start" style="text-align:left;padding-left:10px;">
+                                            Begin beschikbaarheid
+                                        </div>
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col" style="width:200px;">
+                                        <div class="" title="End" style="text-align:left;padding-left:10px;">
+                                            Einde beschikbaarheid
+                                        </div>
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col" style="width:200px;">
+                                        <div class="" title="IsAssigned" style="text-align:left;padding-left:10px;">
+                                            Is toegekend?
+                                        </div>
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col" style="width:200px;">
+                                        <div class="" title="KMSKAProduct" style="text-align:left;padding-left:10px;">
+                                            KMSKA Product
+                                        </div>
+                                    </th>
+                                    <th class="slds-cell-wrap" scope="col" style="width:200px;">
+                                        <div class="" title="Assign" style="text-align:left;padding-left:10px;">
+                                            Wijs toe
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.AvailableGuide}" var="ag" indexVar="index">
+                                    <tr class="slds-line-height_reset">
+                                        <td class="slds-cell-wrap" scope="col" style="width:50px;">
+                                            <div class="" title="#" style="text-align:left;padding-left:10px;">
+                                                {!index + 1}
+                                            </div>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col" style="width:200px;">
+                                            <div class="" title="Guide" style="text-align:left;padding-left:10px;">
+                                                {!ag.guide}
+                                            </div>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col" style="width:200px;">
+                                            <div class="" title="Start" style="text-align:left;padding-left:10px;">
+                                                <lightning:formattedDateTime value="{!ag.StartDate}" 
+                                                                             year="numeric" month="numeric" day="numeric" hour="2-digit"
+                                                                             minute="2-digit" hour12="false"
+                                                                             />
+                                            </div>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col" style="width:200px;">
+                                            <div class="" title="End" style="text-align:left;padding-left:10px;">
+                                                <lightning:formattedDateTime value="{!ag.EndDate}" 
+                                                                             year="numeric" month="numeric" day="numeric" hour="2-digit"
+                                                                             minute="2-digit" hour12="false"
+                                                                             />
+                                            </div>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col" style="width:200px;">
+                                            <div class="" title="IsAssigned" style="text-align:left;padding-left:10px;">
+                                                <lightning:input type="checkbox" label="" variant="label-hidden" name="IsAssigned" 
+                                                                 checked="{!ag.isAssigned}" disabled="true"/>
+                                            </div>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col" style="width:200px;">
+                                            <div class="" title="KMSKAProduct" style="text-align:left;padding-left:10px;">
+                                                {!ag.KMSKAProduct}
+                                            </div>
+                                        </td>
+                                        <td class="slds-cell-wrap" scope="col" style="width:200px;">
+                                            <div class="" title="Assign" style="text-align:left;padding-left:10px;">
+                                                <lightning:input type="checkbox" label="" variant="label-hidden" name="{!index}" 
+                                                                 checked="{!ag.Assign}" onchange="{!c.handleGuideSelection}" disabled="{!ag.isAssigned}"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                    <br/>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-footer slds-modal__footer slds-size_1-of-1">
+        <lightning:button variant="neutral" label="Cancel" onclick="{!c.handleExit}" />
+        <lightning:button variant="brand" label="Submit" onclick="{!c.handleSave}" disabled="{!v.isError}"/>     
+    </div>
+</aura:component>

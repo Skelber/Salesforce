@@ -1,0 +1,89 @@
+@font-face
+{
+    font-family:'Gotham';
+    src:url('https://fonts.cdnfonts.com/css/gotham');
+}
+
+@font-face
+{
+    font-family:'Roboto';
+    src:url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+}
+
+body {
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-weight: 400;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    color: #151828;
+    background-color: #fff;
+}
+
+:host{
+    --sds-c-checkbox-toggle-color-background-checked: #151828;
+    --sds-c-checkbox-toggle-color-background-checked-hover : #151828;
+    --sds-c-checkbox-toggle-color-background-checked-focus : #151828;
+    --sds-c-checkbox-toggle-color-border-checked : #151828;
+    --sds-c-checkbox-toggle-shadow : 0 0 1px #151828;
+    
+    --slds-c-button-destructive-color-background : #001f61;
+    --slds-c-button-destructive-color-background-active : #001f61;
+    --slds-c-button-destructive-color-background-hover : #001f61;
+    --slds-c-button-destructive-color-border : #001f61;
+    --slds-c-button-destructive-color-border-active : #001f61;
+    --slds-c-button-text-destructive-color-border-hover : #001f61;
+    --slds-c-button-destructive-text-color : #fff;
+    --slds-c-button-destructive-text-color-active : #fff; 
+    --slds-c-button-shadow-focus : 0 0 1px #001f61;
+    --slds-c-button-inverse-shadow-focus: 0 0 1px #001f61;
+
+    --slds-c-button-line-height : 28px;
+    --slds-c-input-radius-border : 0px;
+    --slds-c-input-shadow-focus : 0 0 1px #151828;
+    --slds-c-input-color-border-focus : #151828;
+    --lwc-formLabelFontSize : 1.15rem;
+    --lwc-colorTextLabel :  #151828;
+}
+
+.formTitle {
+    /* font-family: "Gotham"; */
+    font-size: 2.25rem;
+    line-height: 2.875rem;
+    font-weight: 200;
+}
+
+.formSubTitle {
+    /* font-family: "Gotham"; */
+    font-size: 20px;
+    line-height: 25px;
+    font-weight: 300;
+}
+
+label{
+    /* font-family: "Roboto";
+    font-size: 15px;
+    font-weight: 500;*/
+    line-height: 22px;
+    color: var(--slds-g-color-neutral-base-30, var(--lwc-colorTextLabel,rgb(116, 116, 116)));
+}
+
+.slds-form-element__label {
+    font-family: "Roboto" !important;
+    font-size: 15px !important;
+    line-height: 22px !important;
+    font-weight: 500 !important;
+}
+
+.kmskaButton{
+    font-family: "Gotham";
+    font-size: 18px;
+    line-height: 28px;
+    font-weight: 500;
+}
+
+.slds-form-element__label {
+    color: #001f61 !important;
+    font-size: medium !important;
+}

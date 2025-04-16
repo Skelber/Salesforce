@@ -1,0 +1,17 @@
+<aura:component >
+    <aura:attribute name="foldeName" type="String" />
+    <aura:attribute name="folderID" type="String" />
+    <aura:attribute name="RecId" type="String" />
+    <aura:attribute name="folder" type="object" />
+    
+    <aura:registerEvent name="folderOpenEvent" type="c:SPFolderOpenEvent"/> 
+    
+    <div style="width:120px">
+        <div style="text-align:center;" onclick="{!c.openFolder}">
+            <lightning:icon iconName="doctype:folder" size="large"  alternativeText="Image file" title="Image" />
+        </div>
+        <div style="text-align:center;word-wrap: break-word;">
+            {!v.foldeName}    
+        </div>
+    </div>
+</aura:component>

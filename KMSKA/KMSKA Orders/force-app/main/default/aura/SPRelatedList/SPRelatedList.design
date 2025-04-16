@@ -1,0 +1,3 @@
+<design:component>
+    <design:attribute name="headerTitle" label="Related List Label" description="label of the related list" />
+</design:component>

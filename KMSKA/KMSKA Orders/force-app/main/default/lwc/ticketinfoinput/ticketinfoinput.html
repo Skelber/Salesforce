@@ -1,0 +1,53 @@
+<template>
+<article class="slds-card">
+    <div class="slds-card__header slds-grid">
+        <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__figure">
+                <span>    <lightning-icon icon-name="standard:price_book_entries" size="medium"></lightning-icon>
+                <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#account"></use>
+                </svg>
+                <span class="slds-assistive-text">Ticket prijs informatie</span>
+                </span>
+            </div>
+            <div class="slds-media__body">
+                <h2 class="slds-card__header-title">
+                <span>Ticket prijs informatie</span>
+                </h2>
+            </div>
+        <div class="slds-no-flex">
+        </div>
+        </header>
+    </div>
+    <div class="slds-card__body slds-card__body_inner slds-var-m-around_medium">Geef hieronder informatie over het product in. 
+        <div>
+            <lightning-datatable data={records} columns={fieldColumns} key-field="Id" onrowselection={getSelectedRows}></lightning-datatable>
+        </div>
+        <div class="slds-grid slds-m-around_large">
+                <div class="slds-col slds-size_1-of-5 slds-m-around_xx-small">
+                    <lightning-input value={subtypeVal} label="Product" onchange={handleChange}></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-5 slds-m-around_xx-small">
+                    <lightning-input type="number" value={prijsVal} formatter="currency" label="Prijs" onchange={handlePrijsChange}></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-5 slds-m-around_xx-small">
+                    <lightning-input value={prijsKVal} type="number" formatter="currency" label="Prijs Kansentarief" onchange={handlePrijsKChange}></lightning-input>
+                </div>
+                <div class="slds-col slds-size_1-of-5 slds-m-around_xx-small">
+                    <lightning-combobox value={btwVal} label="BTW %" options={BTWOptions} onchange={handleBtwChange}></lightning-combobox>
+                </div>
+                 <div class="slds-col slds-size_1-of-5 slds-m-around_xx-small">
+                    <lightning-input value={availableSpaces} type="number" label="Beschikbare plaatsen" onchange={handleAvailableSpaces}></lightning-input>
+                </div> 
+        </div>     
+            <div class="slds-var-m-bottom_medium">
+                <lightning-button variant="brand-outline" label="Voeg ticket toe" class="slds-float_right" onclick={createTicketInfo} disabled={disableButton}></lightning-button>
+                <lightning-button variant="destructive-text" onclick={deleteTickets} label="Verwijder Tickets" disabled={disableDeleteButton}></lightning-button>
+            </div>
+    </div>
+    <footer class="slds-card__footer">
+        <span class="slds-assistive-text">Ticket prijs informatie</span>
+    </footer>
+</article>
+
+</template>

@@ -1,0 +1,37 @@
+<aura:component >
+    
+    <aura:attribute name="folderList" type="List"/>
+    <aura:attribute name="fileList" type="List"/>
+    <aura:attribute name="currentFolderId" type="String"/>
+    
+    
+    <div class="slds-grid slds-wrap">
+        <aura:iteration items="{!v.folderList}" var="folder" indexVar="index">
+            <aura:if isTrue="{!v.currentFolderId==folder.pId}">
+                <div class="slds-size--1-of-4 slds-medium-size--3-of-6 slds-large-size--3-of-12">
+                    <c:SPFolders foldeName="{!folder.name}" 
+                                 folderID="{!folder.id}" 
+                                 RecId="{!folder.eTag}"
+                                 folder = "{!folder}"
+                                 />
+                </div>
+            </aura:if>
+            
+        </aura:iteration>
+        
+        <aura:iteration items="{!v.fileList}" var="file" indexVar="index">
+            <aura:if isTrue="{!v.currentFolderId==file.pId}">
+                <div class="slds-size--1-of-4 slds-medium-size--3-of-6 slds-large-size--3-of-12">
+                    <c:SPFiles fileName="{!file.name}" 
+                               fileURL="{!file.webUrl}" 
+                               fileType="{!file.contentType}" 
+                               fileId="{!file.id}"
+                               iconName="{!file.icon}"
+                               file = "{!file}"
+                               />
+                    <!-- iconName="{!file.icon}" -->
+                </div>
+            </aura:if>
+        </aura:iteration>
+    </div>
+</aura:component>

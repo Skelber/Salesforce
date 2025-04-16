@@ -1,0 +1,158 @@
+<aura:component description="WelcomeForm" controller="testpubliekmotivatieCmpController"  access="global">
+    <aura:attribute name="Lead" type="Lead" />
+    <aura:attribute name="Form" type="form__c" />
+    
+    <aura:attribute name="isSubmitted" type="Boolean" default="false" />
+    <aura:attribute name="LeadId" type="String" />
+    <aura:attribute name="agree" type="Boolean" default="false" />
+    <aura:attribute name="isInvalid" type="Boolean" default="false" />
+    
+    <!-- Utility -->
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <aura:attribute name="recordAddded" type="Boolean" default="false" />
+    <aura:attribute name="Error" type="Boolean" default="false" />
+    <aura:attribute name="Errormessage" type="String" />
+    <aura:attribute name="notificationmessage" type="String"/>
+    
+    <!-- Utility Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    
+    
+    <header class="slds-align_absolute-center slds-border_bottom slds-p-around--x-small">
+        <img src="{!$Resource.Site_Header_testpubliekmotivatie}" style="height: 150px;"/>
+        <hr/>
+    </header>
+    
+    <aura:if isTrue="{!v.isInvalid}">
+        <div class="slds-grid slds-grid_align-center slds-p-around--medium">
+            <div class="slds-col slds-size--2-of-4">
+                <div class="slds-text-heading_large slds-text-color_error" style="margin-top:150px">
+                    <p>URL is niet geldig</p> <br/>
+                </div>
+            </div>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!not(v.isInvalid)}">
+        <aura:if isTrue="{!v.Spinner}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </aura:if>
+        
+        <!-- top of the page Error Notification -->
+        <div class="slds-modal slds-fade-in-open errorDiv slds-hide" aura:id="warningDiv">
+            <ui:inputText aura:id="articleURL"/>
+            <div class="demo-only" style="height: 8rem;">
+                <div class="slds-notify_container slds-is-relative">
+                    <div class="slds-notify slds-notify_toast slds-theme_error" role="alert">
+                        <div class=" slds-m-left_xx-large">
+                            <div class="slds-notify__content slds-m-left_small slds-align_absolute-center slds-m-left_xx-large">
+                                <lightning:icon alternativeText="Error" iconName="utility:error" size="small"
+                                                class="buttonColor slds-m-right_small" />
+                                <h2 class="slds-text-heading_small ">{!v.notificationmessage}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <aura:if isTrue="{!v.recordAddded}">
+            <div class="slds-grid slds-grid_align-center slds-p-around--medium">
+                <div class="slds-col slds-size--2-of-4">
+                    <div class="slds-text-heading_large slds-text-color_success" style="margin-top:150px">
+                        <p>Gefeliciteerd! Jouw registratie is goed ontvangen.</p> <br/>
+                        <p>We nemen nu de tijd om alle kandidaturen door te nemen. Op 9 oktober ontvang je een mail waarin je verneemt of je geselecteerd bent of niet.</p><br/>
+                        <p>Ben je geselecteerd, dan word je op dat moment ook uitgenodigd voor een eerste ontmoetingsdag op 25 oktober in het museumgebouw. Hou je mailbox in de gaten.</p><br/> 
+                    </div>
+                </div>
+            </div>
+        </aura:if>
+        
+        
+        <aura:if isTrue="{!(v.recordAddded==false)}">
+            <aura:if isTrue="{!v.isSubmitted}">
+                <!-- succes message for submited -->
+                <div class="slds-grid slds-grid_align-center slds-p-around--medium">
+                    <div class="slds-col slds-size--2-of-4">
+                        <div class="slds-form slds-form_compound slds-p-bottom--xx-large">
+                            <br />
+                            <p class="slds-text-heading--small slds-p-top--medium slds-p-bottom--small" style="font-size:20px !important;">
+                                Beste {!v.Lead.FirstName},
+                            </p>
+                            <p class="slds-text-heading--small slds-p-top--medium slds-p-bottom--small"  style="font-size:20px !important;">
+                                Wij ontvingen reeds jouw formulier. Indien je nog iets wil toevoegen, dan kan je dit mailen naar 
+                                <a href="mailto:deschoonstehonderd@kmska.be">deschoonstehonderd@kmska.be.</a> 
+                            </p>
+                            <p class="slds-text-heading--small slds-p-bottom--small"  style="font-size:20px !important;">
+                                Succes!
+                            </p>
+                            <br/>
+                            <p class="slds-text-heading--small slds-p-top--medium slds-p-bottom--small"  style="font-size:20px !important;">
+                                Het KMSKA-team 
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <aura:set attribute="else" >
+                    <aura:if isTrue="{!v.Error}">
+                        <div class="slds-grid slds-grid_align-center slds-p-around--medium " >
+                            <div class="demo-only slds-col slds-size--1-of-2" style="background:#D60501;">
+                                <div class="slds-text-color_inverse" style="padding:5px;">{!v.Errormessage}</div>
+                            </div>
+                        </div>
+                    </aura:if>
+                    
+                    <div class="slds-grid slds-grid_align-center slds-p-around--medium">
+                        <div class="slds-col slds-size--2-of-4">
+                            <div class="slds-text-align_center slds-text-heading--large">
+                                De Schoonste Honderd – Selectieprocedure: motivatie
+                            </div>
+                            <br/>
+                            <div class="slds-form slds-form_compound slds-p-bottom--xx-large" Style="margin:10px;">
+                                <div class="slds-form-element__group slds-p-bottom--small">
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-form-element__group">
+                                            <div class="slds-form-element__row">
+                                                <div class="slds-form-element slds-size--1-of-1">
+                                                    <lightning:textarea aura:id="reqfield" name="motivation" required="true" 
+                                                                        value="{!v.Form.Motivation__c}" 
+                                                                        label="Vertel ons in maximum 50 woorden waarom jij de ultieme kandidaat bent voor De Schoonste Honderd."
+                                                                         />
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="slds-form-element__row" style="margin-top:20px;">
+                                                <div class="slds-form-element slds-size--1-of-1">
+                                                    <input type="checkbox" id="termsSC" name="termsSC" value="{!v.agree}" onchange="{!c.termsChangedSC}" ></input>
+                                                    <label for="termsSC">
+                                                        Ik ga akkoord met de   
+                                                        <a href="https://www.kmska.be/sites/default/files/2020-09/Privacy_policy_De_Schoonste_Honderd.pdf" target="_blank">
+                                                            privacy policy testpubliek
+                                                        </a>.
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="slds-docked-form-footer slds-p-around--medium">
+                                <lightning:button type="button" variant="brand" onclick="{!c.submit}" label="Registreer" disabled="{!not(v.agree)}" />
+                            </div>
+                        </div>
+                    </div>
+                </aura:set>
+            </aura:if>
+        </aura:if>
+    </aura:if>
+    
+</aura:component>

@@ -1,0 +1,48 @@
+<template>
+    <template if:true={imageUrl}>
+            <div class="slds-align_absolute-center">
+                <div>
+                    <img src={imageUrl} style="height:150px; border-radius: 50%; border: 3px solid black; padding: 5px"/>
+                </div>
+            </div>
+            <template if:false={showUploadComponent}>
+                <div class="slds-align_absolute-center">
+                    <button class="slds-button slds-button_neutral slds-m-around_medium" onclick={showFileUpload}>Wijzig foto</button>
+                </div>
+            </template>
+            <template if:true={showUploadComponent}>
+                <div class="slds-align_absolute-center">
+                    <lightning-file-upload
+                    label="Wijzig foto"
+                    name="fileUploader"
+                    accept={acceptedFormats}
+                    record-id={recordId}
+                    onuploadfinished={handleUploadFinished}
+                    >
+                </lightning-file-upload>
+            </div>
+            <div class="slds-align_absolute-center">
+                    <button class="slds-button slds-button_neutral slds-m-around_medium" onclick={showFileUpload}>Annuleer</button>
+                    <button class="slds-button slds-button_destructive slds-m-around_medium">Verwijder foto</button>
+                </div>
+        </template>
+    </template>
+    <template if:false={imageUrl}>
+
+       <div class="slds-align_absolute-center">
+                    <button class="slds-button slds-button_neutral slds-m-around_medium" onclick={showFileUpload}>Laad een foto op</button>
+                </div>
+        <template if:true={showUploadComponent}>
+            <div class="slds-align_absolute-center">
+                <lightning-file-upload
+                    label="Upload een foto"
+                    name="fileUploader"
+                    accept={acceptedFormats}
+                    record-id={recordId}
+                    onuploadfinished={handleUploadFinished}
+                    >
+                </lightning-file-upload>
+            </div>
+        </template>          
+    </template>
+</template>

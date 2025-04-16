@@ -1,0 +1,214 @@
+<template>
+    <header class="slds-align_absolute-center slds-border_bottom slds-var-p-around_x-small">
+        <img src={kmskaLogo} style="height: 200px;" />
+        <img src={invitationHeader} style="height: 200px;" />
+        <hr/>
+    </header>
+
+    <template if:true={isSpinner}>
+        <div class="slds-spinner_container" style="z-index: 10000;position: fixed;">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </template>
+
+    <template if:true={isLoaded}>
+        <template if:true={isError}>
+            <div class="slds-text-heading_large slds-text-color_error slds-text-align_center" style="margin-top:150px">
+                {errorMessage}   
+            </div>
+        </template>
+        <template if:false={isError}>
+            <template if:true={isSuccess}>
+                <div class="slds-text-heading_large slds-text-color_success slds-text-align_center" style="margin-top:150px">
+                    {successMessage}    
+                </div>
+            </template>
+            <template if:false={isSuccess}>
+                <div class="slds-grid slds-grid_align-center slds-var-p-around_medium">
+                    <div class="slds-col slds-size_2-of-4">
+                        <div class="slds-text-align_center slds-text-heading_large">
+                            Onderzoek met Eye-tracking toestellen - Vragenlijst selectieprocedure
+                        </div>
+                        <br/>
+                        <div class="slds-var-p-bottom_xx-small">
+                            <br />
+                            <p class="slds-text-heading_small slds-var-p-top_medium slds-var-p-bottom_small">
+                                Het KMSKA en KU Leuven werken samen aan een onderzoeksproject dat de bezoekerservaring 
+                                in een tentoonstelling in kaart wil brengen.
+                            </p>
+                            <p class="slds-text-heading_small slds-var-p-top_medium slds-var-p-bottom_small">
+                                Om deze studie succesvol te kunnen uitvoeren, hebben we nood aan vrijwilligers die 
+                                als testpubliek willen optreden. Kandidaten bezoeken individueel of in duo de nieuwe
+                                tentoonstelling Krasse Koppen terwijl zij uitgerust worden met draagbare camerasystemen.
+                            </p>
+        
+                            <p class="slds-text-heading_small slds-var-p-top_medium slds-var-p-bottom_small">
+                                Om een voldoende gevarieerde testgroep te garanderen nodigen wij je uit deze 
+                                vragenlijst in te vullen vóór <b>1 december 2023</b>. Wij nemen nadien contact op via mail
+                                om een precieze timing af te spreken. Op de dag van de opname krijg je verdere informatie over 
+                                het doel van de studie, de opnameprocedure en de manier waarop de verzamelde gegevens zullen 
+                                worden verwerkt en opgeslagen.
+                            </p>
+                            <p class="slds-text-heading_small slds-var-p-top_medium slds-var-p-bottom_small">
+                                <a href="mailto:hello@kmska.be">
+                                Mocht je interesse hebben maar nog specifieke vragen hebben, 
+                                aarzel dan niet om ons te contacteren.
+                                </a>
+                            </p>
+                            <p class="slds-text-heading_small slds-var-p-top_medium slds-var-p-bottom_small">
+                                Met vriendelijke groeten en alvast hartelijk dank voor je respons,
+                            </p>
+                            <p class="slds-text-heading_small slds-var-p-top_medium slds-var-p-bottom_small">
+                                Geert Brône – Professor Taalkunde KU Leuven
+                                <br/>En het KMSKA-Team
+                            </p>
+                        </div>
+                        <div class="form">
+                            <template if:true={saveError}>
+                                <div class="slds-grid slds-grid_align-center slds-var-p-around_medium " >
+                                    <div class="demo-only slds-col slds-size_1-of-2" style="background:#D60501;">
+                                        <div class="slds-text-color_inverse" style="padding:5px;">{errorMessage}</div>
+                                    </div>
+                                </div>
+                            </template>
+    
+                            <lightning-layout multiple-rows>
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input type="text" label="Voornaam" name="voornaam" value={contactInfo.voornaam} disabled={contactInfo.isVoornaam}  message-when-value-missing="Dit veld is verplicht." onchange={onContactChange} required></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input type="text" label="Naam" name="naam" value={contactInfo.naam} disabled={contactInfo.isNaam} message-when-value-missing="Dit veld is verplicht." onchange={onContactChange} required></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input type="text" label="Adres (straat + nummer)" name="adres" value={contactInfo.adres} disabled={contactInfo.isAdres} message-when-value-missing="Dit veld is verplicht." onchange={onContactChange} required></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input type="text" label="Postcode" name="postcode" value={contactInfo.postcode} disabled={contactInfo.isPostcode} message-when-value-missing="Dit veld is verplicht." onchange={onContactChange} required></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input type="text" label="Gemeente" name="gemeente" value={contactInfo.gemeente} disabled={contactInfo.isGemeente} message-when-value-missing="Dit veld is verplicht." onchange={onContactChange} required></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input type="email" label="E-mailadres" name="email" value={contactInfo.email} disabled={contactInfo.isEmail} message-when-value-missing="Dit veld is verplicht." onchange={onContactChange} required></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input type="date" label="Geboortedatum" name="geboortedatum" value={contactInfo.geboortedatum} disabled={contactInfo.isGeboortedatum} message-when-value-missing="Dit veld is verplicht." onchange={onContactChange} required></lightning-input>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-combobox name="gender" label="Duid aan wat het beste bij je past" options={genderOption} value={contactInfo.gender} disabled={contactInfo.isGender} message-when-value-missing="Dit veld is verplicht." onchange={onContactChange} required></lightning-combobox>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" padding="around-small">
+                                    <lightning-combobox name="highestDegree" label="Hoogst behaalde diploma" options={highestDegreeOption} value={formInfo.highestDegree} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-combobox>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </div>
+                        <div class="formData" style="margin-bottom: 100px;">
+                            <lightning-layout multiple-rows>
+                                <lightning-layout-item size="12" padding="around-small">
+                                    <lightning-combobox name="currentSituation" label="1. Welk statuut komt het beste overeen met jouw huidige situatie?" options={currentSituationOption} value={formInfo.currentSituation} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-combobox>
+                                    <template if:true={isOther}>
+                                        <lightning-input style="margin:10px 0px;" name="otherSituationCurrent" max-length="255" variant="label-hidden" value={formInfo.otherSituationCurrent} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-input>
+                                    </template>
+                                </lightning-layout-item>
+                                <!--
+                                <template if:true={isStudent}>
+                                    <lightning-layout-item size="12" padding="around-small">
+                                        <lightning-checkbox-group name="studyArea" label="1.1. Wat is je studiegebied?" options={studyAreaOption} value={formInfo.studyArea} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-checkbox-group>
+                                        <template if:true={IsStudyAreaOther}>
+                                            <lightning-input style="margin:10px 0px;" name="otherStudyArea" max-length="255" variant="label-hidden" value={formInfo.otherStudyArea} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-input>
+                                        </template>
+                                    </lightning-layout-item>
+        
+                                    <lightning-layout-item size="12" padding="around-small">
+                                        <lightning-input name="whatdoYouStudy" label="1.2. Wat studeer je?" max-length="255" value={formInfo.whatdoYouStudy} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-input>
+                                    </lightning-layout-item>
+                                </template>
+        
+                                <template if:true={isWerkend}>
+                                    <lightning-layout-item size="12" padding="around-small">
+                                        <lightning-checkbox-group name="studyArea" label="1.1. Wat heb je gestudeerd?" options={studyAreaOption} value={formInfo.studyArea} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-checkbox-group>
+                                        <template if:true={IsStudyAreaOther}>
+                                            <lightning-input style="margin:10px 0px;" name="otherStudyArea" max-length="255" variant="label-hidden" value={formInfo.otherStudyArea} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-input>
+                                        </template>
+                                    </lightning-layout-item>
+        
+                                    <lightning-layout-item size="12" padding="around-small">
+                                        <lightning-checkbox-group name="workSector" label="1.2. In welke sector werk je?" options={workSectorOption} value={formInfo.workSector} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-checkbox-group>
+                                        <template if:true={IsWorkSectorOther}>
+                                            <lightning-input style="margin:10px 0px;" name="otherWorkSector" max-length="255" variant="label-hidden" value={formInfo.otherWorkSector} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-input>
+                                        </template>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12" padding="around-small">
+                                        <lightning-input name="profession" label="1.3.  Wat is jouw beroep?" max-length="255" value={formInfo.profession} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-input>
+                                    </lightning-layout-item>
+                                </template>
+        
+                                <template if:true={isWerkzoekend}>
+                                    <lightning-layout-item size="12" padding="around-small">
+                                        <lightning-checkbox-group name="workSector" label="1.1. In welke sector zoek je werk?" options={workSectorOption} value={formInfo.workSector} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-checkbox-group>
+                                        <template if:true={IsWorkSectorOther}>
+                                            <lightning-input style="margin:10px 0px;" name="otherWorkSector" max-length="255" variant="label-hidden" value={formInfo.otherWorkSector} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-input>
+                                        </template>
+                                    </lightning-layout-item>
+                                </template>
+                                
+                                <template if:true={isGepensioneerd}>
+                                    <lightning-layout-item size="12" padding="around-small">
+                                        <lightning-checkbox-group name="workSector" label="1.1. In welke sector werkte je?" options={workSectorOption} value={formInfo.workSector} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-checkbox-group>
+                                        <template if:true={IsWorkSectorOther}>
+                                            <lightning-input style="margin:10px 0px;" name="otherWorkSector" max-length="255" variant="label-hidden" value={formInfo.otherWorkSector} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-input>
+                                        </template>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12" padding="around-small">
+                                        <lightning-input name="profession" label="1.2. Wat was jouw beroep?" max-length="255" value={formInfo.profession} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-input>
+                                    </lightning-layout-item>
+                                </template>
+                                -->
+        
+                                <lightning-layout-item size="12" padding="around-small">
+                                    <lightning-combobox name="visitMusea" label="2. Hoe vaak ging je het voorbije jaar naar musea?" options={visitMuseaOption} value={formInfo.visitMusea} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-combobox>
+                                </lightning-layout-item>
+        
+                                <template if:true={isVisitNiet}>
+                                    <lightning-layout-item size="12" padding="around-small">
+                                        <lightning-checkbox-group name="reasonNoVisit" label="2.1. Ik bezoek zelden museum omdat:" options={reasonNoVisitOption} value={formInfo.reasonNoVisit} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-checkbox-group>
+                                        <template if:true={IsReasonNoVisitOther}>
+                                            <lightning-input style="margin:10px 0px;" name="otherReasonNoVisit" max-length="255" variant="label-hidden" value={formInfo.otherReasonNoVisit} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-input>
+                                        </template>
+                                    </lightning-layout-item>
+                                </template>
+        
+                                <template if:true={isVisit}>
+                                    <lightning-layout-item size="12" padding="around-small">
+                                        <lightning-checkbox-group name="contextVisit" label="2.1. In welke context bezoek je musea?" options={contextVisitOption} value={formInfo.contextVisit} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-checkbox-group>
+                                        <template if:true={IsContextVisitOther}>
+                                            <lightning-input style="margin:10px 0px;" name="otherContextVisit" max-length="255" variant="label-hidden" value={formInfo.otherContextVisit} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-input>
+                                        </template>
+                                    </lightning-layout-item>
+                                </template>
+        
+        
+                                <lightning-layout-item size="12" padding="around-small">
+                                    <lightning-checkbox-group name="interest" label="3. Duid drie interesses aan die het meeste bij je passen?" options={interestOption} value={formInfo.interest} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-checkbox-group>
+                                </lightning-layout-item>
+                                <lightning-layout-item size="12" padding="around-small">
+                                    <lightning-radio-group type="radio" name="reasonVisit" label="4. Duid aan welke stelling het beste bij je past. Ik bezoek een museum omdat:" options={reasonVisitOption} value={formInfo.reasonVisit} onchange={onFormChange} message-when-value-missing="Dit veld is verplicht." required></lightning-radio-group>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </div>
+        
+                        <div class="slds-docked-form-footer slds-var-p-around_medium">
+                            <lightning-button variant="brand" onclick={submitForm} label="Registreer"></lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            
+        </template>
+        
+    </template>
+</template>

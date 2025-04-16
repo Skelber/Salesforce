@@ -1,0 +1,398 @@
+<aura:component description="WelcomeForm" controller="testpubliekCmpController" access="global">
+    <aura:attribute name="Lead" type="Lead" />
+    <aura:attribute name="Form" type="form__c" />
+    
+    <!-- Picklist value maps -->
+    <aura:attribute name="GenderMap" type="Map"/>
+    <aura:attribute name="CurrentSituationMap" type="Map"/>
+    <aura:attribute name="StudyAreaMap" type="Map"/>
+    <aura:attribute name="WorkSectorMap" type="Map"/>
+    <aura:attribute name="VisitedKMSKAMap" type="Map"/>
+    <aura:attribute name="VisitMuseaMap" type="Map"/>
+    <aura:attribute name="ReasonNoVisitMap" type="Map"/>
+    <aura:attribute name="ContextVisitMap" type="Map"/>
+    <aura:attribute name="InterestMap" type="Map"/>
+    <aura:attribute name="ReasonVisitsMap" type="Map"/>
+    <aura:attribute name="ReasonToVisitsMap" type="Map"/>
+    <aura:attribute name="CampaignSourceMap" type="Map"/>
+    <aura:attribute name="PreferWorkSectorMap" type="Map"/>
+    
+    <!-- Multi Select Checkboxes Values -->
+    <aura:attribute name="StudyArea" type="List" default=""/>
+    <aura:attribute name="WorkSector" type="List" default=""/>
+    <aura:attribute name="ReasonNoVisit" type="List" default=""/>
+    <aura:attribute name="ContextVisit" type="List" default=""/>
+    <aura:attribute name="Interest" type="List" default=""/>
+    <aura:attribute name="ReasonToVisits" type="List" default=""/>
+    <aura:attribute name="CampaignSource" type="List" default=""/>
+    <aura:attribute name="PreferWorkSector" type="List" default=""/>
+    
+    <!-- Hide/UnHide Fields -->
+    <aura:attribute name="IsStudyAreaOther" type="Boolean" default="false" />
+    <aura:attribute name="IsWorkSectorOther" type="Boolean" default="false" />
+    <aura:attribute name="IsReasonNoVisitOther" type="Boolean" default="false" />
+    <aura:attribute name="IsContextVisitOther" type="Boolean" default="false" />
+    <aura:attribute name="IsCampaignSourceOther" type="Boolean" default="false" />
+    <aura:attribute name="IsPreferWorkSectorOther" type="Boolean" default="false" />
+    
+    <!-- Utility -->
+    <aura:attribute name="Spinner" type="Boolean" default="false" />
+    <aura:attribute name="recordAddded" type="Boolean" default="false" />
+    <aura:attribute name="Error" type="Boolean" default="false" />
+    <aura:attribute name="Errormessage" type="String" />
+    <aura:attribute name="notificationmessage" type="String"/>
+    
+    <!-- Utility Handler -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    
+    
+    <header class="slds-align_absolute-center slds-border_bottom slds-p-around--x-small">
+        <img src="{!$Resource.Site_Header}" style="height: 150px;"/>
+        <hr/>
+    </header>
+    
+    <aura:if isTrue="{!v.Spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+    
+    <!-- top of the page Error Notification -->
+    <div class="slds-modal slds-fade-in-open errorDiv slds-hide" aura:id="warningDiv">
+        <ui:inputText aura:id="articleURL"/>
+        <div class="demo-only" style="height: 8rem;">
+            <div class="slds-notify_container slds-is-relative">
+                <div class="slds-notify slds-notify_toast slds-theme_error" role="alert">
+                    <div class=" slds-m-left_xx-large">
+                        <div class="slds-notify__content slds-m-left_small slds-align_absolute-center slds-m-left_xx-large">
+                            <lightning:icon alternativeText="Error" iconName="utility:error" size="small"
+                                            class="buttonColor slds-m-right_small" />
+                            <h2 class="slds-text-heading_small ">{!v.notificationmessage}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <aura:if isTrue="{!v.recordAddded}">
+        <div class="slds-text-heading_large slds-text-color_success slds-text-align_center" style="margin-top:150px">Gefeliciteerd! We hebben jouw registratie goed ontvangen. Hou je mailbox in de gaten voor verdere instructies.</div>
+    </aura:if>
+    
+    
+    <aura:if isTrue="{!(v.recordAddded==false)}">
+        <aura:if isTrue="{!v.Error}">
+            <div class="slds-grid slds-grid_align-center slds-p-around--medium " >
+                <div class="demo-only slds-col slds-size--1-of-2" style="background:#D60501;">
+                    <div class="slds-text-color_inverse" style="padding:5px;">{!v.Errormessage}</div>
+                </div>
+            </div>
+        </aura:if>
+        
+        <div class="slds-grid slds-grid_align-center slds-p-around--medium">
+            <div class="slds-col slds-size--2-of-4">
+                <div class="slds-text-align_center slds-text-heading--large">
+                    De Schoonste Honderd - Vragenlijst selectieprocedure
+                </div>
+                <br/>
+                <div class="slds-form slds-form_compound slds-p-bottom--xx-large">
+                    <br />
+                    <p class="slds-text-heading--small slds-p-top--medium slds-p-bottom--small">
+                        Het KMSKA wil niet alleen imponeren met prachtige kunstwerken en meesterlijke ruimtes.
+                        Ook de interactie met de bezoekers moet uit de kunst zijn. Jij kunt daar een belangrijke rol in spelen.
+                        We bouwen namelijk een select testpubliek uit. Honderd personen die ons intensief op de proef stellen. 
+                        En met hun suggesties bijdragen tot een optimale bezoekersbeleving. Wil jij je hiervoor engageren? 
+                        Vul je gegevens in en wie weet behoor jij tot 
+                        <i>De Schoonste Honderd.</i>
+                    </p>
+                </div>
+                <div class="section-1">
+                    <div class="slds-form slds-form_compound slds-p-bottom--xx-large" style="margin:10px;">
+                        <!-- Start of form -->
+                        <div class="slds-form-element__group slds-p-bottom--small">
+                            <div class="slds-form-element__control">
+                                <div class="slds-form-element__group">
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <lightning:input aura:id="reqfield" placeholder="" maxlength="80" name="Voornaam" label="Voornaam" value="{!v.Lead.FirstName}" required="true" messageWhenValueMissing="Dit veld is verplicht."/>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <lightning:input aura:id="reqfield" placeholder=""  maxlength="100" name="Naam" label="Naam" value="{!v.Lead.LastName}"  required="true" messageWhenValueMissing="Dit veld is verplicht."/>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <lightning:input aura:id="reqfield" placeholder="" maxlength="80" name="Adresstraat" label="Adres (straat + nummer)" value="{!v.Lead.Street}" required="true" messageWhenValueMissing="Dit veld is verplicht."/>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <lightning:input aura:id="reqfield" placeholder=""  maxlength="100" name="Postcode" label="Postcode" value="{!v.Lead.PostalCode}"  required="true" messageWhenValueMissing="Dit veld is verplicht."/>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <lightning:input aura:id="reqfield" placeholder="" maxlength="80" name="Gemeente" label="Gemeente" value="{!v.Lead.City}" required="true" messageWhenValueMissing="Dit veld is verplicht."/>
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <lightning:input aura:id="reqfield" type="email" placeholder=""  maxlength="100" name="Emailadres" label="E-mailadres" required ="true" value="{!v.Lead.Email}" messageWhenValueMissing="Dit veld is verplicht." />
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <lightning:input aura:id="reqfield" type="date" placeholder="" name="Geboortedatum" label="Geboortedatum" value="{!v.Lead.Birthdate__c}" required="true" messageWhenValueMissing="Dit veld is verplicht." messageWhenBadInput ="Gelieve een geldige datum te selecteren." />
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                            <lightning:select aura:id="reqfield" value="{!v.Lead.Gender__c}"  name="Gender" label="Duid aan wat het beste bij je past" required="true" messageWhenValueMissing="Dit veld is verplicht." >
+                                                <option value="">- gelieve keuze te maken -</option>
+                                                <aura:iteration items="{!v.GenderMap}" var="ind" indexVar="key">
+                                                    <option text="{!ind.value}" value="{!ind.key}" selected="{!ind.key==v.Lead.Gender__c}" />
+                                                </aura:iteration>
+                                            </lightning:select>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <div class="slds-form-element__row">
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                        </div>
+                                        <div class="slds-form-element slds-size--1-of-2">
+                                        </div>
+                                    </div>
+                                    <br/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question">	
+                            <p>*1. Welk statuut komt het beste overeen met jouw huidige situatie?</p>
+                            <br/>
+                            <div class="ansgroup hideLabel" style="padding-left:30px;width:60% !important">
+                                <lightning:select aura:id="reqfield" class="label-hidden" variant="label-hidden" value="{!v.Form.Current_Situation__c}"  name="CurrentSituation" label="Welk statuut komt het beste overeen met jouw huidige situatie?" required="true" messageWhenValueMissing="Dit veld is verplicht." >
+                                    <option value="">- gelieve keuze te maken -</option>
+                                    <aura:iteration items="{!v.CurrentSituationMap}" var="ind" indexVar="key">
+                                        <option text="{!ind.value}" value="{!ind.key}" selected="{!ind.key==v.Form.Current_Situation__c}" />
+                                    </aura:iteration>
+                                </lightning:select>
+                                <!-- If selected Other -->
+                                <aura:if isTrue="{!(v.Form.Current_Situation__c=='Andere')}">
+                                    <br/>
+                                    <lightning:input style="width:170% !important" aura:id="reqfield" placeholder="" required="true" maxlength="255" name="OtherSituationCurrent" variant="label-hidden" label="#" value="{!v.Form.Current_Situation_Other__c}" messageWhenValueMissing="Dit veld is verplicht."/>    
+                                </aura:if>
+                            </div>
+                            <br/>
+                        </div>
+                        <aura:if isTrue="{!v.Form.Current_Situation__c=='Student'}">
+                            <div class="question">	
+                                <p>*1.1. Wat is je studiegebied?</p>
+                                <br/>
+                                <div class="ansgroup hideLabel" style="padding-left:30px;width:100% !important">
+                                    <lightning:checkboxGroup  aura:id="reqfield" name="Studeer" label="Checkbox Group" options="{!v.StudyAreaMap}" required="true" variant="label-hidden" value="{!v.StudyArea}" onchange="{!c.isSAOther}" messageWhenValueMissing="Dit veld is verplicht." />
+                                    <!-- If selected Other -->
+                                    <aura:if isTrue="{!v.IsStudyAreaOther}">
+                                        <br/>
+                                        <lightning:input style="width:100% !important" aura:id="reqfield" required="true" placeholder="" maxlength="255" name="WhatdoYouStudyOther" variant="label-hidden" label="#" value="{!v.Form.Study_Area_Other__c}" messageWhenValueMissing="Dit veld is verplicht."/>
+                                    </aura:if>
+                                </div>
+                                <br/>
+                            </div>
+                            <div class="question">	
+                                <p>*1.2. Wat studeer je?</p>
+                                <br/>
+                                <div class="ansgroup hideLabel" style="padding-left:30px;width:100% !important">
+                                    <lightning:input  aura:id="reqfield" required="true" placeholder="" maxlength="255" name="WhatdoYouStudy" variant="label-hidden" label="Wat is je studiegebied?" value="{!v.Form.What_do_you_study__c}" messageWhenValueMissing="Dit veld is verplicht."/>
+                                </div>
+                                <br/>
+                            </div>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!v.Form.Current_Situation__c=='Werkend'}">
+                            <div class="question">	
+                                <p>*1.1. Wat heb je gestudeerd?</p>
+                                <br/>
+                                <div class="ansgroup hideLabel" style="padding-left:30px;width:100% !important">
+                                    <lightning:checkboxGroup  aura:id="reqfield" name="Gestudeerd" label="Wat heb je gestudeerd?" options="{!v.StudyAreaMap}" required="true" variant="label-hidden" value="{!v.StudyArea}" onchange="{!c.isSAOther}" messageWhenValueMissing="Dit veld is verplicht."/>
+                                    <aura:if isTrue="{!v.IsStudyAreaOther}">
+                                        <br/>
+                                        <lightning:input style="width:100% !important" aura:id="reqfield" required="true" placeholder="" maxlength="255" name="WhatdoYouStudyOther" variant="label-hidden" label="#" value="{!v.Form.Study_Area_Other__c}" messageWhenValueMissing="Dit veld is verplicht." />
+                                    </aura:if>
+                                </div>
+                                <br/>
+                            </div>
+                            
+                            <div class="question">	
+                                <p>*1.2. In welke sector werk je?</p>
+                                <br/>
+                                <div class="ansgroup hideLabel" style="padding-left:30px;width:100% !important">
+                                    <lightning:checkboxGroup  aura:id="reqfield" name="WorkSectore" label="In welke sector werk je?" options="{!v.WorkSectorMap}" required="true" variant="label-hidden" value="{!v.WorkSector}" onchange="{!c.isWSOther}" messageWhenValueMissing="Dit veld is verplicht."/>
+                                    <aura:if isTrue="{!v.IsWorkSectorOther}">
+                                        <br/>
+                                        <lightning:input style="width:100% !important" aura:id="reqfield" required="true" placeholder="" maxlength="255" name="OtherWorkSector" variant="label-hidden" label="#" value="{!v.Form.Work_Sector_Other__c}" messageWhenValueMissing="Dit veld is verplicht."/>
+                                    </aura:if>
+                                </div>
+                                <br/>
+                            </div>
+                            
+                            <div class="question">	
+                                <p>*1.3.  Wat is jouw beroep? </p>
+                                <br/>
+                                <div class="ansgroup hideLabel" style="padding-left:30px;width:100% !important">
+                                    <lightning:input style="width:100% !important" aura:id="reqfield" required="true" placeholder="" maxlength="255" name="Profession" variant="label-hidden" label="Wat is jouw beroep?" value="{!v.Form.Profession__c}" messageWhenValueMissing="Dit veld is verplicht." />
+                                </div>
+                                <br/>
+                            </div>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!v.Form.Current_Situation__c=='Werkzoekend'}">
+                            <div class="question">	
+                                <p>*1.1. In welke sector zoek je werk?</p>
+                                <br/>
+                                <div class="ansgroup hideLabel" style="padding-left:30px;width:100% !important">
+                                    <lightning:checkboxGroup  aura:id="reqfield" name="WorkSectore" label="In welke sector werk je?" options="{!v.WorkSectorMap}" required="true" variant="label-hidden" value="{!v.WorkSector}" onchange="{!c.isWSOther}" messageWhenValueMissing="Dit veld is verplicht." />
+                                    <aura:if isTrue="{!v.IsWorkSectorOther}">
+                                        <br/>
+                                        <lightning:input style="width:100% !important" aura:id="reqfield" required="true" placeholder="" maxlength="255" name="OtherWorkSector" variant="label-hidden" label="#" value="{!v.Form.Work_Sector_Other__c}" messageWhenValueMissing="Dit veld is verplicht." />
+                                    </aura:if>
+                                </div>
+                                <br/>
+                            </div>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!v.Form.Current_Situation__c=='Gepensioneerd'}">
+                            <div class="question">	
+                                <p>*1.1. In welke sector werkte je?</p>
+                                <br/>
+                                <div class="ansgroup" style="padding-left:30px;width:100% !important">
+                                    <lightning:checkboxGroup  aura:id="reqfield" name="WorkSectore" label="In welke sector werkte je?" options="{!v.WorkSectorMap}" required="true" variant="label-hidden" value="{!v.WorkSector}" onchange="{!c.isWSOther}" messageWhenValueMissing="Dit veld is verplicht."/>
+                                    <!-- If selected Other -->
+                                    <aura:if isTrue="{!v.IsWorkSectorOther}">
+                                        <br/>
+                                        <lightning:input style="width:100% !important" aura:id="reqfield" required="true" placeholder="" maxlength="255" name="OtherWorkSector" variant="label-hidden" label="#" value="{!v.Form.Work_Sector_Other__c}" messageWhenValueMissing="Dit veld is verplicht."/>
+                                    </aura:if>
+                                </div>
+                                <br/>
+                            </div>
+                            <div class="question">	
+                                <p>*1.2. Wat was jouw beroep? </p>
+                                <br/>
+                                <div class="ansgroup" style="padding-left:30px;width:100% !important">
+                                    <lightning:input  aura:id="reqfield" required="true" placeholder="" maxlength="255" name="Profession" variant="label-hidden" label="Wat is jouw beroep?" value="{!v.Form.Profession__c}" messageWhenValueMissing="Dit veld is verplicht." />
+                                </div>
+                                <br/>
+                            </div>
+                        </aura:if>
+                        
+                        <div class="question">	
+                            <p>*2.	Bezocht je het KMSKA voor de sluiting? </p>
+                            <br/>
+                            <div class="ansgroup hideLabel" style="padding-left:30px;width:60% !important">
+                                <lightning:select aura:id="reqfield" class="label-hidden" variant="label-hidden" value="{!v.Form.Visitied_KMSKA__c}"  name="visitedKMSKA" label="#" required="true" messageWhenValueMissing="Dit veld is verplicht." >
+                                    <option value="">- gelieve keuze te maken -</option>
+                                    <aura:iteration items="{!v.VisitedKMSKAMap}" var="ind" indexVar="key">
+                                        <option text="{!ind.value}" value="{!ind.key}" selected="{!ind.key==v.Form.Visitied_KMSKA__c }" />
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                            <br/>
+                        </div>
+                        
+                        <div class="question">	
+                            <p>*3.	Hoe vaak ging je het voorbije jaar naar musea?</p>
+                            <br/>
+                            <div class="ansgroup hideLabel" style="padding-left:30px;width:60% !important">
+                                <lightning:select aura:id="reqfield" class="label-hidden" variant="label-hidden" value="{!v.Form.Visits_musea_last_year__c}"  name="visitedLastYear" label="#" required="true" messageWhenValueMissing="Dit veld is verplicht." >
+                                    <option value="">- gelieve keuze te maken -</option>
+                                    <aura:iteration items="{!v.VisitMuseaMap}" var="ind" indexVar="key">
+                                        <option text="{!ind.value}" value="{!ind.key}" selected="{!ind.key==v.Form.Visits_musea_last_year__c}" />
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                            <br/>
+                        </div>
+                        
+                        <aura:if isTrue="{!v.Form.Visits_musea_last_year__c=='Niet'}">
+                            <div class="question">	
+                                <p>*3.1. Ik bezoek zelden museum omdat:</p>
+                                <br/>
+                                <div class="ansgroup hideLabel" style="padding-left:30px;width:100% !important">
+                                    <lightning:checkboxGroup  aura:id="reqfield" name="PReasonNoVisit" label="#" options="{!v.ReasonNoVisitMap}" required="true" variant="label-hidden" value="{!v.ReasonNoVisit}" onchange="{!c.isRNVOther}" messageWhenValueMissing="Dit veld is verplicht."/>
+                                    <aura:if isTrue="{!v.IsReasonNoVisitOther}">
+                                        <br/>
+                                        <lightning:input style="width:100% !important" aura:id="reqfield" required="true" placeholder="" maxlength="255" name="OtherReason" variant="label-hidden" label="#" value="{!v.Form.Reason_no_visits_Other__c}" messageWhenValueMissing="Dit veld is verplicht."/>
+                                    </aura:if>
+                                </div>
+                                <br/>
+                            </div>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!or((v.Form.Visits_musea_last_year__c=='1 tot 2 keer'),(v.Form.Visits_musea_last_year__c=='3 of meerdere keren'))}">
+                            <div class="question">	
+                                <p>*3.1. In welke context bezoek je musea?</p>
+                                <br/>
+                                <div class="ansgroup hideLabel" style="padding-left:30px;width:100% !important">
+                                    <lightning:checkboxGroup  aura:id="reqfield" name="ContetVisit" label="#" options="{!v.ContextVisitMap}" required="true" variant="label-hidden" value="{!v.ContextVisit}" onchange="{!c.isCVOther}" messageWhenValueMissing="Dit veld is verplicht."/>
+                                    <aura:if isTrue="{!v.IsContextVisitOther}">
+                                        <br/>
+                                        <lightning:input style="width:100% !important" aura:id="reqfield" required="true" placeholder="" maxlength="255" name="OtherReason" variant="label-hidden" label="#" value="{!v.Form.Context_Visits_Other__c}" messageWhenValueMissing="Dit veld is verplicht."/>
+                                    </aura:if>
+                                </div>
+                                <br/>
+                            </div>
+                        </aura:if>
+                        
+                        <div class="question">	
+                            <p>*4.	Duid drie interesses aan die het meeste bij je passen?</p>
+                            <br/>
+                            <div class="ansgroup hideLabel" style="padding-left:30px;width:100% !important">
+                                <lightning:checkboxGroup  aura:id="reqfield" name="ContetVisit" label="#" options="{!v.InterestMap}" required="true" variant="label-hidden" value="{!v.Interest}" messageWhenValueMissing="Dit veld is verplicht."/>
+                            </div>
+                            <br/>
+                        </div>
+                        
+                        <div class="question">	
+                            <p>*5.	Duid aan welke stelling het beste bij je past. Ik bezoek een museum omdat:</p>
+                            <br/>
+                            <div class="ansgroup hideLabel" style="padding-left:30px;width:120% !important">
+                                <lightning:radioGroup aura:id="reqfield" required="true" class="label-hidden" variant="label-hidden" name="radioGroup" label="#" options="{! v.ReasonVisitsMap }" value="{! v.Form.Reason_Visits__c}" type="radio" messageWhenValueMissing="Dit veld is verplicht."/>
+							</div>
+                            <br/>
+                        </div>
+                        
+                        <div class="question">	
+                            <p>*6. Welke zijn voor jou de 3 belangrijkste redenen om een museum te bezoeken?</p>
+                            <br/>
+                            <div class="ansgroup hideLabel" style="padding-left:30px;width:100% !important">
+                                <lightning:checkboxGroup  aura:id="reqfield" name="ReasonToVisitsM" label="#" options="{!v.ReasonToVisitsMap}" required="true" variant="label-hidden" value="{!v.ReasonToVisits}" messageWhenValueMissing="Dit veld is verplicht." />
+                            </div>
+                            <br/>
+                        </div>
+                        
+                        <div class="question">	
+                            <p>*7. Via welk kanaal hoorde je van deze campagne?</p>
+                            <br/>
+                            <div class="ansgroup hideLabel" style="padding-left:30px;width:100% !important">
+                                <lightning:checkboxGroup  aura:id="reqfield" name="CampaignSourceM" label="#" options="{!v.CampaignSourceMap}" required="true" variant="label-hidden" value="{!v.CampaignSource}" onchange="{!c.isCSVOther}" messageWhenValueMissing="Dit veld is verplicht." />
+                                <aura:if isTrue="{!v.IsCampaignSourceOther}">
+                                    <br/>
+                                    <lightning:input style="width:100% !important" aura:id="reqfield" required="true" placeholder="" maxlength="255" name="CamSourceOther" variant="label-hidden" label="#" value="{!v.Form.Campaign_Source_other__c}" messageWhenValueMissing="Dit veld is verplicht." />
+                                </aura:if>
+                            </div>
+                            <br/>
+                        </div>
+                        <!-- End of form -->
+                    </div>
+                </div>
+                
+                
+                <div class="slds-docked-form-footer slds-p-around--medium">
+                    <lightning:button type="button" variant="brand" onclick="{!c.submit}" label="Registreer" />
+                </div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

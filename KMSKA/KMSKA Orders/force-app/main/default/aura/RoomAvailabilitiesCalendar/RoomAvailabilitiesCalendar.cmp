@@ -1,0 +1,256 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" 
+                access="global" controller="RoomAvailabilitiesCalendarController">
+    <aura:attribute name="isCommunity" type="Boolean" default="false" />
+    <aura:attribute name="isLUGuide" type="Boolean" default="false" />
+    
+    <ltng:require scripts="{!join(',',
+                           $Resource.Scheduler  + '/JS/jquery-3.3.1.min.js',
+                           $Resource.FullCalendarV5   + '/packages/core/main.js',
+                           $Resource.FullCalendarV5   + '/packages/daygrid/main.js',
+                           $Resource.FullCalendarV5   + '/packages/list/main.js',
+                           $Resource.FullCalendarV5   + '/packages/timegrid/main.js',
+                           $Resource.FullCalendarV5   + '/packages/interaction/main.js',
+                           $Resource.FullCalendarV5   + '/packages/moment/main.js',
+                           $Resource.FullCalendarV5   + '/packages/moment-timezone/main.js',
+                           $Resource.FullCalendarV5   + '/packages/bootstrap/main.js'
+                           )}"
+                  afterScriptsLoaded="{!c.afterScriptsLoaded}" />
+    <link href="{!$Resource.FullCalendarV5  + '/packages/core/main.css'}" rel="stylesheet"/>
+    <link href="{!$Resource.FullCalendarV5  + '/packages/daygrid/main.css'}" rel="stylesheet" />
+    <link href="{!$Resource.FullCalendarV5  + '/packages/list/main.css'}" rel="stylesheet"  />
+    <link href="{!$Resource.FullCalendarV5  + '/packages/timegrid/main.css'}" rel="stylesheet" />
+    <link href="{!$Resource.FullCalendarV5  + '/packages/bootstrap/main.css'}" rel="stylesheet" />
+    
+    
+    
+    <!-- Calendar Filters -->
+    <aura:attribute name="roomMap" type="Map"/>
+    <aura:attribute name="room" type="String" default="all"/>
+    
+    <aura:attribute name="dataLst" type="List" />
+    <aura:attribute name="isDataLoaded" type="Boolean" default="false" />
+    <aura:attribute name="isCalenderLoaded" type="Boolean" default="false" />
+    
+    <aura:attribute name="calendar" type="object" />
+    <aura:attribute name="calendarLabel" type="string" default="" />
+    <aura:attribute name="calendarStyleHeight" type="string" default="" />
+    
+    <aura:attribute name="showTooltip" type="Boolean" default="false" />
+    <aura:attribute name="tooltipStyle" type="string" default="display:none;" />
+    
+    
+    <aura:attribute name="calendarMap" type="Map"/>
+    <aura:attribute name="RecName" type="string" default="" />
+    <aura:attribute name="oppName" type="string" default="" />
+    <aura:attribute name="roomName" type="string" default="" />
+    <aura:attribute name="accName" type="string" default="" />
+    <aura:attribute name="conName" type="string" default="" />
+    <aura:attribute name="participants" type="string" default="" />
+    <aura:attribute name="start" type="string" default="" />
+    <aura:attribute name="end" type="string" default="" />
+    
+    <aura:attribute name="editError" type="Boolean" default="false" />
+    <aura:attribute name="errorMessage" type="String" default="" />
+    
+    <div aura:id="calendarHome" class="calendarHome slds-is-relative">
+        <aura:if isTrue="{!v.showTooltip}">
+            <div>
+                <section  aura:id="calendar-event-tooltip" aria-labelledby="panel-heading-id" class="slds-popover slds-popover_panel slds-nubbin_bottom-left" 
+                         role="dialog" style="{!v.tooltipStyle}">
+                    <div class="slds-popover__header">
+                        <header class="slds-media slds-media_center slds-m-bottom_small">
+                            <span class="slds-icon_container slds-icon-standard-account slds-media__figure">
+                                <lightning:icon iconName="standard:key_dates" alternativeText="key_dates" title="key_dates" />
+                            </span>
+                            <div class="slds-media__body">
+                                <h2 class="slds-text-heading_medium slds-hyphenate" id="panel-heading-id">
+                                    {!v.RecName}
+                                </h2>
+                            </div>
+                        </header>
+                        <footer class="slds-grid slds-wrap slds-grid_pull-padded">
+                            <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-popover_panel__label slds-truncate" title="KMSKA Activity">
+                                            KMSKA Activity
+                                        </p>
+                                    </dt>
+                                    <dd>{!v.oppName}</dd>
+                                </dl>
+                            </div>
+                            <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-popover_panel__label slds-truncate" title="Account">
+                                            Account
+                                        </p>
+                                    </dt>
+                                    <dd>{!v.accName}</dd>
+                                </dl>
+                            </div>
+                            
+                            <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-popover_panel__label slds-truncate" title="PrimaryContact">
+                                            Primary Contact
+                                        </p>
+                                    </dt>
+                                    <dd>{!v.conName}</dd>
+                                </dl>
+                            </div>
+                            <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-popover_panel__label slds-truncate" title="Zalen">
+                                            Zalen
+                                        </p>
+                                    </dt>
+                                    <dd>{!v.roomName}</dd>
+                                </dl>
+                            </div>
+                            
+                            <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-popover_panel__label slds-truncate" title="Participants">
+                                            Participants
+                                        </p>
+                                    </dt>
+                                    <dd>{!v.participants}</dd>
+                                </dl>
+                            </div>
+                            <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-popover_panel__label slds-truncate" title="Participants">
+                                            
+                                        </p>
+                                    </dt>
+                                    <dd>
+                                        
+                                    </dd>
+                                </dl>
+                            </div>
+                            
+                            <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-popover_panel__label slds-truncate" title="Van">
+                                            Van
+                                        </p>
+                                    </dt>
+                                    <dd>{!v.start}</dd>
+                                </dl>
+                            </div>
+                            <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-popover_panel__label slds-truncate" title="Tot">
+                                            Tot
+                                        </p>
+                                    </dt>
+                                    <dd>{!v.end}</dd>
+                                </dl>
+                            </div>
+                        </footer>
+                    </div>
+                </section>
+            </div>
+        </aura:if>
+        
+        <div class="forceCalendar">
+            <div aura:id="calendarHeader" class="calendarHeader">
+                <div class="slds-page-header">
+                    <div class="slds-grid">
+                        <div class="slds-col slds-has-flexi-truncate">
+                            <div class="slds-media slds-no-space slds-grow">
+                                <div class="slds-media__figure">
+                                    <lightning:icon iconName="standard:event" alternativeText="Event" title="Event" />
+                                </div>
+                                <div class="slds-media__body">
+                                    <p class="slds-text-title_caps slds-line-height_reset">Beschikbaarheden</p>
+                                    <h1 class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate"  title="{!v.calendarLabel}">
+                                        {!v.calendarLabel}
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-no-flex slds-grid slds-align-top">
+                            <lightning:buttonGroup>
+                                <lightning:buttonIcon variant="border-filled" alternativeText="left" iconName="utility:chevronleft" onclick="{!c.previousHandler}" />
+                                <lightning:buttonIcon variant="border-filled" alternativeText="right" iconName="utility:chevronright" onclick="{!c.nextHandler}" />
+                            </lightning:buttonGroup>
+                            
+                            <lightning:button variant="Neutral" label="Vandaag" title="Today" onclick="{!c.today}" class="slds-m-horizontal_x-small"/>
+                            
+                            <lightning:buttonGroup>
+                                <lightning:buttonIcon variant="border-filled" alternativeText="Dag" iconName="utility:dayview" onclick="{!c.dailyViewHandler}" />
+                                <lightning:buttonIcon variant="border-filled" alternativeText="Week" iconName="utility:weeklyview" onclick="{!c.weeklyViewHandler}" />
+                                <lightning:buttonIcon variant="border-filled" alternativeText="Maand" iconName="utility:monthlyview" onclick="{!c.monthlyViewHandler}" />
+                            </lightning:buttonGroup>
+                            <!--
+                            <lightning:button variant="Neutral" label="Voeg beschikbaarheid toe" title="NewAvailablility" onclick="{!c.newAvailability}" class="slds-m-horizontal_x-small"/>
+                            -->
+                            <lightning:buttonIcon variant="border-filled" iconName="utility:refresh" onclick="{!c.refresh}" alternativeText="Refresh" title="Refresh"/>
+                        </div>
+                    </div>
+                    <aura:if isTrue="{!(!v.isCommunity)}">
+                        <ul class="slds-grid slds-page-header__detail-row">
+                            <li class="slds-page-header__detail-block">
+                                <lightning:select aura:id="roomType" value="{!v.room}"  name="Zalen" label="Zalen" onchange="{!c.onRoomChange}">
+                                    <aura:iteration items="{!v.roomMap}" var="room" indexVar="key">
+                                        <option text="{!room.key}" value="{!room.value}" selected="{!room.value==v.room}" />
+                                    </aura:iteration>
+                                </lightning:select>
+                            </li>
+                        </ul>
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+        <div style="background:#ffffff;max-height:670px;" class="slds-grid">
+            <div class="slds-col slds-size_5-of-6">
+                <div style="{!v.calendarStyleHeight}">
+                    <div aura:id="calendar" style="height:670px;max-height:670px;">
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="slds-col slds-size_1-of-6 slds-border_left slds-border_right">
+                <div class="slds-m-left_small slds-m-right_small slds-m-top_small">
+                    <div class="slds-text-heading_medium"> 
+                        <b>Kalenders</b>
+                    </div>
+                    <div class="slds-m-left_small slds-m-top_small">
+                        <table>
+                            <aura:iteration items="{!v.calendarMap}" var="cc" indexVar="key">
+                                <tr>
+                                    <td>
+                                        <span class="calColorCircle" style="{!'background:' + cc.value}"></span>
+                                    </td>
+                                    <td>
+                                        {!cc.key} 
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--
+        <div style="background:#ffffff;" class="slds-grid">
+            <div class="slds-col ">
+                <div aura:id="calendar" style="height:670px;max-height:670px;">
+                    
+                </div>
+            </div>
+		</div>
+		-->
+    </div>
+</aura:component>

@@ -74,6 +74,7 @@ import ProviderOrLocationGuidance from "@salesforce/label/c.AppointmentScheduler
 import NoSlotsAvailable from "@salesforce/label/c.AppointmentSchedulerNoSlotsAvailable"
 import DurationInMinutes from "@salesforce/label/c.AppointmentSchedulerDurationInMinutes"
 import FirstAvailableLabel from "@salesforce/label/c.AppointmentSchedulerFirstAvailableDate"
+import UserLang from "@salesforce/i18n/lang"
 
 
 import PatientLABEL from "@salesforce/label/c.ConfirmationModalPatient"
@@ -192,6 +193,8 @@ export default class CalendarTest extends NavigationMixin(LightningElement)  {
     EndTimeLABEL = EndTimeLABEL
     ButtonLabelLABEL = ButtonLabelLABEL
     DescriptionLABEL = DescriptionLABEL
+    userLanguage = UserLang
+    isFrenchUser = false;
 
 
     label = {
@@ -399,6 +402,7 @@ export default class CalendarTest extends NavigationMixin(LightningElement)  {
         this.disablePrimaryProvider = true;
         this.disableSecondaryResource = true;
         this.disableServiceTerritory = true;
+        this.setWorktypeDisplayInfoLanguague();
     }
 
 
@@ -447,6 +451,20 @@ export default class CalendarTest extends NavigationMixin(LightningElement)  {
             this.callForData();
         } this.disableBU = false
     }
+
+    setWorktypeDisplayInfoLanguague(){
+        if(this.userLanguage =='fr'){
+            this.isFrenchUser = true
+        }
+    }
+
+    displayInfoFr = {
+        primaryField:  'Work_Type_Name_FR__c'
+    };
+
+    displayInfoNl = {
+        primaryField: 'Name'
+    };
 
     handleDurationChange(event){
         this.workTypeDuration = event.target.value;
@@ -724,9 +742,11 @@ export default class CalendarTest extends NavigationMixin(LightningElement)  {
                         multipleResources.events = events;
                         multipleResources.firstAvailableDate = events[0].start;
                         this.multipleResourceMap.push(multipleResources)
-                        if(multipleResources.events[0].start >= this.colOneHeader && multipleResources.events[0].start < this.colSixHeader){
+                        if(multipleResources.events[0].start >= this.colOneHeader && multipleResources.events[0].start <= this.colSixHeader){
                             multipleResources.weekWithSlots = true;
                         } 
+                        console.log(this.currentDate);
+                        console.log(JSON.stringify(this.multipleResourceMap))
                     } else {
                         element.hasResults = false
                     }

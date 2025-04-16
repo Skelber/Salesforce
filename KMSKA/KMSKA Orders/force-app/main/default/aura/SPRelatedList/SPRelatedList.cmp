@@ -1,0 +1,72 @@
+<aura:component controller="SPRelatedListController" 
+                implements="flexipage:availableForRecordHome,force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" 
+                access="global" >
+    
+    <aura:attribute name="headerTitle" type="String" access="global" default="Related Documents"/>
+    <aura:attribute name="folderList" type="List"/>
+    <aura:attribute name="fileList" type="List"/>
+    <aura:attribute name="allFolders" type="Object"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="force:showToast" action="{!c.doRefreshPage}"/>
+    
+    <!-- Folder Open -->
+    <aura:handler name="folderOpenEvent" event="c:SPFolderOpenEvent" action="{!c.handlefolderOpenEvent}"/> 
+    <aura:attribute name="folderName" type="String" access="global" />
+    <aura:attribute name="folderPath" type="String" access="global" />
+    <aura:attribute name="currentFolderId" type="String" access="global" />
+    
+    <aura:attribute name="parentFId" type="String" access="global" />
+    <aura:attribute name="parentFolder" type="Boolean" default="true"/>
+    
+    
+    <div class="container" style="margin:10px;border: 1px solid rgb(221, 219, 218);border-radius: .25rem;">
+        <div class="slds-page-header slds-page-header_record-home">
+            <div class="slds-page-header__row">
+                <div class="slds-page-header__col-title">
+                    <div class="slds-media">
+                        <div class="slds-media__figure">
+                            <lightning:icon iconName="standard:file" size="small"  alternativeText="Attachment" title="Attachment" />
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-card__header-title">
+                                <span> {!v.headerTitle}</span>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding:1rem;border-top: 1px solid rgb(221, 219, 218);" >
+            <div class="folderHeader">
+                <div style="display:inline-block;margin-right:5px;">
+                    <lightning:buttonIcon iconName="utility:back" variant="bare" disabled="{!(v.parentFId==v.currentFolderId)}" onclick="{!c.goBack}" alternativeText="Back" title="Back"/>
+                </div>
+                <div style="display:inline-block;margin-right:5px;">
+                    <lightning:buttonIcon iconName="utility:refresh" variant="bare" onclick="{!c.refreshFolder}" alternativeText="Refresh" title="Refresh"/>
+                </div>
+                <div style="display:inline-block;margin-right:5px;">
+                    <lightning:badge label="{!v.folderPath}"/>
+                </div>
+                <div style="display:inline-block;margin-right:5px;float:right;">
+                    <lightning:buttonIcon iconName="utility:home" variant="bare" disabled="{!(v.parentFId==v.currentFolderId)}" onclick="{!c.goHome}" alternativeText="Home" title="Home"/>
+                </div>
+            </div>
+        </div>
+        
+        <div style="padding:1rem;border-top: 1px solid rgb(221, 219, 218);">
+            <aura:if isTrue="{!or(v.folderList.length>0,v.fileList.length>0)}">
+                <c:SPFolderList folderList="{!v.folderList}" fileList="{!v.fileList}" currentFolderId="{!v.currentFolderId}"/>
+                
+                <aura:set attribute="else">
+                    <p> NO RECORD FOUND.</p>
+                </aura:set>
+            </aura:if>
+        </div>
+        
+        <div style="padding:1rem;border-top: 1px solid rgb(221, 219, 218);min-height:10px;" >
+            <!-- footer -->
+        </div>
+    </div>
+    
+</aura:component>

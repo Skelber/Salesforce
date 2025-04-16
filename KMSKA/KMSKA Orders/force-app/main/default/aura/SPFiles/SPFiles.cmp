@@ -1,0 +1,33 @@
+<aura:component controller="SPFilesController">
+    <aura:attribute name="fileName" type="String" />
+    <aura:attribute name="fileType" type="String" />
+    <aura:attribute name="fileURL" type="String" />
+    <aura:attribute name="fileId" type="String" />
+    <aura:attribute name="iconName" type="String" default="doctype:attachment"/>
+    <aura:attribute name="file" type="object" />
+    
+    <div style="width:120px;">
+        <lightning:card title="">
+            <aura:set attribute="actions">
+                <lightning:buttonMenu alternativeText="Show menu" menuAlignment="center" iconName="utility:automate" 
+                                      class="slds-m-left_xx-large" onselect="{!c.handleMenuSelect}">
+                    <lightning:menuItem value="Preview" label="Preview" />
+                    <lightning:menuItem value="Download" label="Download" />
+                </lightning:buttonMenu>
+            </aura:set>
+            
+            <p class="slds-p-horizontal_small">
+                <div style="text-align:center;">
+                    <a data-record="{!v.fileId}" id="{!v.fileId}" onclick="{!c.redirectToPreviewURl}">
+                        <lightning:icon class="iconCls" iconName="{!v.iconName}" size="large"  alternativeText="file" title="Image" />
+                    </a>
+                </div>
+                <div style="text-align:center;word-wrap: break-word;">
+                    <a data-record="{!v.fileId}" id="{!v.fileId}" onclick="{!c.redirectToPreviewURl}">
+                        {!v.fileName} 
+                    </a>
+                </div>    
+            </p>
+        </lightning:card>
+    </div>
+</aura:component>

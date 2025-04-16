@@ -1,0 +1,284 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" 
+                access="global" controller="GuideActivitySelectionController">
+    
+    <aura:attribute name="isCommunity" type="Boolean" default="false" />
+    <aura:attribute name="isLUGuide" type="Boolean" default="false" />
+    <aura:attribute name="MonthLabel" type="String" default="" />
+    <aura:attribute name="fromDate" type="Date" />
+    <aura:attribute name="toDate" type="Date" />
+    <aura:attribute name="assignedTourLst" type="List" />
+    <aura:attribute name="upcomingTourLst" type="List" />
+    <aura:attribute name="isSave" type="Boolean" default="false" />
+    <aura:attribute name="loading" type="Boolean" default="true"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="force:refreshView" action="{!c.refreshView}" />
+    
+    
+    <div aura:id="tourHome" class="tourHome slds-is-relative">
+        <aura:if isTrue="{!v.loading}">
+            <div aura:id="spinnerId" class="slds-spinner_container">
+                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                    <span class="slds-assistive-text">Loading...</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </aura:if>
+        
+        <div style="background:#ffffff;" class="slds-grid">
+            <div class="slds-col ">
+                <div aura:id="tour" >
+                    <div class="slds-box slds-m-top_x-small slds-m-bottom_x-small">
+                        <!-- Header -->
+                        <div class="slds-border_bottom">
+                            <div class="slds-clearfix slds-m-bottom_x-small">
+                                <div class="slds-float_left" style="width:10%">
+                                    <lightning:buttonIcon iconName="utility:chevronleft" variant="border-filled" alternativeText="previous" title="Previous" onclick="{!c.previousWeek}"/>
+                                </div>
+                                <div class="slds-float_left slds-align_absolute-center slds-text-heading_medium" style="width:80%">
+                                    {!v.MonthLabel}
+                                </div>
+                                <div class="slds-float_right">
+                                    <lightning:buttonIcon iconName="utility:chevronright" variant="border-filled" alternativeText="next" title="Next" onclick="{!c.nextWeek}"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="slds-border_bottom slds-border_top slds-border_left slds-border_right slds-m-left_large slds-m-right_large slds-m-top_small slds-m-bottom_small">
+                            <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered">
+                                <thead>
+                                    <tr >
+                                        <td class="" scope="col" colspan="9">
+                                            <div class="slds-truncate slds-align_absolute-center slds-text-heading_medium slds-m-top_xxx-small slds-m-bottom_xxx-small">
+                                                Rondleidingen Overzicht
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr class="slds-line-height_reset">
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="#">#</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Datum">Datum</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Hours">tijdstip</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Product">Product</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Talen">Taal</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Doelgroep">Doelgroep</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="account">Account</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div title="extraInfoGids">Extra Info Gids</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Participants">Participants</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:if isTrue="{!not(empty(v.assignedTourLst))}">
+                                        <aura:iteration items="{!v.assignedTourLst}" var="item" indexVar="index">
+                                            <tr class="slds-hint-parent">
+                                                <th data-label="#" scope="row">
+                                                    <div class="slds-truncate" title="#">{!index + 1}</div>
+                                                </th>
+                                                <td data-label="Datum">
+                                                    <div class="slds-truncate" title="Datum">
+                                                        <lightning:formattedDateTime value="{!item.activityProductStartDate}" month="short" day="2-digit"/>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Hours">
+                                                    <div class="slds-truncate" title="Hours">
+                                                        <lightning:formattedDateTime value="{!item.activityProductStartDate}" hour="2-digit" minute="2-digit" hour12="false"/>
+                                                        -
+                                                        <lightning:formattedDateTime value="{!item.activityProductEndDate}" hour="2-digit" minute="2-digit" hour12="false"/>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Product">
+                                                    <div class="slds-truncate" title="Product">
+                                                        {!item.productName}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Talen">
+                                                    <div class="slds-truncate" title="Talen">
+                                                        {!item.languages}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Doelgroep">
+                                                    <div class="slds-truncate" title="Doelgroep">
+                                                        {!item.targetAudience}
+                                                    </div>
+                                                </td>
+                                                <td data-label="account">
+                                                    <div class="slds-truncate" title="account">
+                                                        {!item.accountName}
+                                                    </div>
+                                                </td>
+                                                <td data-label="extraInfo">
+                                                    <div title="{!item.extraInfo}" style="word-wrap:break-word;text-wrap:wrap;">
+                                                        {!item.extraInfo}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Participants">
+                                                    <div class="slds-truncate" title="Participants">
+                                                        {!item.participants}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                        
+                                        <aura:set attribute="else">
+                                            <tr class="slds-hint-parent">
+                                                <td data-label="nodata" colspan="9">
+                                                    <div class="slds-truncate slds-align_absolute-center slds-text-color_error" title="noData">
+                                                        *Geen rondleidingen
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:set>
+                                    </aura:if>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        
+                        <div class="slds-border_bottom slds-border_top slds-border_left slds-border_right slds-m-left_large slds-m-right_large slds-m-top_small slds-m-bottom_small">
+                            <table class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered">
+                                <thead>
+                                    <tr >
+                                        <td class="" scope="col" colspan="10">
+                                            <div class="slds-truncate slds-align_absolute-center slds-text-heading_medium slds-m-top_xxx-small slds-m-bottom_xxx-small">
+                                                Rondleidingen Selectie
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr class="slds-line-height_reset">
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="#">#</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Datum">Datum</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Hours">tijdstip</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Product">Product</div>
+                                        </th>
+                                        
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Talen">Taal</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Doelgroep">Doelgroep</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Doelgroep">Account</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div title="extraInfoGids">Extra Info Gids</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Participants">Participants</div>
+                                        </th>
+                                        <th class="" scope="col">
+                                            <div class="slds-truncate" title="Actie">Inplannen</div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:if isTrue="{!not(empty(v.upcomingTourLst))}">
+                                        <aura:iteration items="{!v.upcomingTourLst}" var="item" indexVar="index">
+                                            <tr class="slds-hint-parent">
+                                                <th data-label="#" scope="row">
+                                                    <div class="slds-truncate" title="#">{!index + 1}</div>
+                                                </th>
+                                                <td data-label="Datum">
+                                                    <div class="slds-truncate" title="Datum">
+                                                        <lightning:formattedDateTime value="{!item.activityProductStartDate}" month="short" day="2-digit"/>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Hours">
+                                                    <div class="slds-truncate" title="Hours">
+                                                        <lightning:formattedDateTime value="{!item.activityProductStartDate}" hour="2-digit" minute="2-digit" hour12="false"/>
+                                                        -
+                                                        <lightning:formattedDateTime value="{!item.activityProductEndDate}" hour="2-digit" minute="2-digit" hour12="false"/>
+                                                    </div>
+                                                </td>
+                                                <td data-label="Product">
+                                                    <div class="slds-truncate" title="Product">
+                                                        {!item.productName}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Talen">
+                                                    <div class="slds-truncate" title="Talen">
+                                                        {!item.languages}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Doelgroep">
+                                                    <div class="slds-truncate" title="Doelgroep">
+                                                        {!item.targetAudience}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Account">
+                                                    <div class="slds-truncate" title="Account">
+                                                        {!item.accountName}
+                                                    </div>
+                                                </td>
+                                                <td data-label="extraInfo">
+                                                    <div title="{!item.extraInfo}" style="word-wrap: break-word;text-wrap:wrap;">
+                                                        {!item.extraInfo}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Participants">
+                                                    <div class="slds-truncate" title="Participants">
+                                                        {!item.participants}
+                                                    </div>
+                                                </td>
+                                                <td data-label="Actie">
+                                                    <div class="slds-truncate" title="Actie">
+                                                        <lightning:input type="checkbox" label="#" name="actieSelect" checked="{!item.isSelected}" variant="label-hidden" onchange="{!c.evaluateSaving}"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                        
+                                        <aura:set attribute="else">
+                                            <tr class="slds-hint-parent">
+                                                <td data-label="nodata" colspan="10">
+                                                    <div class="slds-truncate slds-align_absolute-center slds-text-color_error" title="noData">
+                                                        *Geen rondleidingen
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </aura:set>
+                                    </aura:if>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="slds-m-left_large slds-m-right_large slds-m-top_small slds-m-bottom_small">
+                            <div class="slds-align_absolute-center">
+                                <aura:if isTrue="{!v.isSave}">
+                                    <lightning:button variant="brand" label="Opslaan" title="Opslaan" onclick="{!c.handleSave}" />
+                                </aura:if>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,22 @@
+<apex:page id="Welcome" cache="false" sidebar="false" showheader="false">
+    <apex:includeLightning />
+    
+    <div id="Form"></div>
+    
+    <script>
+    var campId = "{!$CurrentPage.parameters.campid}";
+    var conId = "{!$CurrentPage.parameters.conid}";
+    var language = "{!$CurrentPage.parameters.lang}";
+    
+    $Lightning.use("c:CampaignInvitationApp", function() {
+        $Lightning.createComponent("c:CampaignInvitationForm", 
+                                   { 
+                                       "campId" : campId,
+                                       "conId" : conId,
+                                       "language":language
+                                   },
+                                   "Form"
+                                  );
+    });
+    </script>
+</apex:page>

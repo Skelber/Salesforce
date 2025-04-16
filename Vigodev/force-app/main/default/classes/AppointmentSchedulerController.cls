@@ -72,6 +72,7 @@ public without sharing class AppointmentSchedulerController {
          lxscheduler.GetAppointmentSlotsInput mrInput = new lxscheduler.GetAppointmentSlotsInputBuilder()
             .setWorkType(workType)
             .setTerritoryIds(location)
+            .setStartTime((currentDateTime.format('yyyy-MM-dd\'T\'HH:mm:ssZ')))
             .setPrimaryResourceId(serviceResourceId[0])
             .setRequiredResourceIds(new List<String>{serviceResourceId[1]})
             .setAccountId(accountId)

@@ -1,0 +1,377 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,forceCommunity:availableForAllPageTypes" 
+                access="global" controller="GidsenAvailablilitiesCalendarController">
+    <aura:attribute name="isCommunity" type="Boolean" default="false" />
+    <aura:attribute name="isLUGuide" type="Boolean" default="false" />
+    
+    <ltng:require scripts="{!join(',',
+                           $Resource.Scheduler  + '/JS/jquery-3.3.1.min.js',
+                           $Resource.FullCalendarV5   + '/packages/core/main.js',
+                           $Resource.FullCalendarV5   + '/packages/daygrid/main.js',
+                           $Resource.FullCalendarV5   + '/packages/list/main.js',
+                           $Resource.FullCalendarV5   + '/packages/timegrid/main.js',
+                           $Resource.FullCalendarV5   + '/packages/interaction/main.js',
+                           $Resource.FullCalendarV5   + '/packages/moment/main.js',
+                           $Resource.FullCalendarV5   + '/packages/moment-timezone/main.js',
+                           $Resource.FullCalendarV5   + '/packages/bootstrap/main.js'
+                           )}"
+                  afterScriptsLoaded="{!c.afterScriptsLoaded}" />
+    <link href="{!$Resource.FullCalendarV5  + '/packages/core/main.css'}" rel="stylesheet"/>
+    <link href="{!$Resource.FullCalendarV5  + '/packages/daygrid/main.css'}" rel="stylesheet" />
+    <link href="{!$Resource.FullCalendarV5  + '/packages/list/main.css'}" rel="stylesheet"  />
+    <link href="{!$Resource.FullCalendarV5  + '/packages/timegrid/main.css'}" rel="stylesheet" />
+    <link href="{!$Resource.FullCalendarV5  + '/packages/bootstrap/main.css'}" rel="stylesheet" />
+    
+    
+    
+    <!-- Calendar Filters -->
+    <aura:attribute name="guideMap" type="Map"/>
+    <aura:attribute name="guide" type="String" default="all"/>
+    <aura:attribute name="taalMap" type="Map"/>
+    <aura:attribute name="taal" type="String" default=""/>
+    <aura:attribute name="doelgroepMap" type="Map"/>
+    <aura:attribute name="doelgroep" type="String" default=""/>
+    
+    <aura:attribute name="dataLst" type="List" />
+    <aura:attribute name="apDataLst" type="List" />
+    <aura:attribute name="isDataLoaded" type="Boolean" default="false" />
+    <aura:attribute name="isCalenderLoaded" type="Boolean" default="false" />
+    
+    <aura:attribute name="calendar" type="object" />
+    <aura:attribute name="calendarLabel" type="string" default="" />
+    <aura:attribute name="calendarStyleHeight" type="string" default="" />
+    
+    <aura:attribute name="showTooltip" type="Boolean" default="false" />
+    <aura:attribute name="tooltipStyle" type="string" default="display:none;" />
+    <aura:attribute name="RecName" type="string" default="" />
+    <aura:attribute name="parentName" type="string" default="" />
+    <aura:attribute name="start" type="string" default="" />
+    <aura:attribute name="end" type="string" default="" />
+    <aura:attribute name="isGuideAP" type="Boolean" default="false" />
+    <aura:attribute name="Gids" type="string" default="" />
+    <aura:attribute name="Extrainfogids" type="string" default="" />
+    
+    <aura:attribute name="editError" type="Boolean" default="false" />
+    <aura:attribute name="errorMessage" type="String" default="" />
+    
+    <aura:attribute name="isNewRecord" type="Boolean" default="false" />
+    <aura:attribute name="availability" type="Availablility__c" default="{'sobjectType' : 'Availablility__c', 'RecordTypeId' : '0125E000001WLe9QAG'}"/>
+    <aura:attribute name="filterCondition" type="String" />
+    
+    <aura:attribute name="isUpdateRecord" type="Boolean" default="false" />
+    <aura:attribute name="EditAvailability" type="Availablility__c" />
+    
+    <aura:attribute name="isRecurring" type="Boolean" default="false" />
+    <aura:attribute name="isParentAV" type="Boolean" default="false" />
+    
+    <aura:attribute name="recurringRecordTypeId" type="String" />
+    <aura:attribute name="singleRecordTypeId" type="String" />
+    <aura:attribute name="isDeleteRecurring" type="Boolean" default="false" />
+    <aura:attribute name="isParentRecurring" type="Boolean" default="false" />
+    
+    
+    <div aura:id="calendarHome" class="calendarHome slds-is-relative">
+        <aura:if isTrue="{!v.showTooltip}">
+            <div>
+                <section  aura:id="calendar-event-tooltip" aria-labelledby="panel-heading-id" class="slds-popover slds-popover_panel slds-nubbin_bottom-left" 
+                         role="dialog" style="{!v.tooltipStyle}">
+                    <div class="slds-popover__header">
+                        <header class="slds-media slds-media_center slds-m-bottom_small">
+                            <span class="slds-icon_container slds-icon-standard-account slds-media__figure">
+                                <lightning:icon iconName="standard:key_dates" alternativeText="key_dates" title="key_dates" />
+                            </span>
+                            <div class="slds-media__body">
+                                <h2 class="slds-text-heading_medium slds-hyphenate" id="panel-heading-id">
+                                    {!v.parentName}
+                                </h2>
+                            </div>
+                        </header>
+                        <footer class="slds-grid slds-wrap slds-grid_pull-padded">
+                            <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-popover_panel__label slds-truncate" title="Van">
+                                            Van
+                                        </p>
+                                    </dt>
+                                    <dd>{!v.start}</dd>
+                                </dl>
+                            </div>
+                            <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
+                                <dl>
+                                    <dt>
+                                        <p class="slds-popover_panel__label slds-truncate" title="Tot">
+                                            Tot
+                                        </p>
+                                    </dt>
+                                    <dd>{!v.end}</dd>
+                                </dl>
+                            </div>
+                            
+                            <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
+                                <aura:if isTrue="{!v.isGuideAP}">
+                                    <dl>
+                                        <dt>
+                                            <p class="slds-popover_panel__label slds-truncate" title="Tot">
+                                                Gids
+                                            </p>
+                                        </dt>
+                                        <dd>{!v.Gids}</dd>
+                                    </dl>
+                                </aura:if>
+                            </div>
+                            
+                            <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
+                                <aura:if isTrue="{!v.isGuideAP}">
+                                    <dl>
+                                        <dt>
+                                            <p class="slds-popover_panel__label slds-truncate" title="Tot">
+                                                Extra info gids
+                                            </p>
+                                        </dt>
+                                        <dd>{!v.Extrainfogids}</dd>
+                                    </dl>
+                                </aura:if>
+                            </div>
+                            
+                        </footer>
+                    </div>
+                </section>
+            </div>
+        </aura:if>
+        
+        <div class="forceCalendar">
+            <div aura:id="calendarHeader" class="calendarHeader">
+                <div class="slds-page-header">
+                    <div class="slds-grid">
+                        <div class="slds-col slds-has-flexi-truncate">
+                            <div class="slds-media slds-no-space slds-grow">
+                                <div class="slds-media__figure">
+                                    <lightning:icon iconName="standard:event" alternativeText="Event" title="Event" />
+                                </div>
+                                <div class="slds-media__body">
+                                    <p class="slds-text-title_caps slds-line-height_reset">Beschikbaarheden</p>
+                                    <h1 class="slds-page-header__title slds-m-right_small slds-align-middle slds-truncate"  title="{!v.calendarLabel}">
+                                        {!v.calendarLabel}
+                                    </h1>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-no-flex slds-grid slds-align-top">
+                            <lightning:buttonGroup>
+                                <lightning:buttonIcon variant="border-filled" alternativeText="left" iconName="utility:chevronleft" onclick="{!c.previousHandler}" />
+                                <lightning:buttonIcon variant="border-filled" alternativeText="right" iconName="utility:chevronright" onclick="{!c.nextHandler}" />
+                            </lightning:buttonGroup>
+                            
+                            <lightning:button variant="Neutral" label="Vandaag" title="Today" onclick="{!c.today}" class="slds-m-horizontal_x-small"/>
+                            
+                            <lightning:buttonGroup>
+                                <lightning:buttonIcon variant="border-filled" alternativeText="Dag" iconName="utility:dayview" onclick="{!c.dailyViewHandler}" />
+                                <lightning:buttonIcon variant="border-filled" alternativeText="Week" iconName="utility:weeklyview" onclick="{!c.weeklyViewHandler}" />
+                                <lightning:buttonIcon variant="border-filled" alternativeText="Maand" iconName="utility:monthlyview" onclick="{!c.monthlyViewHandler}" />
+                            </lightning:buttonGroup>
+                            
+                            <lightning:button variant="Neutral" label="Voeg beschikbaarheid toe" title="NewAvailablility" onclick="{!c.newAvailability}" class="slds-m-horizontal_x-small"/>
+                            
+                            <lightning:buttonIcon variant="border-filled" iconName="utility:refresh" onclick="{!c.refresh}" alternativeText="Refresh" title="Refresh"/>
+                        </div>
+                    </div>
+                    <aura:if isTrue="{!(!v.isCommunity)}">
+                        <ul class="slds-grid slds-page-header__detail-row">
+                            <li class="slds-page-header__detail-block">
+                                <lightning:select aura:id="guideType" value="{!v.guide}"  name="Guide" label="Gids" onchange="{!c.onFilterChange}">
+                                    <aura:iteration items="{!v.guideMap}" var="gm" indexVar="key">
+                                        <option text="{!gm.key}" value="{!gm.value}" selected="{!gm.value==v.guide}" />
+                                    </aura:iteration>
+                                </lightning:select>
+                            </li>
+                            <li class="slds-page-header__detail-block">
+                                <lightning:select aura:id="Taal" value="{!v.taal}"  name="Taal" label="Taal" onchange="{!c.onFilterChange}">
+                                    <aura:iteration items="{!v.taalMap}" var="gm" indexVar="key">
+                                        <option text="{!gm.key}" value="{!gm.value}" selected="{!gm.value==v.taal}" />
+                                    </aura:iteration>
+                                </lightning:select>
+                            </li>
+                            <li class="slds-page-header__detail-block">
+                                <lightning:select aura:id="Doelgroep" value="{!v.doelgroep}"  name="Doelgroep" label="Doelgroep" onchange="{!c.onFilterChange}">
+                                    <aura:iteration items="{!v.doelgroepMap}" var="gm" indexVar="key">
+                                        <option text="{!gm.key}" value="{!gm.value}" selected="{!gm.value==v.doelgroep}" />
+                                    </aura:iteration>
+                                </lightning:select>
+                            </li>
+                        </ul>
+                    </aura:if>
+                </div>
+            </div>
+        </div>
+        
+        <div style="background:#ffffff;max-height:670px;" class="slds-grid">
+            <div class="slds-col">
+                <div aura:id="calendar" style="height:670px;max-height:670px;">
+                    <!-- Calendar will goes here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <aura:if isTrue="{!v.isNewRecord}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeModel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Nieuwe beschikbaarheid
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <aura:if isTrue="{!v.editError}">
+                        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                            <h2>{!v.errorMessage}</h2>
+                        </div>
+                    </aura:if>
+                    
+                    <lightning:layout >
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <div class="row">
+                                <h2 class="header">Van</h2>
+                                <lightning:input aura:id="reqField" type="datetime" variant="label-hidden"  label="Van" value="{!v.availability.Start__c}" required="true" dateStyle="short"/>
+                            </div>
+                            <br/>
+                            
+                            <div class="row">
+                                <h2 class="header">Herhaling?</h2>
+                                <lightning:input type="checkbox" label="Herhaling?" variant="label-hidden" name="Herhaling" checked="{!v.isRecurring}" />
+                            </div>
+                            <br/>
+                            
+                            <lightning:input aura:id="reqField" class="{! v.isRecurring ? 'slds-show' : 'slds-hide'}" type="date" label="Einde Herhaling" value="{!v.availability.End_Recurring__c}" required="true" dateStyle="short"/>
+                            <br/>
+                        </lightning:layoutItem>
+                        
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <div class="row">
+                                <h2 class="header">Tot</h2>
+                                <lightning:input aura:id="reqField" type="datetime" variant="label-hidden" label="Tot" value="{!v.availability.End__c}" required="true" dateStyle="short"/>
+                            </div>
+                            
+                            <c:lookupField objectAPIName="User" label="Gids"
+                                           returnFields="['Name']" queryFields="['Name']"
+                                           selectedId="{!v.availability.Guide__c}" filter="{!v.filterCondition}"
+                                           customPermission = "true"
+                                           showAddNew="false" showRecent="false" disabled="{!v.isCommunity}"
+                                           />
+                            <br/>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Annuleer" title="Cancel" onclick="{!c.closeModel}"/>
+                    <lightning:button variant="brand" label="Opslaan" title="Save" onclick="{!c.handleSave}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.isUpdateRecord}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeEditModel}" alternativeText="close" variant="bare-inverse" class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Bewerk beschikbaarheid
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <aura:if isTrue="{!v.editError}">
+                        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                            <h2>{!v.errorMessage}</h2>
+                        </div>
+                    </aura:if>
+                    <lightning:layout >
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <div class="row">
+                                <h2 class="header">Van</h2>
+                                <lightning:input aura:id="reqField" type="datetime" variant="label-hidden"  label="Van" value="{!v.EditAvailability.Start__c}" required="true" dateStyle="short"/>
+                            </div>
+                            <br/>
+                            
+                            <c:lookupField objectAPIName="User" label="Gids"
+                                           returnFields="['Name']" queryFields="['Name']"
+                                           selectedId="{!v.EditAvailability.Guide__c}" filter="{!v.filterCondition}"
+                                           showAddNew="false" showRecent="false" disabled="{!v.isCommunity}"
+                                           />
+                            <br/>
+                        </lightning:layoutItem>
+                        
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <div class="row">
+                                <h2 class="header">Tot</h2>
+                                <lightning:input aura:id="reqField" type="datetime" variant="label-hidden"  label="Tot" value="{!v.EditAvailability.End__c}" required="true" dateStyle="short"/>
+                            </div>
+                            <br/>
+                            
+                            <lightning:input aura:id="reqField" class="{!v.isRecurring ? 'slds-show' : 'slds-hide'}" type="date" label="Einde Herhaling" value="{!v.EditAvailability.End_Recurring__c}" required="true" dateStyle="short" disabled="{!(!v.EditAvailability.Parent__c)}"/>
+                            <br/>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button class="slds-float_left" variant="neutral" label="Verwijderen" title="Delete" onclick="{! c.handleDelete }"/>
+                    <lightning:button variant="neutral" label="Annuleer" title="Cancel" onclick="{! c.closeEditModel }"/>
+                    <lightning:button variant="brand" label="Opslaan" title="Save" onclick="{!c.handleUpdate}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.isDeleteRecurring}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{!c.closeDeleteModel}" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Beschikbaarheid verwijderen
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <aura:if isTrue="{!v.editError}">
+                        <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                            <h2>{!v.errorMessage}</h2>
+                        </div>
+                    </aura:if>
+                    <h2>
+                        <aura:if isTrue="{!v.isParentRecurring}">
+                            Dit is een terugkerende beschikbaarheid, ben je zeker dat ze allemaal mogen worden verwijderd?
+                            <aura:set attribute="else">
+                                Dit is een terugkerend beschikbaarheid tot 
+                                <lightning:formattedDateTime value="{!v.EditAvailability.End_Recurring__c}" 
+                                                             year="numeric" 
+                                                             month="numeric" 
+                                                             day="numeric" 
+                                                             timeZone ="CET"
+                                                             />
+                                , wil je enkel deze verwijderen of ze allemaal?
+                            </aura:set>
+                        </aura:if>
+                    </h2>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button class="slds-float_left" variant="neutral" label="Annuleer" title="Cancel" onclick="{! c.closeDeleteModel}"/>
+                    <aura:if isTrue="{!v.isParentRecurring}">
+                        <lightning:button  variant="neutral" label="Verwijder" title="Delete" onclick="{! c.handleDeleteAllRecurring }"/>
+                        <aura:set attribute="else">
+                            <lightning:button  variant="neutral" label="Allemaal" title="All" onclick="{! c.handleDeleteAllRecurring }"/>
+                            <lightning:button variant="brand" label="Enkel deze" title="Only This" onclick="{!c.handleDeleteRecurring}"/>
+                        </aura:set>
+                    </aura:if>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+</aura:component>

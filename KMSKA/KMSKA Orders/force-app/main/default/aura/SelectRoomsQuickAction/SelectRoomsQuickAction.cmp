@@ -1,0 +1,156 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,flexipage:availableForRecordHome,force:hasRecordId"
+                controller="SelectRoomsQuickActionController">
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="force:refreshView" action="{!c.doRefresh}"/>
+    <aura:attribute name="Opportunity" type="Opportunity" />
+    <aura:attribute name="oppLst" type="Opportunity[]" />
+    <aura:attribute name="resourceLst" type="Opportunity[]" />
+    <aura:attribute name="isOppLoaded" type="Boolean" default="false" />
+    <aura:attribute name="selectedPage" type="Integer" default="1" />
+    <aura:attribute name="assignedResource" type="Assigned_Resource__c" default="{'sobjectType' : 'Assigned_Resource__c'}"/>
+    
+    <aura:attribute name="selectedId" type="String" />
+    <aura:attribute name="filterCondition" type="String" />
+    <aura:attribute name="isModalOpen" type="boolean" default="false"/>
+    <aura:attribute name="showTooltip" type="boolean" default="false"/>
+    <aura:attribute name="tooltipStyle" type="string" default="display:none;" />
+    <aura:attribute name="HoveredRec" type="Sobject" />
+    
+    
+    <!-- 
+  Help : https://salesforce.stackexchange.com/questions/214108/scheduler-javascript-library-component-that-works-in-salesforce-lightning-with
+  Required JS: jQuery 3.3.1 , Moment JS 2.22.0 ,FullCalendar 3.9.0,FullCalendar Scheduler 1.9.4 
+ -->
+    <ltng:require scripts="{!join(',',
+                           $Resource.Scheduler  + '/JS/jquery-3.3.1.min.js',
+                           $Resource.Scheduler  + '/JS/moment.min.js',
+                           $Resource.Scheduler  + '/JS/fullcalendar.min.js',
+                           $Resource.Scheduler  + '/JS/scheduler.min.js',
+                           $Resource.Scheduler  + '/JS/main.global.min.js',
+                           $Resource.Scheduler  + '/JS/moment-timezone-with-data.min.js'
+                           )}"
+                  afterScriptsLoaded="{!c.afterScriptsLoaded}" />
+    
+    
+    <link href="{!$Resource.Scheduler + '/CSS/fullcalendar.min.css'}" rel="stylesheet" />
+    <link href="{!$Resource.Scheduler + '/CSS/scheduler.min.css'}" rel="stylesheet" />
+    <link href="{!$Resource.Scheduler + '/CSS/fullcalendar.print.min.css'}" rel="stylesheet" media="print" />
+    
+    <div class="slds-p-around--medium">
+        <div class="slds-col">
+            <div class="slds-text-align_center slds-text-heading--medium">
+                Select Room
+            </div>
+            
+            <div class="slds-m-top--medium">
+                <div class="slds-m-top--medium slds-box">
+                    <div class="slds-m-top--medium">
+                        <div aura:id="calendar"></div>
+                    </div>
+                    
+                    <aura:if isTrue="{!v.showTooltip}">
+                        <div class="slds-m-top--small">
+                            <article class="slds-tile slds-media slds-card__tile slds-hint-parent">
+                                <div class="slds-media__body">
+                                    <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+                                        <h3 class="slds-tile__title slds-truncate" title="Title">
+                                           <b>{!v.HoveredRec.Name}</b> 
+                                        </h3>
+                                    </div>
+                                    <div class="slds-tile__detail">
+                                        <dl class="slds-list_horizontal slds-wrap">
+                                            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Opportunity">
+                                                Opportunity:
+                                            </dt>
+                                            <dd class="slds-item_detail slds-truncate" title="Opportunity">
+                                                {!v.HoveredRec.KMSKA_Opportunity__r.Name}
+                                            </dd>
+                                            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Type">
+                                                Type:
+                                            </dt>
+                                            <dd class="slds-item_detail slds-truncate" title="Type">
+                                                {!v.HoveredRec.Type__c}
+                                            </dd>
+                                            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Start">
+                                                Start Activity Product:
+                                            </dt>
+                                            <dd class="slds-item_detail slds-truncate" title="Start">
+                                                {!v.HoveredRec.Start_Activity_Product__c}
+                                            </dd>
+                                            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="End">
+                                                End Activity Product:
+                                            </dt>
+                                            <dd class="slds-item_detail slds-truncate" title="End">
+                                                {!v.HoveredRec.End_Activity_Product__c}
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </aura:if>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <aura:if isTrue="{!v.isModalOpen}">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <lightning:buttonIcon iconName="utility:close" onclick="{! c.closeModel }" alternativeText="close"
+                                          variant="bare-inverse" class="slds-modal__close"/>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">
+                        Assign Resource
+                    </h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning:layout >
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <c:lookupField objectAPIName="Opportunity" label="KMSKA Opportunity"
+                                           returnFields="['Name']" queryFields="['Name']"
+                                           selectedId="{!v.assignedResource.KMSKA_Opportunity__c}" filter=""
+                                           showAddNew="false" showRecent="false" disabled="true"
+                                           />
+                            <br/>
+                            <lightning:input aura:id="reqField" type="datetime" label="Start Activity Product" 
+                                             value="{!v.assignedResource.Start_Activity_Product__c}" required="true"
+                                             />
+                            <br/>
+                            
+                            <c:lookupField objectAPIName="Activity_Product__c" label="Activity Product"
+                                           returnFields="['Name']" queryFields="['Name']"
+                                           selectedId="{!v.assignedResource.Activity_Product__c}" 
+                                           filter="{!v.filterCondition}" showAddNew="false"
+                                           showRecent="false"
+                                           />
+                            
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small" size="6">
+                            <c:lookupField objectAPIName="Resource__c" label="Resource"
+                                           returnFields="['Name']" queryFields="['Name']"
+                                           selectedId="{!v.assignedResource.Resource__c}" filter=""
+                                           showAddNew="false"
+                                           showRecent="false" disabled="true"
+                                           />
+                            <br/>
+                            <lightning:input aura:id="reqField" type="datetime" label="End Activity Product" 
+                                             value="{!v.assignedResource.End_Activity_Product__c}" required="true"
+                                             />
+                            <br/>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </div>
+                
+                <footer class="slds-modal__footer">
+                    <lightning:button variant="neutral" label="Cancel" title="Cancel" onclick="{! c.closeModel }"/>
+                    <lightning:button variant="brand" label="Save" title="Save" onclick="{!c.handleSave}"/>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </aura:if>
+    
+</aura:component>

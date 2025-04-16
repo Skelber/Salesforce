@@ -1,0 +1,14 @@
+<template>
+
+    <p>{collectionSize} van de {allowedContacts} uitnodigingen zijn verdeeld.</p>
+    <lightning-datatable data={records} columns={fieldColumns} key-field="id"></lightning-datatable>
+
+    <lightning-record-picker
+    label="Voeg een club Fouquet contact toe."
+    placeholder="zoek een contact"
+    object-api-name="Contact"
+    onchange={handleChange}
+>
+</lightning-record-picker>
+<lightning-button variant="brand" label="Voeg contact toe" class="slds-float_right slds-p-around_medium" onclick={addContact}></lightning-button>
+</template>

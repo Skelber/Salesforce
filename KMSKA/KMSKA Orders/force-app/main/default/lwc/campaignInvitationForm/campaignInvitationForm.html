@@ -1,0 +1,118 @@
+<template>
+    <template if:true={isKUL}>
+        <c-campaign-invitationkul-form contact-id={conId} camp-id={campId} language={language}></c-campaign-invitationkul-form>
+    </template>
+    
+    <template if:false={isKUL}>
+    
+        <header class="slds-align_absolute-center slds-border_bottom slds-var-p-around_x-small">
+            <img src={invitationHeader} style="height: 230px; max-width:1440px;" />
+            <hr/>
+        </header>
+    
+        <!-- REMOVE WHEN TO ACTIVE  : START -->
+        <!--
+        <div class="slds-grid slds-grid_align-center slds-var-p-around_medium">
+            <div class="slds-col slds-size_3-of-12 slds-large-size_3-of-12 slds-medium-size_1-of-12"></div>
+            <div class="slds-col slds-size_6-of-12 slds-large-size_6-of-12 slds-medium-size_10-of-12">
+                <div class="slds-text-heading_large slds-text-align_center" style="margin-top:150px;color:#151828 !important;">
+                    <p> Bedankt voor jouw interesse! Wij hebben momenteel al voldoende inschrijvingen.</p>
+                </div>
+            </div>
+            <div class="slds-col slds-size_3-of-12 slds-large-size_3-of-12 slds-medium-size_1-of-12"></div>
+        </div>
+        -->
+        <!-- REMOVE WHEN TO ACTIVE : END -->
+        
+        <template if:true={isLoaded}>
+            <div class="slds-grid slds-grid_align-center slds-var-p-around_medium">
+                <div class="slds-col slds-size_3-of-12 slds-large-size_3-of-12 slds-medium-size_1-of-12"></div>
+                <div class="slds-col slds-size_6-of-12 slds-large-size_6-of-12 slds-medium-size_10-of-12">
+                    <template if:false={isCompleted}>
+                        <div class="titleHeader">
+                            <div class="slds-text-align_center formTitle" style="color:#151828">
+                                {campTitle}
+                            </div>
+                            <p  class="slds-text-align_center slds-text-heading_small slds-var-p-bottom_medium formSubTitle" style="color:#151828 !important;">
+                                {campaignStartDate}
+                            </p>
+                        </div>
+                        <div class="formBody">
+                            <template if:true={isErrorMessage}>
+                                <div class="slds-text-heading_medium slds-text-color_error slds-text-align_center" style="margin-top:10px">
+                                    {errorMessage}   
+                                </div>
+                            </template>
+
+                            <template if:true={isError}>
+                                <div class="mainContent slds-text-heading_medium" style="margin: 5px;padding: 10px;color:#151828 !important;">
+                                    <lightning-formatted-rich-text value={LinkBrokenMessage}></lightning-formatted-rich-text>
+                                </div>
+                            </template>
+                            <template if:false={isError}>
+                                <template if:true={isActive}>
+                                    <div class="mainContent" style="margin: 5px;padding: 10px;color:#151828 !important;"></div>
+                                    <div class="slds-form slds-form_horizontal" style="margin-bottom:20px;">
+                                        <lightning-combobox name="register" variant="label-inline" label={campSubsciption} value={campaignMember.registered} options={options} onchange={onOptionChange}></lightning-combobox>
+                                    </div>                
+                                    <br/>
+                                    <div style="margin:3px;">
+                                        <template if:true={campaignMember.showOther}>
+                                            <template if:true={isRegister}>
+                                            <lightning-input style="margin-bottom:20px;" type="toggle" name="myself"  label={toggelLabel} checked={campaignMember.mySelf} message-toggle-active={messageActive} message-toggle-inactive={messageInActive} onchange={onTogleChange} ></lightning-input>
+                                            </template>
+                                            
+                                            <template if:false={campaignMember.mySelf}>
+                                                <template if:true={isRegister}>
+                                                    <label style="font-size:1.15rem;margin-bottom:20px;" > {otherLabel}</label>
+                                                    <lightning-layout multiple-rows>
+                                                        <template for:each={campaignMember.otherPerson} for:item="op" for:index="i">
+                                                            <lightning-layout-item size="12" style="margin-top:20px;" key={op.index}>
+                                                                <lightning-input label={NameLabel} name="Name" value={op.Name} data-index={i} onchange={onAdditionalPersonChange}  message-when-value-missing={valueMissing} ></lightning-input>
+                                                            </lightning-layout-item>
+                                                        </template>
+                                                    </lightning-layout>
+                                                </template>
+                                            </template>
+                                        </template>
+                                        <div class="slds-var-m-top_small">
+                                            <template if:true={isRegister}>
+                                                <template if:true={campaignMember.showAvailabilityPicklist}>
+                                                    <lightning-combobox variant="label-inline" label={TimeSlotLabel} value={campaignMember.timeSlotId} options={timeSlotOption} onchange={onTimeSlotChange}></lightning-combobox>
+                                                </template>
+                                            </template>
+                                        </div>
+                                        <div class="slds-text-align_center slds-var-m-top_small">
+                                            <lightning-button class="kmskaButton"  label={submitButtonlabel} onclick={onSave} variant="destructive" icon-name="utility:save" ></lightning-button>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template if:false={isActive}>
+                                    <div class="mainContent slds-text-heading_medium" style="margin: 5px;padding: 10px;color:#151828 !important;">
+                                        <lightning-formatted-rich-text value={RSVPMessage}></lightning-formatted-rich-text>
+                                    </div>
+                                </template>
+                            </template>
+                        </div>
+                    </template>
+    
+                    <template if:true={isCompleted}>
+                        <div class="slds-text-heading_large slds-text-align_center" style="margin-top:150px;color:#151828 !important;">
+                            <template if:true={isRegister}>
+                                <p>
+                                    {confirmationMessage}
+                                </p>
+                            </template>
+    
+                            <template if:false={isRegister}>
+                                <p> {defaultConfirmationMessage}</p>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+                <div class="slds-col slds-size_3-of-12 slds-large-size_3-of-12 slds-medium-size_1-of-12"></div>
+            </div>
+        </template>
+        
+    </template>
+</template>

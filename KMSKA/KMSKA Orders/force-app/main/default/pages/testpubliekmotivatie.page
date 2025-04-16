@@ -1,0 +1,13 @@
+<apex:page id="Welcome" cache="false" sidebar="false" showheader="false" language="{!$CurrentPage.parameters.lang}">
+    <apex:includeLightning />
+    
+    <div id="form"></div>
+    
+    <script>
+    var LeadId = "{!$CurrentPage.parameters.Id}";
+    
+    $Lightning.use("c:testpubliekmotivatieApp", function() {
+        $Lightning.createComponent("c:testpubliekmotivatieCmp", {"LeadId": LeadId}, "form");
+    });
+    </script>
+</apex:page>

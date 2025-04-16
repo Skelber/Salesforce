@@ -110,17 +110,35 @@
 
             <div class="slds-col slds-size_10-of-12">
                 <lightning-layout horizontal-align="center">
-                   <lightning-record-picker
-                    lwc:ref="workTypePicker"   
-                    class="slds-p-around_medium"
-                    value={workType}
-                    label={label.WorkType}
-                    style="width: 100%"
-                    placeholder={label.Lookup}
-                    object-api-name="WorkType"
-                    onchange={handleWTChange}
-                >
-                </lightning-record-picker>
+                    <template if:true={isFrenchUser}>
+                        <lightning-record-picker
+                        lwc:ref="workTypePicker"   
+                        class="slds-p-around_medium"
+                        value={workType}
+                        label={label.WorkType}
+                        style="width: 100%"
+                        display-info={displayInfoFr}
+                        placeholder={label.Lookup}
+                        object-api-name="WorkType"
+                        onchange={handleWTChange}
+                        >
+                    </lightning-record-picker>
+                </template>
+
+                    <template if:false={isFrenchUser}>
+                        <lightning-record-picker
+                        lwc:ref="workTypePicker"   
+                        class="slds-p-around_medium"
+                        value={workType}
+                        label={label.WorkType}
+                        style="width: 100%"
+                        display-info={displayInfoNl}
+                        placeholder={label.Lookup}
+                        object-api-name="WorkType"
+                        onchange={handleWTChange}
+                        >
+                    </lightning-record-picker>
+                </template>
                 </lightning-layout>
             </div>
             <div class="slds-col slds-size_2-of-12">

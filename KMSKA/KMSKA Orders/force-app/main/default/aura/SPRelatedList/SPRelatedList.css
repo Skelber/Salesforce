@@ -1,0 +1,29 @@
+.THIS #holder {
+    border: 2px dashed #ccc;
+    width: 98%;
+    height:95%;
+    background-color:#ccc;
+    -webkit-border-radius: 8px 8px 8px 8px;
+    border-radius: 8px 8px 8px 8px;
+    text-align: center;
+}
+.THIS #holder span,.THIS #uploadCompleted span {
+    position: relative;
+    top: 30%;
+    transform: translateY(-50%);
+    text-shadow: 2px 2px 2px #525252;
+    font-size:3em;
+    color:#A3A3A3;
+}
+
+.THIS #holder.hover { border: 2px dashed #636363; }
+
+.THIS #uploadStatus span{
+    text-shadow: 2px 2px 2px #525252;
+    font-size:1em;
+}
+
+.THIS .dragDropComponentSize{ 
+    height: 200px;
+    overflow-y:auto; 
+}
