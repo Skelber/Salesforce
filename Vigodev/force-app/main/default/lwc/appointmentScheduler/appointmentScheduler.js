@@ -466,6 +466,10 @@ export default class CalendarTest extends NavigationMixin(LightningElement)  {
         primaryField: 'Name'
     };
 
+    matchingInfoFr = {
+    primaryField: { fieldPath: 'Work_Type_Name_FR__c', mode: 'contains' },
+};
+
     handleDurationChange(event){
         this.workTypeDuration = event.target.value;
             clearTimeout(this.timeout);
