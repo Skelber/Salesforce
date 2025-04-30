@@ -74,6 +74,7 @@ import ProviderOrLocationGuidance from "@salesforce/label/c.AppointmentScheduler
 import NoSlotsAvailable from "@salesforce/label/c.AppointmentSchedulerNoSlotsAvailable"
 import DurationInMinutes from "@salesforce/label/c.AppointmentSchedulerDurationInMinutes"
 import FirstAvailableLabel from "@salesforce/label/c.AppointmentSchedulerFirstAvailableDate"
+import ResetFilters from "@salesforce/label/c.AppointmentSchedulerResetFilters"
 import UserLang from "@salesforce/i18n/lang"
 
 
@@ -225,7 +226,8 @@ export default class CalendarTest extends NavigationMixin(LightningElement)  {
         AccountMobile,
         NoSlotsAvailable,
         DurationInMinutes,
-        FirstAvailableLabel
+        FirstAvailableLabel,
+        ResetFilters
     }
    
 
