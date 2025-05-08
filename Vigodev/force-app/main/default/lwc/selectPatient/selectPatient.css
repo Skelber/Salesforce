@@ -1,3 +1,12 @@
 lightning-input {
-    width: 50%;
+    width: 40%;
+}
+
+.patientSelect {
+    width: 70px;
+    height: 70px;
+    border-radius: 50px;
+    background-color: #C1E6EF;
+    margin: 20px;
+    font-weight: bold;
 }

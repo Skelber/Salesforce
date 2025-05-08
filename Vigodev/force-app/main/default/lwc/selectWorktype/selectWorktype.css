@@ -1,10 +1,11 @@
 .slds-col {
-    height: 200px;
+    height: 400px;
     background-color: #C1E6EF;
     margin: 10px;
     border-radius: 15px;
 }
 
 .footer {
+    position: relative;
     bottom: 3;
 }

@@ -2,11 +2,11 @@ import { LightningElement, api, track } from 'lwc';
 
 export default class AppointmentProgress extends LightningElement {
 
-    @track currentstep = "1"
+    @api currentstep = "1"
 
     @api
     complete() {
-        if (parseInt(this.currentstep) < 4) {
+        if (parseInt(this.currentstep) < 5) {
             this.currentstep = String(parseInt(this.currentstep) + 1);
         }
     }

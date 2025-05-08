@@ -3,8 +3,12 @@
 
        
        <c-appointment-progress></c-appointment-progress>
-       <c-select-patient></c-select-patient>
-       <c-select-worktype></c-select-worktype>
+       <template if:true={showScreenOne}>
+           <c-select-patient></c-select-patient>
+       </template>
+       <template if:true={showScreenTwo}>
+           <c-select-worktype></c-select-worktype>
+       </template>
        
        
        <footer>

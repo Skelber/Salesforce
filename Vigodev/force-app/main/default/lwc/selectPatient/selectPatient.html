@@ -1,16 +1,30 @@
 <template>
     <div class="patientinput slds-p-around_large">
+        <template if:false={checked}>
+            <div class="slds-align_absolute-center">
+                <div class="slds-align_absolute-center patientSelect">SK</div>
+                <div class="slds-align_absolute-center patientSelect">MR</div>
+                <div class="slds-align_absolute-center patientSelect">AB</div>
+                <div class="slds-align_absolute-center patientSelect">ND</div>
+            </div>
+        </template>
         <div class="slds-align_absolute-center">
-            <lightning-input  type="toggle" label="Ik boek een afspraak voor mezelf" checked></lightning-input>
-        </div>
-        <div class="slds-align_absolute-center">
-            <lightning-input  type="text" label="Naam"></lightning-input>
+            <lightning-input  type="toggle" label="Ik boek een afspraak voor mezelf" checked={checked} onchange={handleToggle}></lightning-input>
         </div>
         <div class="slds-align_absolute-center">
             <lightning-input  type="text" label="Voornaam"></lightning-input>
         </div>
         <div class="slds-align_absolute-center">
+            <lightning-input  type="text" label="Achternaam"></lightning-input>
+        </div>
+        <div class="slds-align_absolute-center">
             <lightning-input  type="email" label="Email"></lightning-input>
+        </div>
+        <div class="slds-align_absolute-center">
+            <lightning-input  type="text" label="Telefoonnummer"></lightning-input>
+        </div>
+        <div class="slds-align_absolute-center">
+            <lightning-input  type="tekst" label="Rijksregisternummer"></lightning-input>
         </div>
     </div>
     
