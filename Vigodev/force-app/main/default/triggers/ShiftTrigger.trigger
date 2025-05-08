@@ -1,35 +1,25 @@
+// LLP-1575
+
 trigger ShiftTrigger on Shift (after insert, after update) {
-    // ShiftTriggerHandlerClass handler = new ShiftTriggerHandlerClass();
-
-    if(Trigger.isUpdate && Trigger.IsAfter){
-        List <Shift> shiftListToDelete = new List <Shift>();
-        List <Shift> shiftToUpdate = new List <Shift>();
-       for(Shift shift :Trigger.new){
-        if (shift.Job_Profile__c != Trigger.oldMap.get(shift.Id).Job_Profile__c) {
-            shiftListToDelete.add(shift);
-            if(shift.Job_Profile__c != null){
-                shiftToUpdate.add(shift);
-            }
+    
+    if(Trigger.IsAfter) {
+    
+        if(Trigger.isUpdate){
+            
+            //Delete all existing Shift WOrk Topics of the updated shifts
+            ShiftTriggerHandlerClass.deleteShiftWorkTopics(Trigger.new, Trigger.oldMap);
+            
+            //Create new Shift Work Topics for the updated shifts 
+            ShiftTriggerHandlerClass.createShiftWorkTopics(Trigger.new, Trigger.oldMap);
+            
         }
-       }
-    if(shiftListToDelete.size() > 0) {
-       ShiftTriggerHandlerClass.deleteShiftWorkTopics(shiftListToDelete);
+        
+        if(Trigger.isInsert){
+            
+            //Create new Shift Work Topics for the created shifts 
+            ShiftTriggerHandlerClass.createShiftWorkTopics(Trigger.new, null);
+            
         }
-    if(shiftToUpdate.size() > 0) {
-        ShiftTriggerHandlerClass.createShiftWorkTopics(shiftToUpdate);
-      } 
-    }
-
-    if(Trigger.isInsert && Trigger.IsAfter){
-        List <Shift> shiftList = new List <Shift>();
-        for(Shift shift :Trigger.new){
-            if(shift.Job_Profile__c != null) {
-                System.debug('passing shift to controller');
-                shiftList.add(shift);
-            }
-        }
-        if(shiftList.size() > 0) {
-       ShiftTriggerHandlerClass.createShiftWorkTopics(shiftList);
-        }
+        
     }
 }

@@ -25,6 +25,7 @@ public with sharing class GetCandidatesControllerTest {
         insert wtgm;
 
         ShiftWorkTopic swt = [SELECT Id, ShiftId FROM ShiftWorkTopic WHERE WorkTypeGroupId != null LIMIT 1];
+        system.debug('swt = ' + swt);
 
         List<GetCandidatesController.shiftInput> ShiftInput = new List<GetCandidatesController.shiftInput>();
         GetCandidatesController.ShiftInput si = new GetCandidatesController.ShiftInput();

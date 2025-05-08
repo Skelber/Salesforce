@@ -182,8 +182,3 @@ public with sharing class GetCandidatesController {
         public List<ServiceResource> serviceResources;
     }
 }
-
-
-
-
-

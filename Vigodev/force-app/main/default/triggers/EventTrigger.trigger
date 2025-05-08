@@ -34,4 +34,4 @@ trigger EventTrigger on Event (before update, before delete) {
             }
         }
     }
-} 
+}

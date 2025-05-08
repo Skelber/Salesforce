@@ -1,0 +1,19 @@
+<template>
+   <lightning-card title="Patient self service">
+
+       
+       <c-appointment-progress></c-appointment-progress>
+       <c-select-patient></c-select-patient>
+       <c-select-worktype></c-select-worktype>
+       
+       
+       <footer>
+        <div class="slds-float_right">
+            <lightning-button label="Previous" onclick={handlePrevious} class="slds-m-right_small"></lightning-button>
+            <lightning-button variant="brand"  label="Next" onclick={handleNext} class="slds-m-right_small"></lightning-button>
+        </div>
+        </footer>
+        
+    </lightning-card>
+    
+</template>
