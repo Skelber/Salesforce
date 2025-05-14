@@ -1,23 +1,43 @@
 <template>
-   <lightning-card title="Patient self service">
+    <div class="slds-scope">
 
-       
-       <c-appointment-progress></c-appointment-progress>
-       <template if:true={showScreenOne}>
-           <c-select-patient></c-select-patient>
-       </template>
-       <template if:true={showScreenTwo}>
-           <c-select-worktype></c-select-worktype>
-       </template>
-       
-       
-       <footer>
-        <div class="slds-float_right">
-            <lightning-button label="Previous" onclick={handlePrevious} class="slds-m-right_small"></lightning-button>
-            <lightning-button variant="brand"  label="Next" onclick={handleNext} class="slds-m-right_small"></lightning-button>
-        </div>
-        </footer>
+        <lightning-card title="Patient self service">       
+            <c-appointment-progress></c-appointment-progress>
+            <template if:true={showScreenOne}>
+                <c-select-patient></c-select-patient>
+            </template>
+            <template if:true={showScreenTwo}>
+                <c-select-worktype></c-select-worktype>
+            </template>
+            <template if:true={showScreenThree}>
+                <c-select-location></c-select-location>
+            </template>
+            <template if:true={showScreenFour}>
+                <c-select-service-resource></c-select-service-resource>  
+            </template>
+            <template if:true={showScreenFive}>
+                <c-additional-info></c-additional-info>
+            </template>
+            <template if:true={showScreenSix}>
+                <c-patient-overview></c-patient-overview>
+            </template>
+            
+            
+            <footer>
+                <div class="slds-grid slds-grid_align-end">
+                    <template if:false={showScreenOne}>
+                        <lightning-button label="Previous" onclick={handlePrevious} class="slds-m-right_small"></lightning-button>
+                    </template>
+                    <template if:false={showScreenSix}>
+                        <lightning-button variant="brand"  label="Next" onclick={handleNext} class="slds-m-right_small"></lightning-button>
+                    </template>
+                    <template if:true={showScreenSix}>
+                        <lightning-button variant="brand"  label="Finish" class="slds-m-right_small"></lightning-button>
+                    </template>
+                </div>
+            </footer>
+            
+        </lightning-card>
         
-    </lightning-card>
-    
+    </div>
 </template>

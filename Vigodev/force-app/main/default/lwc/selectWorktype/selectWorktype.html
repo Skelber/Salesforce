@@ -1,28 +1,57 @@
 <template>
     <div class="slds-p-around_large">
         <h2>Selecteer uw hulpmiddel</h2>
+
+        <lightning-accordion active-section-name={activeSection} class="slds-p-around_small">
+            <lightning-accordion-section name="A" label="Selecteer een business unit">
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4" onclick={handleBusinessUnitSelection}>
+                            <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                                <img src={bandageIcon} alt="bandage icon">
+                                <h3>Bandages</h3>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4">
+                            <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                                <img src={prostheticIcon} alt="prosthetic icon">
+                                <h3>Prothesen</h3>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4">
+                            <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                                <img src={orthoticIcon} alt="orthotic icon">
+                                <h3>Orthesen</h3>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4">
+                            <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                                <h3>Mobility</h3>
+                            </div>
+                        </div>
+                    </div>
+    
+                </lightning-accordion-section>
+            <lightning-accordion-section name="B" label="Selecteer een product groep">
+                <div class="slds-grid slds-size_1-of-4 slds-gutters slds-wrap">
+                    <div class="slds-col slds-p-around_small">
+                            <img src={bandageIcon} alt="bandage icon">
+                            <h3>Bandages</h3>
+                    </div>
+                    <div class="slds-col slds-size_1-of-4 slds-p-around_small slds-grid_vertical slds-grid_align-center">
+                           <img src={prostheticIcon} alt="prosthetic icon">
+                           <h3>Prothesen</h3>
+                    </div>
+                </div>
+
+            </lightning-accordion-section>
+            <lightning-accordion-section name="C" label="Selecteer een product sub-groep">
+                
+            </lightning-accordion-section>
+            <lightning-accordion-section name="C" label="Selecteer een afspraak type">
+
+            </lightning-accordion-section>
+        </lightning-accordion>
         
-        <div class="slds-grid slds-gutters">
-            <div class="slds-col">
-                <div class="footer slds-p-around_small" >
-                    <lightning-button variant="Brand" label="Select"></lightning-button>
-                </div>
-            </div>
-            <div class="slds-col">
-               <div class="footer slds-p-around_small">
-                   <lightning-button variant="Brand" label="Select"></lightning-button>
-               </div>
-            </div>
-            <div class="slds-col">
-                <div class="footer slds-p-around_small">
-                    <lightning-button variant="Brand" label="Select"></lightning-button>
-                </div>
-            </div>
-            <div class="slds-col">
-                <div class="footer slds-p-around_small">
-                    <lightning-button variant="Brand" label="Select"></lightning-button>
-                </div>
-            </div>
-        </div>
+    
     </div>
 </template>

@@ -1,0 +1,43 @@
+<template>
+    <div class="slds-p-around_large">
+        <h2>Selecteer een tijd en zorgverstrekker</h2>
+        
+        <div class="slds-grid slds-gutters slds-wrap">
+            <div class="slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4">
+                <lightning-input type="Date" label="Datum" name="Datum"></lightning-input>
+            </div>
+            <div class="slds-col slds-large-size_3-of-4 slds-medium-size_4-of-4">
+               <div class="slds-wrap">
+                <div class="slds-grid slds-gutters serviceResourceSelect slds-wrap">
+                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4 slds-p-vertical_medium">
+                        <h3>Martijn Reekmans</h3>
+                        <p>Specialist prothesen, orthesen</p>
+                    </div>
+                        <div class="slds-large-size_3-of-4 slds-medium-size_4-of-4 slds-grid slds-grid_align-spread slds-gutters slds-align_absolute-center slds-p-vertical_medium">
+                        <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                            <div class="timeslot slds-align_absolute-center">&#60;</div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                            <div class="timeslot slds-align_absolute-center">13:00</div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                            <div class="timeslot slds-align_absolute-center">14:00</div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                            <div class="timeslot slds-align_absolute-center">15:00</div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                            <div class="timeslot slds-align_absolute-center">&#62;</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-p-around_small serviceResourceSelect">Anke Bellens</div>
+                <div class="slds-p-around_small serviceResourceSelect">Steven Kelber</div>
+                <div class="slds-p-around_small serviceResourceSelect">Nicolas Delahaut</div>
+               </div>
+            </div>
+         
+        </div>
+    </div>
+    
+</template>

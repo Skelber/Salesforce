@@ -10,3 +10,9 @@ lightning-input {
     margin: 20px;
     font-weight: bold;
 }
+
+@media only screen and (max-width: 600px) {
+    lightning-input {
+        width: 90%;
+    }
+  }

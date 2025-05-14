@@ -7,6 +7,8 @@ export default class BookAppointment extends LightningElement {
     showScreenTwo;
     showScreenThree;
     showScreenFour;
+    showScreenFive;
+    showScreenSix;
 
     connectedCallback() {
         this.currentStep = "1"
@@ -18,6 +20,8 @@ export default class BookAppointment extends LightningElement {
         this.currentStep == "2" ? this.showScreenTwo = true : this.showScreenTwo = false;
         this.currentStep == "3" ? this.showScreenThree = true : this.showScreenThree = false;
         this.currentStep == "4" ? this.showScreenFour = true : this.showScreenFour = false;
+        this.currentStep == "5" ? this.showScreenFive = true : this.showScreenFive = false;
+        this.currentStep == "6" ? this.showScreenSix = true : this.showScreenSix = false;
     }
 
 

@@ -12,19 +12,40 @@
             <lightning-input  type="toggle" label="Ik boek een afspraak voor mezelf" checked={checked} onchange={handleToggle}></lightning-input>
         </div>
         <div class="slds-align_absolute-center">
-            <lightning-input  type="text" label="Voornaam"></lightning-input>
+            <lightning-input  type="text" label="Voornaam" value={contactFirstName} onchange={handleFirstNameChange}></lightning-input>
         </div>
         <div class="slds-align_absolute-center">
-            <lightning-input  type="text" label="Achternaam"></lightning-input>
+            <lightning-input  type="text" label="Achternaam" value={contactLastName} onchange={handleLastNameChange}></lightning-input>
         </div>
         <div class="slds-align_absolute-center">
-            <lightning-input  type="email" label="Email"></lightning-input>
+            <lightning-input  type="email" label="Email" value={contactEmail} onchange={handleEmailChange}></lightning-input>
         </div>
         <div class="slds-align_absolute-center">
-            <lightning-input  type="text" label="Telefoonnummer"></lightning-input>
+            <lightning-input  type="text" label="Telefoonnummer" value={contactPhone} onchange={handlePhoneChange}></lightning-input>
         </div>
         <div class="slds-align_absolute-center">
-            <lightning-input  type="tekst" label="Rijksregisternummer"></lightning-input>
+            <lightning-input class="inputCmp"  type="tekst" label="Rijksregisternummer" value={contactRSZ} onchange={handleRSZChange}></lightning-input>
+        </div>
+        <div class="slds-align_absolute-center">
+            <lightning-input type="date" label="Geboortedatum" value={birthdate}></lightning-input>
+        </div>
+        <div class="slds-align_absolute-center">
+        <lightning-input-address
+            style="width: 40%"
+            address-label="Adres"
+            street-label="Straat"
+            city-label="Plaats"
+            country-label="Land"
+            province-label="Provincie"
+            postal-code-label="Postcode"
+            street={contactStreet}
+            city={contactCity}
+            country={contactCountry}
+            province={contactProvince}
+            postal-code={contactPostalCode}
+            show-address-lookup="true"
+            onchange={handleAddressChange}>
+        </lightning-input-address>
         </div>
     </div>
     

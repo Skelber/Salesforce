@@ -6,7 +6,7 @@ export default class AppointmentProgress extends LightningElement {
 
     @api
     complete() {
-        if (parseInt(this.currentstep) < 5) {
+        if (parseInt(this.currentstep) < 6) {
             this.currentstep = String(parseInt(this.currentstep) + 1);
         }
     }

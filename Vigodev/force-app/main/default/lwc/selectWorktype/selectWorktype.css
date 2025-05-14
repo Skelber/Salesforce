@@ -1,11 +1,24 @@
-.slds-col {
+.worktypeSelection {
     height: 400px;
-    background-color: #C1E6EF;
-    margin: 10px;
+    border: 2px solid #003f5c;
     border-radius: 15px;
+    transition: 400ms;
+}
+
+.worktypeSelection:hover {
+    background-color: #C1E6EF;
+    border: 2px solid #C1E6EF;
 }
 
 .footer {
     position: relative;
     bottom: 3;
+}
+
+img {
+    height: 10em;
+    width: 10em;
+    border-radius: 50%;
+    padding: 5px;
+    border: 1px solid #003f5c;
 }
