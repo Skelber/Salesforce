@@ -1,18 +1,53 @@
 <template>
     <div class="overviewSection slds-p-around_large">
         <header>
-            <h2>Patient gegevens</h2>
+            <h2>1. Wie</h2>
         </header>
-    </div>
-    <div class="overviewSection slds-p-around_large">
-        <header>
-            <h2>Afspraak gegevens</h2>
-        </header>
-    </div>
-    <div class="overviewSection slds-p-around_large">
-        <header>
-            <h2>Gelesecteerde behandeling</h2>
-        </header>
+        <div class="slds-grid slds-wrap">
+            <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1 slds-p-around_medium">
+                <p>Voornaam Patient: {contact.firstName}</p>
+                <p>Achternaam Patient: {contact.lastName}</p>
+            </div>
+            <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1 slds-p-around_medium">
+                <p>Email Patient: {contact.email}</p>
+                <p>Telefoonnummer Patient: {contact.phone}</p>
+            </div>
+        </div>
+        <div class="slds-grid slds-grid_align-end">
+            <a href="">edit</a>
+        </div>
+        <div class="overviewSection slds-p-around_large">
+            <header>
+                <h2>2. Waarvoor</h2>
+            </header>
+            <div class="slds-grid slds-grid_align-end">
+                <a href="">edit</a>
+            </div>
+        </div>
+        <div class="overviewSection slds-p-around_large">
+            <header>
+                <h2>3. Waar</h2>
+            </header>
+            <div class="slds-grid slds-grid_align-end">
+                <a href="">edit</a>
+            </div>
+        </div>
+        <div class="overviewSection slds-p-around_large">
+            <header>
+                <h2>4. Bij wie en wanneer</h2>
+            </header>
+            <div class="slds-grid slds-grid_align-end">
+                <a href="">edit</a>
+            </div>
+        </div>
+        <div class="overviewSection slds-p-around_large">
+            <header>
+                <h2>5. Aanvullende info</h2>
+            </header>
+            <div class="slds-grid slds-grid_align-end">
+                <a href="">edit</a>
+            </div>
+        </div>
     </div>
     
 </template>

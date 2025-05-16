@@ -1,4 +1,4 @@
-lightning-input {
+lightning-input, lightning-input-address{
     width: 40%;
 }
 
@@ -12,7 +12,7 @@ lightning-input {
 }
 
 @media only screen and (max-width: 600px) {
-    lightning-input {
+    lightning-input, lightning-input-address{
         width: 90%;
     }
   }

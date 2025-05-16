@@ -1,54 +1,104 @@
+<!-- LLP-2052 -->
+
 <template>
     <div class="slds-p-around_large">
         <h2>Selecteer uw hulpmiddel</h2>
 
         <lightning-accordion active-section-name={activeSection} class="slds-p-around_small">
-            <lightning-accordion-section name="A" label="Selecteer een business unit">
+            <lightning-accordion-section name="A" value="A" onclick={handleSectionHeaderClick} label="Selecteer een business unit">
                 <div class="slds-grid slds-gutters slds-wrap">
                     <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4" onclick={handleBusinessUnitSelection}>
                             <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
                                 <img src={bandageIcon} alt="bandage icon">
                                 <h3>Bandages</h3>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
                             </div>
                         </div>
-                        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4">
+                        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4" onclick={handleBusinessUnitSelection}>
                             <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
                                 <img src={prostheticIcon} alt="prosthetic icon">
                                 <h3>Prothesen</h3>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
                             </div>
                         </div>
-                        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4">
+                        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4" onclick={handleBusinessUnitSelection}>
                             <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
                                 <img src={orthoticIcon} alt="orthotic icon">
                                 <h3>Orthesen</h3>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+
                             </div>
                         </div>
-                        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4">
+                        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4" onclick={handleBusinessUnitSelection}>
                             <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
                                 <h3>Mobility</h3>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+
                             </div>
                         </div>
                     </div>
     
                 </lightning-accordion-section>
-            <lightning-accordion-section name="B" label="Selecteer een product groep">
-                <div class="slds-grid slds-size_1-of-4 slds-gutters slds-wrap">
-                    <div class="slds-col slds-p-around_small">
+            <lightning-accordion-section name="B" value="B" label="Selecteer een product groep">
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4" onclick={handleProductGroupSelection}>
+                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
                             <img src={bandageIcon} alt="bandage icon">
                             <h3>Bandages</h3>
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+
+                        </div>
                     </div>
-                    <div class="slds-col slds-size_1-of-4 slds-p-around_small slds-grid_vertical slds-grid_align-center">
-                           <img src={prostheticIcon} alt="prosthetic icon">
-                           <h3>Prothesen</h3>
+                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4" onclick={handleProductGroupSelection}>
+                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                            <img src={prostheticIcon} alt="prosthetic icon">
+                            <h3>Prothesen</h3>
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+
+                        </div>
+                    </div>
+                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4" onclick={handleProductGroupSelection}>
+                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                            <img src={orthoticIcon} alt="orthotic icon">
+                            <h3>Orthesen</h3>
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+
+                        </div>
                     </div>
                 </div>
 
             </lightning-accordion-section>
-            <lightning-accordion-section name="C" label="Selecteer een product sub-groep">
-                
-            </lightning-accordion-section>
-            <lightning-accordion-section name="C" label="Selecteer een afspraak type">
+            <lightning-accordion-section name="C" value="C" label="Selecteer een product sub-groep">
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4" onclick={handleProductSubGroupSelection}>
+                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                            <img src={bandageIcon} alt="bandage icon">
+                            <h3>Bandages</h3>
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
 
+                        </div>
+                    </div>
+                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4" onclick={handleProductSubGroupSelection}>
+                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                            <img src={prostheticIcon} alt="prosthetic icon">
+                            <h3>Prothesen</h3>
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+
+                        </div>
+                    </div>
+                </div>
+            </lightning-accordion-section>
+            <lightning-accordion-section name="D" value="D" label="Selecteer een afspraak type">
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4">
+                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                            <img src={bandageIcon} alt="bandage icon">
+                            <h3>Bandages</h3>
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+
+                        </div>
+                    </div>
+                </div>
             </lightning-accordion-section>
         </lightning-accordion>
         

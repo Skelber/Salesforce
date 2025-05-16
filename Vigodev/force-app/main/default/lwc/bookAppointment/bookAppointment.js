@@ -1,4 +1,5 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, track } from 'lwc';
+import locale from '@salesforce/i18n/locale';
 
 export default class BookAppointment extends LightningElement {
 
@@ -9,6 +10,8 @@ export default class BookAppointment extends LightningElement {
     showScreenFour;
     showScreenFive;
     showScreenSix;
+    userLocale = locale;
+    @track receivedContact;
 
     connectedCallback() {
         this.currentStep = "1"
@@ -37,6 +40,10 @@ export default class BookAppointment extends LightningElement {
         appointmentProgress.previous();
         this.currentStep = appointmentProgress.currentstep;
         this.handleScreenChange()
+    }
+
+    receiveContact(event) {
+        console.log('received event: ' + JSON.stringify(event.detail));
     }
     
 }

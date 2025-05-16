@@ -17,6 +17,11 @@ trigger EventTrigger on Event (before update, before delete) {
             if (event.Resource_Absence__c != null && bypassTriggerSetting.isActive__c == false) {
                 event.addError('You can not update an event if it has a linked resource absence.');
             }
+
+            if(Trigger.oldMap.get(event.Id).Shift__c == null && event.Shift__c != null){
+                bypass = true;
+            }
+
             if (event.Shift__c != null && Trigger.oldMap.get(event.Id).Shift__c != null) {
                 event.addError('You can not update an event if it has a linked shift');
             }
@@ -35,6 +40,11 @@ trigger EventTrigger on Event (before update, before delete) {
             if (event.Resource_Absence__c != null && bypassTriggerSetting.isActive__c == false) {
                 event.addError('You can not delete an event if it has a linked resource absence.');
             }
+
+            if(Trigger.oldMap.get(event.Id).Shift__c == null && event.Shift__c != null){
+                bypass = true;
+            }
+
             if (event.Shift__c != null && Trigger.oldMap.get(event.Id).Shift__c != null) { 
                 event.addError('You can not delete an event if it has a linked shift');
         }

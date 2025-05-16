@@ -1,26 +1,27 @@
 .serviceResourceSelect {
     border: 1px solid grey;
     border-radius: 12px;
-    margin: 10px;
 }
 
 .timeslot {
-    border: 1px solid grey;
     border-radius: 5px;
-    width: 7em;
-    height: 4em;
-    transition: 400ms;
+    /* width: 7em;
+    height: 4em; */
 }
 
-.timeslot:Hover {
-    border: 1px solid #C1E6EF;
+.timeslotContainer:Hover {
     background-color: #C1E6EF;
+}
+
+.timeslotContainer {
+    transition: 400ms;
+    border-right: 1px solid grey;
 }
 
 @media only screen and (max-width: 600px) {
     .timeslot {
-        width: 3.5em;
-        height: 3em;
+        /* width: 3.5em;
+        height: 3em; */
 
     }
 }

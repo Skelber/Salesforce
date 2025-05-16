@@ -13,4 +13,14 @@ export default class SelectWorktype extends LightningElement {
     handleBusinessUnitSelection() {
         this.activeSection = "B"
     }
+    handleProductGroupSelection(){
+        this.activeSection = "C"
+    }
+    handleProductSubGroupSelection(){
+        this.activeSection = "D"
+    }
+
+    handleSectionHeaderClick(event){
+        this.activeSection = event.target.value
+    }
 }

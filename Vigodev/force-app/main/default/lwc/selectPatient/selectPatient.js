@@ -1,64 +1,72 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track, api } from 'lwc';
 
 export default class SelectPatient extends LightningElement {
     @track checked;
-    contactFirstName;
-    contactLastName;
-    contactEmail;
-    contactPhone;
-    contactRSZ
-    contactStreet;
-    contactCity;
-    contactCountry;
-    contactProvince;
-    contactPostalCode;
-    contactAddress
+    contact = {
+        firstName: null,
+        lastName: null,
+        email: null,
+        phone: null,
+        RSZ: null,
+        street: null,
+        city: null,
+        country: null,
+        province: null,
+        postalCode: null,
+        address: null,
+        birthdate: null
+    }
     birthyearPrefix = "19"
-    birthdate
 
     connectedCallback() {
         this.checked = true;
         this.checked = localStorage.getItem('checked') === 'true';
-        this.contactFirstName = localStorage.getItem('contactFirstName') || '';
-        this.contactLastName = localStorage.getItem('contactLastName') || '';
-        this.contactEmail = localStorage.getItem('contactEmail') || '';
-        this.contactPhone = localStorage.getItem('contactPhone') || '';
-        this.contactStreet = localStorage.getItem('contactStreet') || '';
-        this.contactCity = localStorage.getItem('contactCity') || '';
-        this.contactCountry = localStorage.getItem('contactCountry') || '';
-        this.birthdate = localStorage.getItem('birthdate') || '';
+        this.contact.firstName = localStorage.getItem('firstName') || '';
+        this.contact.lastName = localStorage.getItem('lastName') || '';
+        this.contact.email = localStorage.getItem('email') || '';
+        this.contact.phone = localStorage.getItem('phone') || '';
+        this.contact.street = localStorage.getItem('street') || '';
+        this.contact.city = localStorage.getItem('city') || '';
+        this.contact.country = localStorage.getItem('country') || '';
+        this.contact.birthdate = localStorage.getItem('birthdate') || '';    
+        console.log('local storage loaded')
     }
 
+    disconnectedCallback() {
+        console.log('disconnected callback')
+        this.passToParent();
+    }
+    
     handleToggle() {
         this.checked = !this.checked;
     }
 
     handleFirstNameChange(event) {
         const value = event.target.value;
-        this.contactFirstName = value;
-        localStorage.setItem('contactFirstName', value);
+        this.contact.firstName = value;
+        localStorage.setItem('firstName', value);
     }
     handleLastNameChange(event) {
         const value = event.target.value;
-        this.contactLastName = event.target.value;
-        localStorage.setItem('contactLastName', value);
+        this.contact.lastName = event.target.value;
+        localStorage.setItem('lastName', value);
     }
     handleEmailChange(event) {
         const value = event.target.value;
-        this.contactEmail = event.target.value;
-        localStorage.setItem('contactEmail', value);
+        this.contact.email = event.target.value;
+        localStorage.setItem('email', value);
     }
     handlePhoneChange(event) {
         const value = event.target.value;
-        this.contactPhone = event.target.value;
-        localStorage.setItem('contactPhone', value);
+        this.contact.phone = event.target.value;
+        localStorage.setItem('phone', value);
     }
 
     handleRSZChange(event) {
         var inputCmp = this.template.querySelector('.inputCmp')
         const value = event.target.value;
         if (this.isValidRijksregisternummer(value)) {
-            this.contactRSZ = value;
+            this.contact.RSZ = value;
             localStorage.setItem('contactRSZ', value);
             inputCmp.setCustomValidity('');
             inputCmp.reportValidity();
@@ -88,6 +96,8 @@ export default class SelectPatient extends LightningElement {
         if (checksum !== lastTwoDigits) {
             checksum = 97 - ((2000000000 + firstNineDigits) % 97);
             this.birthyearPrefix = "20"
+        } else {
+            this.birthyearPrefix = "19"
         }
     
         return checksum === lastTwoDigits;
@@ -102,7 +112,7 @@ export default class SelectPatient extends LightningElement {
         d.setYear(parsedYear);
         d.setMonth(parseInt(value.substring(2, 4) - 1, 10));
         d.setDate(parseInt(value.substring(4, 6), 10));
-        this.birthdate = d.toLocaleDateString('nl-BE');
+        this.contact.birthdate = d.toLocaleDateString('nl-BE');
         localStorage.setItem('birthdate', this.birthdate);
     }
 
@@ -120,36 +130,17 @@ export default class SelectPatient extends LightningElement {
         localStorage.setItem('contactCountry', countryValue);
         localStorage.setItem('contactProvince', provinceValue);
         localStorage.setItem('contactPostalCode', postalCodeValue);
-
-        // const address = event.target.value;
-        // console.log('address ' + address)
-
-        // if (address) {
-        //     const geolocation = await getGeolocation(address);
-    
-        //     if (geolocation) {
-        //         console.log(`Latitude: ${geolocation.latitude}, Longitude: ${geolocation.longitude}`);
-        //     } else {
-        //         console.log('Geolocation not found');
-        //     }
-        // }
     }
 
-    // async getGeolocation(address) {
-    //     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&addressdetails=1`;
-    
-    //     const response = await fetch(url);
-    //     const data = await response.json();
-    
-    //     if (data && data[0]) {
-    //         return {
-    //             latitude: parseFloat(data[0].lat),
-    //             longitude: parseFloat(data[0].lon),
-    //         };
-    //     }
-    
-    //     return null;
-    // }
-    
-    
+    @api passToParent() {
+        const patientInfo = new CustomEvent('getPatientDetails',{
+            detail: {
+                ...this.contact,
+                bubbles: true,
+                composed: true
+            }
+        });
+        this.dispatchEvent(patientInfo);
+        console.log('passing event: ' + JSON.stringify(patientInfo.detail))
+    }
 }

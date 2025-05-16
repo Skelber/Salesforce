@@ -1,10 +1,14 @@
+<!-- LLP-2052 -->
+
 <template>
-    <div class="slds-p-around_large">
+    <div class="slds-p-around_large slds-grid slds-wrap">
 
         
-        <div class="slds-grid_vertical slds-align_absolute-center">
-            <h2>Voeg extra informatie toe.</h2>
-            <lightning-input type="File" label="Upload je voorschrift" ></lightning-input>
+        <div class=" slds-col slds-size_1-of-1 slds-grid_vertical slds-align_absolute-center slds-p-around_medium">
+            <lightning-input type="File" label="Indien u een afspraak maakt op voorschrift, gelieve hier uw voorschrift op te laden" ></lightning-input>
+        </div>
+        <div class=" slds-col slds-size_1-of-1 slds-grid_vertical slds-align_absolute-center slds-p-around_medium">
+            <lightning-textarea  label="Heeft u nog andere opmerkingen?" ></lightning-textarea>
         </div>
     </div>
 </template>
