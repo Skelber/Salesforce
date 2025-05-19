@@ -17,10 +17,11 @@ export default class SelectPatient extends LightningElement {
         birthdate: null
     }
     birthyearPrefix = "19"
+    @api jtp
 
     connectedCallback() {
         this.checked = true;
-        this.checked = localStorage.getItem('checked') === 'true';
+        this.checked = localStorage.getItem('checked');     
         this.contact.firstName = localStorage.getItem('firstName') || '';
         this.contact.lastName = localStorage.getItem('lastName') || '';
         this.contact.email = localStorage.getItem('email') || '';
@@ -28,8 +29,7 @@ export default class SelectPatient extends LightningElement {
         this.contact.street = localStorage.getItem('street') || '';
         this.contact.city = localStorage.getItem('city') || '';
         this.contact.country = localStorage.getItem('country') || '';
-        this.contact.birthdate = localStorage.getItem('birthdate') || '';    
-        console.log('local storage loaded')
+        this.contact.birthdate = localStorage.getItem('birthdate') || ''; 
     }
 
     disconnectedCallback() {
@@ -39,6 +39,7 @@ export default class SelectPatient extends LightningElement {
     
     handleToggle() {
         this.checked = !this.checked;
+        localStorage.setItem('checked', this.checked);
     }
 
     handleFirstNameChange(event) {
@@ -133,7 +134,7 @@ export default class SelectPatient extends LightningElement {
     }
 
     @api passToParent() {
-        const patientInfo = new CustomEvent('getPatientDetails',{
+        const patientInfo = new CustomEvent('patientdetails',{
             detail: {
                 ...this.contact,
                 bubbles: true,
@@ -141,6 +142,6 @@ export default class SelectPatient extends LightningElement {
             }
         });
         this.dispatchEvent(patientInfo);
-        console.log('passing event: ' + JSON.stringify(patientInfo.detail))
     }
+
 }

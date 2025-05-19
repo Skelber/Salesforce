@@ -1,45 +1,153 @@
 <!-- LLP-2052 -->
 
 <template>
-    <div class="slds-p-around_large">
-        <h2>Selecteer een tijd en zorgverstrekker</h2>
-        
-        <div class="slds-grid slds-gutters slds-wrap">
-            <div class="slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4">
-                <lightning-input type="Date" label="Datum" name="Datum"></lightning-input>
-            </div>
-            <div class="slds-col slds-large-size_3-of-4 slds-medium-size_4-of-4">
-               <div class="slds-wrap">
-                <div class="slds-grid slds-gutters serviceResourceSelect slds-col-size_1-of-1 slds-wrap">
-                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4 slds-p-vertical_medium">
-                        <h3>Martijn Reekmans</h3>
-                        <p>Specialist prothesen, orthesen</p>
-                    </div>
-                        <div class="slds-large-size_3-of-4 slds-medium-size_4-of-4 slds-small-size_4-of-4 slds-grid slds-grid_align-spread slds-gutters slds-p-vertical_medium">
-                        <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
-                            &#60;
+    <template if:false={notBookableViaWebsite}>
+        <div class="slds-p-around_large">
+            <h2>Selecteer een tijd en zorgverstrekker</h2>
+            
+            <div class="slds-grid slds-gutters slds-wrap">
+                <div class="slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4">
+                    <lightning-input type="Date" label="Datum" name="Datum"></lightning-input>
+                </div>
+                <div class="slds-col slds-large-size_3-of-4 slds-medium-size_4-of-4">
+                    <div class="slds-wrap">
+                        <div class="slds-grid slds-gutters serviceResourceSelect slds-col-size_1-of-1 slds-wrap slds-m-vertical_medium">
+                            <div class="slds-grid slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-p-vertical_medium">
+                                <div class="slds-col slds-large-size_1-of-3 slds-align_absolute-center">
+                                    <lightning-avatar size="large" src={avatar}></lightning-avatar>
+                                </div>
+                                <div class="slds-col slds-large-2-of-3">
+                                    <h3>Martijn Reekmans</h3>
+                                    <p>Specialist prothesen, orthesen</p>
+                                </div>
+                            </div>
+                            <div class="slds-large-size_2-of-3 slds-medium-size_3-of-3 slds-small-size_3-of-3 slds-grid slds-align_absolute-center slds-gutters slds-p-vertical_medium">
+                                <div class="slds-col slds-size_1-of-1 slds-grid slds-align_absolute-center">
+
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        &#60;
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        13:00
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        14:00                   
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        15:00
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        &#62;
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
-                            13:00
+                        <div class="slds-grid slds-gutters serviceResourceSelect slds-col-size_1-of-1 slds-wrap slds-m-vertical_medium">
+                            <div class="slds-grid slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-p-vertical_medium">
+                                <div class="slds-col slds-large-size_1-of-3 slds-align_absolute-center">
+                                    <lightning-avatar size="large" src={avatar}></lightning-avatar>
+                                </div>
+                                <div class="slds-col slds-large-2-of-3">
+                                    <h3>Anke Bellens</h3>
+                                    <p>Specialist prothesen, orthesen</p>
+                                </div>
+                            </div>
+                            <div class="slds-large-size_2-of-3 slds-medium-size_3-of-3 slds-small-size_3-of-3 slds-grid slds-align_absolute-center slds-gutters slds-p-vertical_medium">
+                                <div class="slds-col slds-size_1-of-1 slds-grid slds-align_absolute-center">
+
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        &#60;
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        13:00
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        14:00                   
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        15:00
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        &#62;
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
-                            14:00                   
+                        <div class="slds-grid slds-gutters serviceResourceSelect slds-col-size_1-of-1 slds-wrap slds-m-vertical_medium">
+                            <div class="slds-grid slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-p-vertical_medium">
+                                <div class="slds-col slds-large-size_1-of-3 slds-align_absolute-center">
+                                    <lightning-avatar size="large" src={avatar}></lightning-avatar>
+                                </div>
+                                <div class="slds-col slds-large-2-of-3">
+                                    <h3>Steven Kelber</h3>
+                                    <p>Specialist prothesen, orthesen</p>
+                                </div>
+                            </div>
+                            <div class="slds-large-size_2-of-3 slds-medium-size_3-of-3 slds-small-size_3-of-3 slds-grid slds-align_absolute-center slds-gutters slds-p-vertical_medium">
+                                <div class="slds-col slds-size_1-of-1 slds-grid slds-align_absolute-center">
+
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        &#60;
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        13:00
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        14:00                   
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        15:00
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        &#62;
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
-                            15:00
-                        </div>
-                        <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
-                            &#62;
+                        <div class="slds-grid slds-gutters serviceResourceSelect slds-col-size_1-of-1 slds-wrap slds-m-vertical_medium">
+                            <div class="slds-grid slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-p-vertical_medium">
+                                <div class="slds-col slds-large-size_1-of-3 slds-align_absolute-center">
+                                    <lightning-avatar size="large" src={avatar}></lightning-avatar>
+                                </div>
+                                <div class="slds-col slds-large-2-of-3">
+                                    <h3>Nicolas Delahaut</h3>
+                                    <p>Specialist prothesen, orthesen</p>
+                                </div>
+                            </div>
+                            <div class="slds-large-size_2-of-3 slds-medium-size_3-of-3 slds-small-size_3-of-3 slds-grid slds-align_absolute-center slds-gutters slds-p-vertical_medium">
+                                <div class="slds-col slds-size_1-of-1 slds-grid slds-align_absolute-center">
+
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        &#60;
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        13:00
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        14:00                   
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        15:00
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-5 slds-align_absolute-center timeslotContainer">
+                                        &#62;
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="slds-p-around_small serviceResourceSelect">Anke Bellens</div>
-                <div class="slds-p-around_small serviceResourceSelect">Steven Kelber</div>
-                <div class="slds-p-around_small serviceResourceSelect">Nicolas Delahaut</div>
-               </div>
+                
             </div>
-         
         </div>
-    </div>
-    
+    </template>
+    <template if:true={notBookableViaWebsite}>
+        <div class="slds-p-around_large">
+            <div class="slds-grid slds-gutters slds-wrap">
+                <div class="slds-col slds-size_1-of-1 slds-align_absolute-center">
+                    <h3>Dit type afspraak kan niet geboekt worden via de website, neem contact op met het betreffende center via: </h3>
+                </div>
+            </div>
+        </div>
+        </template>
 </template>

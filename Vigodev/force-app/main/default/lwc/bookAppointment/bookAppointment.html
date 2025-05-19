@@ -6,7 +6,9 @@
         <lightning-card title="Patient self service">       
             <c-appointment-progress></c-appointment-progress>
             <template if:true={showScreenOne}>
-                <c-select-patient></c-select-patient>
+                <c-select-patient 
+                onpatientdetails={receiveContact}>
+            </c-select-patient>
             </template>
             <template if:true={showScreenTwo}>
                 <c-select-worktype></c-select-worktype>
@@ -21,7 +23,10 @@
                 <c-additional-info></c-additional-info>
             </template>
             <template if:true={showScreenSix}>
-                <c-patient-overview contact={receivedContact}></c-patient-overview>
+                <c-patient-overview 
+                onscreenchange={receiveScreenChange} 
+                contact={receivedContact}>
+            </c-patient-overview>
             </template>
             
             

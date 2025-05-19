@@ -30,6 +30,7 @@
         </div>
         <div class="slds-align_absolute-center">
             <lightning-input type="date" label="Geboortedatum" value={contact.birthdate}></lightning-input>
+            <lightning-formatted-date-time value={contact.birthdate} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
         </div>
         <div class="slds-align_absolute-center">
         <lightning-input-address

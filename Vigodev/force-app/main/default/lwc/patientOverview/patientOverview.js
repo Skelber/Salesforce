@@ -2,19 +2,28 @@ import FirstName from '@salesforce/schema/Contact.FirstName';
 import { LightningElement, api } from 'lwc';
 
 export default class PatientOverview extends LightningElement {
-    @api contact= {
-        FirstName: null,
-        LastName: null,
-        Email: null,
-        Phone: null,
-        RSZ: null,
-        Street: null,
-        City: null,
-        Country: null,
-        PostalCode: null,
+    @api jumpToScreen(event){
+        console.log('jumping to screen ' + event.target.value)
+        const screenChange = new CustomEvent('screenchange',{
+            detail: {
+                screen: event.target.value,
+                 bubbles: true,
+                 composed: true
+            }
+        });
+        this.dispatchEvent(screenChange);
     }
 
-    connectedCallback(){
-        console.log(JSON.stringify(this.contact));
+    @api contact= {
+        firstName: null,
+        lastName: null,
+        email: null,
+        phone: null,
+        RSZ: null,
+        street: null,
+        city: null,
+        country: null,
+        postalCode: null,
     }
+
 }
