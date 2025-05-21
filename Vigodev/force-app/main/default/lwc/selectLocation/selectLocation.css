@@ -1,3 +1,9 @@
+.header {
+    background-color: #C1E6EF;
+    padding: 10px;
+    border-radius: 15px;
+}
+
 .locationSelection {
     border: 2px solid #003f5c;
     border-radius: 15px;

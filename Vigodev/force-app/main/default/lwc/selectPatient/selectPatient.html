@@ -2,17 +2,26 @@
 
 <template>
     <div class="patientinput slds-p-around_large">
-        <template if:false={checked}>
-            <div class="slds-align_absolute-center">
-                <div class="slds-align_absolute-center patientSelect">SK</div>
-                <div class="slds-align_absolute-center patientSelect">MR</div>
-                <div class="slds-align_absolute-center patientSelect">AB</div>
-                <div class="slds-align_absolute-center patientSelect">ND</div>
-            </div>
-        </template>
         <div class="slds-align_absolute-center">
             <lightning-input  type="toggle" label="Ik boek een afspraak voor mezelf" checked={checked} onchange={handleToggle}></lightning-input>
         </div>
+        <template if:false={checked}>
+                <div class="slds-align_absolute-center">
+                    <lightning-input type="Text" label="Voornaam Gebruiker"></lightning-input>
+                </div>
+                <div class="slds-align_absolute-center">
+                    <lightning-input type="Text" label="Achternaam Gebruiker"></lightning-input>
+                </div>
+                <div class="slds-align_absolute-center">
+                    <lightning-radio-group name="radioGroup"
+                    label="Relatie tot gebruiker"
+                    options={options}
+                    value={value}
+                    type="button">
+                </lightning-radio-group>
+            </div>
+
+        </template>
         <div class="slds-align_absolute-center">
             <lightning-input  type="text" label="Voornaam" value={contact.firstName} onchange={handleFirstNameChange}></lightning-input>
         </div>

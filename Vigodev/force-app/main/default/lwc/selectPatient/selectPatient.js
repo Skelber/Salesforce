@@ -36,6 +36,15 @@ export default class SelectPatient extends LightningElement {
         console.log('disconnected callback')
         this.passToParent();
     }
+
+    get options() {
+        return [
+            { label: 'Ouder', value: 'Ouder' },
+            { label: 'Familielid', value: 'Familielid' },
+            { label: 'Voogd', value: 'Voogd' },
+            { label: 'Andere', value: 'Andere' },
+        ];
+    }
     
     handleToggle() {
         this.checked = !this.checked;

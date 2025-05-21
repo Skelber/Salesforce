@@ -1,3 +1,9 @@
+.header {
+    background-color: #C1E6EF;
+    padding: 10px;
+    border-radius: 15px;
+}
+
 .worktypeSelection {
     height: 400px;
     border: 2px solid #003f5c;

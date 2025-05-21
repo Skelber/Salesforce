@@ -1,3 +1,14 @@
+.header {
+    background-color: #C1E6EF;
+    padding: 10px;
+    border-radius: 15px;
+}
 lightning-textarea {
     width: 40%;
 }
+
+@media only screen and (max-width: 600px) {
+    lightning-textarea {
+        width: 100%;
+    }
+  }

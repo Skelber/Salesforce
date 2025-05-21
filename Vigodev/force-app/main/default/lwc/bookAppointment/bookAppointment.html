@@ -1,7 +1,7 @@
 <!-- LLP-2052 -->
 
 <template>
-    <div class="slds-scope">
+    <div class="slds-scope container">
 
         <lightning-card title="Patient self service">       
             <c-appointment-progress></c-appointment-progress>
@@ -33,13 +33,13 @@
             <footer>
                 <div class="slds-grid slds-grid_align-end">
                     <template if:false={showScreenOne}>
-                        <lightning-button label="Previous" onclick={handlePrevious} class="slds-m-right_small"></lightning-button>
+                        <lightning-button label="Vorige" onclick={handlePrevious} class="slds-m-right_small"></lightning-button>
                     </template>
                     <template if:false={showScreenSix}>
-                        <lightning-button variant="brand"  label="Next" onclick={handleNext} class="slds-m-right_small"></lightning-button>
+                        <lightning-button variant="brand"  label="Volgende" onclick={handleNext} class="slds-m-right_small"></lightning-button>
                     </template>
                     <template if:true={showScreenSix}>
-                        <lightning-button variant="brand"  label="Finish" class="slds-m-right_small"></lightning-button>
+                        <lightning-button variant="brand"  label="Boek afspraak" class="slds-m-right_small"></lightning-button>
                     </template>
                 </div>
             </footer>

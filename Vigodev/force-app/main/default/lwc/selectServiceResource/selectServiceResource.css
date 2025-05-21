@@ -1,3 +1,28 @@
+.header {
+    background-color: #C1E6EF;
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.button {
+    padding: 7px;
+    border: 1px solid #003f5c;
+    cursor: pointer;
+}
+
+.button:first-child {
+    border-radius: 15px 0px 0px 15px;
+}
+
+.button:last-child {
+    border-radius: 0px 15px 15px 0px;
+}
+
+.active {
+    background-color: #003f5c;
+    color: white;
+}
+
 .serviceResourceSelect {
     border: 1px solid grey;
     border-radius: 12px;
@@ -28,4 +53,7 @@ img {
 
 @media only screen and (max-width: 600px) {
    
+    input {
+        width: 90%
+    }
 }

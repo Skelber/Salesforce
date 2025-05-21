@@ -3,12 +3,12 @@
         <header>
             <h2>1. Wie</h2>
         </header>
-        <div class="slds-grid slds-wrap">
-            <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1 slds-p-around_medium">
+        <div class="slds-grid slds-wrap slds-p-around_medium">
+            <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
                 <p>Voornaam Patient: {contact.firstName}</p>
                 <p>Achternaam Patient: {contact.lastName}</p>
             </div>
-            <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1 slds-p-around_medium">
+            <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
                 <p>Email Patient:</p>
                 <p>Telefoonnummer Patient:</p>
             </div>
@@ -16,38 +16,70 @@
         <div class="slds-grid slds-grid_align-end">
             <lightning-button variant="base" label="edit" value="1" onclick={jumpToScreen}></lightning-button>
         </div>
-        <div class="overviewSection slds-p-around_large">
+
             <header>
                 <h2>2. Waarvoor</h2>
             </header>
+            <div class="slds-grid slds-wrap slds-p-around_medium">
+                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                    <p>Geselecteerd werktype</p>
+                </div>
+                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                </div>
+            </div>
             <div class="slds-grid slds-grid_align-end">
                 <lightning-button variant="base" label="edit" value="2" onclick={jumpToScreen}></lightning-button>
             </div>
-        </div>
-        <div class="overviewSection slds-p-around_large">
+
+
             <header>
                 <h2>3. Waar</h2>
             </header>
+            <div class="slds-grid slds-wrap slds-p-around_medium">
+                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                    <p>Gekozen service center:</p>
+                    <p>Address service center</p>
+                </div>
+                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                    <p>Contactgegevens service center</p>
+                </div>
+            </div>
             <div class="slds-grid slds-grid_align-end">
                 <lightning-button variant="base" label="edit" value="3" onclick={jumpToScreen}></lightning-button>
             </div>
-        </div>
-        <div class="overviewSection slds-p-around_large">
+
+
             <header>
                 <h2>4. Bij wie en wanneer</h2>
             </header>
+            <div class="slds-grid slds-wrap slds-p-around_medium">
+                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                    <p>Datum van uw afspraak:</p>
+                    <p>Naam zorgverstrekker:</p>
+                </div>
+                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                </div>
+            </div>
             <div class="slds-grid slds-grid_align-end">
                 <lightning-button variant="base" label="edit" value="4" onclick={jumpToScreen}></lightning-button>
             </div>
-        </div>
-        <div class="overviewSection slds-p-around_large">
+
+
             <header>
                 <h2>5. Bijkomende informatie</h2>
             </header>
+            <div class="slds-grid slds-wrap slds-p-around_medium">
+                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                    <p>Bijkomende informatie</p>
+                </div>
+                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                    <p>Bijkomende documenten:</p>
+                </div>
+            </div>
             <div class="slds-grid slds-grid_align-end">
                 <lightning-button variant="base" label="edit" value="5" onclick={jumpToScreen}></lightning-button>
             </div>
-        </div>
+
     </div>
     
 </template>
