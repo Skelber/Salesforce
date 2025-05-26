@@ -5,7 +5,7 @@
 }
 
 .worktypeSelection {
-    height: 400px;
+    height: 25em;
     border: 2px solid #003f5c;
     border-radius: 15px;
     transition: 400ms;
@@ -27,5 +27,18 @@ img {
     border-radius: 50%;
     padding: 5px;
     border: 1px solid #003f5c;
+}
+
+@media only screen and (max-width: 600px) {
+   
+    .worktypeSelection {
+        height: 20em;
+    }
+
+    img {
+        height: 7em;
+        width: 7em;
+        border-radius: 50%;
+    }
 }
 

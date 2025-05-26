@@ -1,8 +1,8 @@
 <!-- LLP-2052 -->
 
 <template>
-    <div class="slds-p-around_large">
-        <h2 class="slds-m-vertical_medium header">Selecteer uw hulpmiddel</h2>
+    <div class="slds-p-around_large slds-grid slds-wrap">
+        <h2 class="slds-m-vertical_medium header">Selecteer een werktype</h2>
 
         <lightning-accordion active-section-name={activeSection} class="slds-p-around_small">
             <lightning-accordion-section name="A" value="A" onclick={handleSectionHeaderClick} label="Selecteer een business unit">
@@ -101,7 +101,28 @@
                 </div>
             </lightning-accordion-section>
         </lightning-accordion>
-        
+
+        <template for:each={workTypes} for:item="selector">
+                <div key={selector.businessUnit.recordId} style="border: 1px solid grey; padding: 5px; margin: 10px;">
+                    <p onclick={handleBUClick}>{selector.businessUnit.Typology_Name_EN}</p> 
+            <template for:each={selector.productGroups} for:item="group">
+                <div key={group.productGroup.recordId} style="border: 1px solid green; padding: 5px; margin: 10px">
+                    <p>{group.productGroup.Typology_Name_EN}</p>
+              <template for:each={group.productSubGroups} for:item="subGroupWrapper">
+                <div key={subGroupWrapper.productSubGroup.recordId} style="border: 1px solid blue; padding: 5px">
+                  <p>{subGroupWrapper.productSubGroup.Typology_Name_EN}</p>
+                  <template for:each={subGroupWrapper.appointmentTypes} for:item="appt">
+                    <div key={appt.recordId} style="border: 1px solid red;">
+                      <span>{appt.Typology_Name_EN}</span>
+                    </div>
+                  </template>
+                </div>
+              </template>
+                </div>
+            </template>
+        </div>
+
+          </template>  
     
     </div>
 </template>
