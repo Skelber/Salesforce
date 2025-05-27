@@ -5,7 +5,7 @@
 }
 
 .button {
-    padding: 7px;
+    padding: 5px 10px;
     border: 1px solid #003f5c;
     cursor: pointer;
 }
@@ -19,7 +19,7 @@
 }
 
 .active {
-    background-color: #003f5c;
+    background-color: #00167a;
     color: white;
 }
 
@@ -34,7 +34,7 @@
     height: 4em; */
 }
 
-.timeslotContainer:Hover {
+.timeslotContainer:Hover, .timeslotContainer:active {
     background-color: #C1E6EF;
 }
 
@@ -55,5 +55,9 @@ img {
    
     input {
         width: 90%
+    }
+
+    .overview {
+        display: none;
     }
 }

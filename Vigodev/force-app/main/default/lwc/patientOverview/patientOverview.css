@@ -8,3 +8,7 @@
     color: #003f5c;
     cursor: pointer;
 }
+
+svg {
+    cursor: pointer;
+}

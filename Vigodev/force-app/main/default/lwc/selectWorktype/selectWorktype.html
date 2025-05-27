@@ -2,127 +2,107 @@
 
 <template>
     <div class="slds-p-around_large slds-grid slds-wrap">
-        <h2 class="slds-m-vertical_medium header">Selecteer een werktype</h2>
+        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4">
+            <h2 class="slds-m-vertical_medium header slds-align_absolute-center">Selecteer een werktype</h2>
+        </div>
+        <div class="slds-grid slds-wrap">
 
         <lightning-accordion active-section-name={activeSection} class="slds-p-around_small">
             <lightning-accordion-section name="A" value="A" onclick={handleSectionHeaderClick} label="Selecteer een business unit">
                 <div class="slds-grid slds-gutters slds-wrap">
-                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handleBusinessUnitSelection}>
+                    <template for:each={businessUnits} for:item="bu">
+                        <div key={bu.recordId} data-id={bu.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handleBUClick}>
                             <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
                                 <img src={bandageIcon} alt="bandage icon">
-                                <h3>Bandages</h3>
+                                <h3>{bu.Typology_Name_EN}</h3>
                                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
                             </div>
                         </div>
-                        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handleBusinessUnitSelection}>
-                            <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                                <img src={prostheticIcon} alt="prosthetic icon">
-                                <h3>Prothesen</h3>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
-                            </div>
-                        </div>
-                        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handleBusinessUnitSelection}>
-                            <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                                <img src={orthoticIcon} alt="orthotic icon">
-                                <h3>Orthesen</h3>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
-
-                            </div>
-                        </div>
-                        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handleBusinessUnitSelection}>
-                            <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                                <h3>Mobility</h3>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
-
-                            </div>
-                        </div>
+                    </template>
                     </div>
-    
                 </lightning-accordion-section>
+
+
             <lightning-accordion-section name="B" value="B" label="Selecteer een product groep">
                 <div class="slds-grid slds-gutters slds-wrap">
-                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handleProductGroupSelection}>
+                    <template for:each={productGroups} for:item="pg" for:index="pgIndex">
+                    <div key={pg.productGroup.recordId} data-index={pgIndex} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handlePGClick}>
                         <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
                             <img src={bandageIcon} alt="bandage icon">
-                            <h3>Bandages</h3>
+                            <h3>{pg.productGroup.Typology_Name_EN}</h3>
                             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
-
                         </div>
                     </div>
-                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handleProductGroupSelection}>
-                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                            <img src={prostheticIcon} alt="prosthetic icon">
-                            <h3>Prothesen</h3>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
-
-                        </div>
-                    </div>
-                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handleProductGroupSelection}>
-                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                            <img src={orthoticIcon} alt="orthotic icon">
-                            <h3>Orthesen</h3>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
-
-                        </div>
-                    </div>
+                    </template>
                 </div>
 
             </lightning-accordion-section>
             <lightning-accordion-section name="C" value="C" label="Selecteer een product sub-groep">
                 <div class="slds-grid slds-gutters slds-wrap">
-                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handleProductSubGroupSelection}>
-                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                            <img src={bandageIcon} alt="bandage icon">
-                            <h3>Bandages</h3>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
-
+                    <template for:each={productSubGroups} for:item="psg" for:index="psgIndex">
+                        <div key={psg.productSubGroup.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" data-index={psgIndex} onclick={handlePSGClick}>
+                            <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                                <img src={bandageIcon} alt="bandage icon">
+                                <h3>{psg.productSubGroup.Typology_Name_EN}</h3>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handleProductSubGroupSelection}>
-                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                            <img src={prostheticIcon} alt="prosthetic icon">
-                            <h3>Prothesen</h3>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
-
-                        </div>
-                    </div>
+                        </template>
                 </div>
             </lightning-accordion-section>
             <lightning-accordion-section name="D" value="D" label="Selecteer een afspraak type">
                 <div class="slds-grid slds-gutters slds-wrap">
-                    <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small">
-                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                            <img src={bandageIcon} alt="bandage icon">
-                            <h3>Bandages</h3>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
-
+                    <template for:each={appointmentTypes} for:item="at" for:index="atIndex">
+                        <div key={at.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" >
+                            <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical" data-index={atIndex}>
+                                <img src={bandageIcon} alt="appointment type icon" />
+                                <h3>{at.Typology_Name_EN}</h3>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                            </div>
                         </div>
-                    </div>
+                    </template>
                 </div>
             </lightning-accordion-section>
         </lightning-accordion>
+    </div>
 
-        <template for:each={workTypes} for:item="selector">
-                <div key={selector.businessUnit.recordId} style="border: 1px solid grey; padding: 5px; margin: 10px;">
-                    <p onclick={handleBUClick}>{selector.businessUnit.Typology_Name_EN}</p> 
-            <template for:each={selector.productGroups} for:item="group">
-                <div key={group.productGroup.recordId} style="border: 1px solid green; padding: 5px; margin: 10px">
-                    <p>{group.productGroup.Typology_Name_EN}</p>
-              <template for:each={group.productSubGroups} for:item="subGroupWrapper">
-                <div key={subGroupWrapper.productSubGroup.recordId} style="border: 1px solid blue; padding: 5px">
-                  <p>{subGroupWrapper.productSubGroup.Typology_Name_EN}</p>
-                  <template for:each={subGroupWrapper.appointmentTypes} for:item="appt">
-                    <div key={appt.recordId} style="border: 1px solid red;">
-                      <span>{appt.Typology_Name_EN}</span>
-                    </div>
-                  </template>
+
+           <!-- <template for:each={businessUnits} for:item="bu">
+            <div key={bu.recordId}>
+              <p onclick={handleBUClick} data-id={bu.recordId} style="border: 1px solid orange;">
+                {bu.Typology_Name_EN}
+              </p>
+            </div>
+          </template>
+
+          <template if:true={showProductGroups}>
+
+            <template for:each={productGroups} for:item="pg" for:index="pgIndex">
+                <div key={pg.productGroup.recordId}>
+                  <p onclick={handlePGClick} data-index={pgIndex} style="border: 1px solid blue;">
+                    {pg.productGroup.Typology_Name_EN}
+                  </p>
                 </div>
               </template>
-                </div>
             </template>
-        </div>
 
-          </template>  
+            <template for:each={productSubGroups} for:item="psg" for:index="psgIndex">
+                <div key={psg.productSubGroup.recordId}>
+                  <p onclick={handlePSGClick} data-index={psgIndex} style="border: 1px solid red;">
+                    {psg.productSubGroup.Typology_Name_EN}
+                  </p>
+                </div>
+              </template>
+
+
+
+              <template for:each={appointmentTypes} for:item="at" for:index="atIndex">
+                <div key={at.recordId}>
+                  <p style="border: 1px solid green;" data-index={atIndex}>
+                    {at.Typology_Name_EN}
+                  </p>
+                </div>
+              </template>  -->
     
     </div>
 </template>

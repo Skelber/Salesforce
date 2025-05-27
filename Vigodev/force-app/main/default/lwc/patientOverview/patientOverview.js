@@ -3,10 +3,9 @@ import { LightningElement, api } from 'lwc';
 
 export default class PatientOverview extends LightningElement {
     @api jumpToScreen(event){
-        console.log('jumping to screen ' + event.target.value)
         const screenChange = new CustomEvent('screenchange',{
             detail: {
-                screen: event.target.value,
+                screen: event.currentTarget.dataset.id,
                  bubbles: true,
                  composed: true
             }
