@@ -3,11 +3,6 @@
     border-bottom: 1px solid #003f5c;
 }
 
-.link {
-    text-decoration: underline;
-    color: #003f5c;
-    cursor: pointer;
-}
 
 svg {
     cursor: pointer;

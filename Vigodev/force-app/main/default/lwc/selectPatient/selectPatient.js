@@ -14,7 +14,10 @@ export default class SelectPatient extends LightningElement {
         province: null,
         postalCode: null,
         address: null,
-        birthdate: null
+        birthdate: null,
+        bookedForSelf: null,
+        bookedForFirstName : null,
+        bookedForLastName: null
     }
     birthyearPrefix = "19"
     @api jtp
@@ -30,10 +33,10 @@ export default class SelectPatient extends LightningElement {
         this.contact.city = localStorage.getItem('city') || '';
         this.contact.country = localStorage.getItem('country') || '';
         this.contact.birthdate = localStorage.getItem('birthdate') || ''; 
+        this.contact.bookedForSelf = this.checked; 
     }
 
     disconnectedCallback() {
-        console.log('disconnected callback')
         this.passToParent();
     }
 
@@ -49,6 +52,7 @@ export default class SelectPatient extends LightningElement {
     handleToggle() {
         this.checked = !this.checked;
         localStorage.setItem('checked', this.checked);
+        this.contact.bookedForSelf = this.checked;
     }
 
     handleFirstNameChange(event) {

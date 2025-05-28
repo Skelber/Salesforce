@@ -3,8 +3,9 @@ import avatar from "@salesforce/resourceUrl/avatar";
 
 export default class SelectServiceResource extends LightningElement {
     @api notBookableViaWebsite = false;
+    @api worktype = {}
+    @api location = {}
     avatar = avatar;
-
     @track amButtonActive = false;
     pmButtonActive = false;
     @track amButtonVariant = "brand";

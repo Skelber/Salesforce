@@ -5,12 +5,17 @@
         </header>
         <div class="slds-grid slds-wrap slds-p-around_medium">
             <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                <p>Voornaam Patient: {contact.firstName}</p>
-                <p>Achternaam Patient: {contact.lastName}</p>
+                <template if:false={contact.bookedForSelf}>
+                    <p>Voornaam Patient:</p>
+                    <p>Achternaam Patient:</p>
+                    <p>Uw relatie tot de Patient:</p>
+                </template>
+                <p>Uw voornaam: {contact.firstName}</p>
+                <p>Uw achternaam: {contact.lastName}</p>
             </div>
             <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                <p>Email Patient:</p>
-                <p>Telefoonnummer Patient:</p>
+                <p>Email Patient: {contact.email}</p>
+                <p>Telefoonnummer Patient:{contact.phone}</p>
             </div>
         </div>
         <!-- <div class="slds-grid slds-grid_align-end">
@@ -22,7 +27,7 @@
             </header>
             <div class="slds-grid slds-wrap slds-p-around_medium">
                 <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                    <p>Geselecteerd werktype</p>
+                    <p>Geselecteerd werktype: {worktype.WorkTypeName}</p>
                 </div>
                 <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
                 </div>
@@ -70,7 +75,7 @@
             </header>
             <div class="slds-grid slds-wrap slds-p-around_medium">
                 <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                    <p>Opmerking:</p>
+                    <p>Opmerking: {additionalinfo.comment}</p>
                 </div>
                 <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
                     <p>Bijkomende documenten:</p>

@@ -12,10 +12,9 @@ export default class BookAppointment extends LightningElement {
     showScreenSix;
     userLocale = locale;
     @track receivedContact;
-
-    jumpToScreenOne(){
-        console.log('Jumping to screen one.')
-    }
+    @track receivedWorktype;
+    @track receivedLocation;
+    @track receivedAdditionalInfo;
 
     connectedCallback() {
         this.currentStep = "1"
@@ -53,7 +52,22 @@ export default class BookAppointment extends LightningElement {
 
     receiveContact(event) {
         this.receivedContact = event.detail;
-        console.log('received contact: ' + JSON.stringify(this.receivedContact));
+    }
+
+    receiveWorktypeDetails(event){
+        this.receivedWorktype = event.detail
+        console.log('received worktype: ' + JSON.stringify(this.receivedWorktype))
+    }
+
+    receiveLocation(event){
+        console.log('receiving location')
+        this.receivedLocation = event.detail
+        console.log('received location: ' + JSON.stringify(this.receivedLocation))
+    }
+
+    receiveAdditionalInfo(event) {
+        this.receiveAdditionalInfo = event.detail
+        console.log('received info: ' + JSON.stringify(this.receiveAdditionalInfo))
     }
     
 }

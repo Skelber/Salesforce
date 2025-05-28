@@ -22,47 +22,53 @@
                     </div>
                 </lightning-accordion-section>
 
-
-            <lightning-accordion-section name="B" value="B" label="Selecteer een product groep">
+            <template if:true={showProductGroups}>
+              <lightning-accordion-section name="B" value="B" label="Selecteer een product groep">
                 <div class="slds-grid slds-gutters slds-wrap">
-                    <template for:each={productGroups} for:item="pg" for:index="pgIndex">
-                    <div key={pg.productGroup.recordId} data-index={pgIndex} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handlePGClick}>
-                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                            <img src={bandageIcon} alt="bandage icon">
-                            <h3>{pg.productGroup.Typology_Name_EN}</h3>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
-                        </div>
+                  <template for:each={productGroups} for:item="pg" for:index="pgIndex">
+                    <div key={pg.productGroup.recordId} data-id={pg.productGroup.recordId} data-index={pgIndex} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handlePGClick}>
+                      <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                        <img src={bandageIcon} alt="bandage icon">
+                        <h3>{pg.productGroup.Typology_Name_EN}</h3>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                      </div>
                     </div>
-                    </template>
+                  </template>
                 </div>
+              </lightning-accordion-section>
+              </template>
 
-            </lightning-accordion-section>
-            <lightning-accordion-section name="C" value="C" label="Selecteer een product sub-groep">
-                <div class="slds-grid slds-gutters slds-wrap">
+              <template if:true={showProductSubGroups}>
+                <lightning-accordion-section name="C" value="C" label="Selecteer een product sub-groep">
+                  <div class="slds-grid slds-gutters slds-wrap">
                     <template for:each={productSubGroups} for:item="psg" for:index="psgIndex">
-                        <div key={psg.productSubGroup.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" data-index={psgIndex} onclick={handlePSGClick}>
-                            <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                                <img src={bandageIcon} alt="bandage icon">
-                                <h3>{psg.productSubGroup.Typology_Name_EN}</h3>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
-                            </div>
+                      <div key={psg.productSubGroup.recordId} data-id={psg.productSubGroup.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" data-index={psgIndex} onclick={handlePSGClick}>
+                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                          <img src={bandageIcon} alt="bandage icon">
+                          <h3>{psg.productSubGroup.Typology_Name_EN}</h3>
+                          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
                         </div>
-                        </template>
-                </div>
-            </lightning-accordion-section>
-            <lightning-accordion-section name="D" value="D" label="Selecteer een afspraak type">
-                <div class="slds-grid slds-gutters slds-wrap">
-                    <template for:each={appointmentTypes} for:item="at" for:index="atIndex">
-                        <div key={at.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" >
-                            <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical" data-index={atIndex}>
-                                <img src={bandageIcon} alt="appointment type icon" />
-                                <h3>{at.Typology_Name_EN}</h3>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
-                            </div>
-                        </div>
+                      </div>
                     </template>
-                </div>
-            </lightning-accordion-section>
+                  </div>
+                </lightning-accordion-section>
+              </template>
+
+              <template if:true={showAppointmentTypes}>
+                <lightning-accordion-section name="D" value="D" label="Selecteer een afspraak type">
+                  <div class="slds-grid slds-gutters slds-wrap">
+                    <template for:each={appointmentTypes} for:item="at" for:index="atIndex">
+                      <div key={at.recordId} data-id={at.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handleATClick}>
+                        <div class="worktypeSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical" data-index={atIndex}>
+                          <img src={bandageIcon} alt="appointment type icon" />
+                          <h3>{at.Typology_Name_EN}</h3>
+                          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                        </div>
+                      </div>
+                    </template>
+                  </div>
+                </lightning-accordion-section>
+              </template>
         </lightning-accordion>
     </div>
 

@@ -1,7 +1,58 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api ,track } from 'lwc';
 import loationIcon from "@salesforce/resourceUrl/locationIcon";
+import getLocation from '@salesforce/apex/WorktypeSelection.getLocations';
+
 
 export default class SelectLocation extends LightningElement {
 
    locationIconURL = loationIcon;
+   @api worktype = {}
+   @track locations = [];
+   locationId;
+   selectedLocation = {}
+
+
+   connectedCallback() {
+      getLocation({ WorkTypeId: this.worktype.RecordId })
+          .then(result => {
+            if (typeof result === 'string') {
+               try {
+                 result = JSON.parse(result);
+               } catch (e) {
+                 result = [];
+               }
+             }
+     
+             // Store full selector data
+             if (Array.isArray(result)) {
+               this.locations = result;
+     
+               // this.locations = result.map(item => item.location);
+             }
+             console.log(JSON.stringify(this.locations))
+          })
+          .catch(error => {
+              console.error('Error in getLocations:', error);
+          });
+   }
+
+   handleLocationClick(event) {
+      this.locationId = event.currentTarget.dataset.id;
+      console.log('location id ' + this.locationId);
+      const selectedLocation = this.locations.find(
+         location => location.recordId === this.locationId
+      );
+      this.selectedLocation = selectedLocation
+      console.log(JSON.stringify(selectedLocation))
+      this.passToParent();
+   }
+
+   @api passToParent() {
+      const locationInfo = new CustomEvent('locationdetails', {
+        detail: this.selectedLocation,
+        bubbles: true,
+        composed: true
+      });
+      this.dispatchEvent(locationInfo);
+    }
 }

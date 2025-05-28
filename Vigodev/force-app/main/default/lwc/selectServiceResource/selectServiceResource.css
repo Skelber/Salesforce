@@ -34,7 +34,7 @@
     height: 4em; */
 }
 
-.timeslotContainer:Hover, .timeslotContainer:active {
+.timeslotContainer:Hover {
     background-color: #C1E6EF;
 }
 

@@ -11,21 +11,30 @@
             </c-select-patient>
             </template>
             <template if:true={showScreenTwo}>
-                <c-select-worktype></c-select-worktype>
+                <c-select-worktype
+                onworktypedetails={receiveWorktypeDetails}></c-select-worktype>
             </template>
             <template if:true={showScreenThree}>
-                <c-select-location></c-select-location>
+                <c-select-location
+                worktype={receivedWorktype}
+                onlocationdetails={receiveLocation}></c-select-location>
             </template>
             <template if:true={showScreenFour}>
-                <c-select-service-resource></c-select-service-resource>  
+                <c-select-service-resource
+                worktype={receivedWorktype}
+                location={receivedLocation}
+                ></c-select-service-resource>  
             </template>
             <template if:true={showScreenFive}>
-                <c-additional-info></c-additional-info>
+                <c-additional-info
+                onadditionalinfodetails={receiveAdditionalInfo}></c-additional-info>
             </template>
             <template if:true={showScreenSix}>
                 <c-patient-overview 
                 onscreenchange={receiveScreenChange} 
-                contact={receivedContact}>
+                contact={receivedContact}
+                worktype={receivedWorktype}
+                additionalinfo={receiveAdditionalInfo}>
             </c-patient-overview>
             </template>
             
