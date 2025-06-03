@@ -7,7 +7,8 @@
             <c-appointment-progress></c-appointment-progress>
             <template if:true={showScreenOne}>
                 <c-select-patient 
-                onpatientdetails={receiveContact}>
+                onpatientdetails={receiveContact}
+                onscreenonecompleted={validateScreenOne}>
             </c-select-patient>
             </template>
             <template if:true={showScreenTwo}>
@@ -34,6 +35,7 @@
                 onscreenchange={receiveScreenChange} 
                 contact={receivedContact}
                 worktype={receivedWorktype}
+                location={receivedLocation}
                 additionalinfo={receiveAdditionalInfo}>
             </c-patient-overview>
             </template>
@@ -45,7 +47,7 @@
                         <lightning-button label="Vorige" onclick={handlePrevious} class="slds-m-right_small"></lightning-button>
                     </template>
                     <template if:false={showScreenSix}>
-                        <lightning-button variant="brand"  label="Volgende" onclick={handleNext} class="slds-m-right_small"></lightning-button>
+                        <lightning-button variant="brand"  label="Volgende" onclick={handleNext} class="slds-m-right_small" disabled={disableNextButton}></lightning-button>
                     </template>
                     <template if:true={showScreenSix}>
                         <lightning-button variant="brand"  label="Boek afspraak" class="slds-m-right_small"></lightning-button>

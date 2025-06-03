@@ -17,8 +17,9 @@ export default class SelectPatient extends LightningElement {
         birthdate: null,
         bookedForSelf: null,
         bookedForFirstName : null,
-        bookedForLastName: null
+        bookedForLastName: null,
     }
+    contactInfoComplete = false
     birthyearPrefix = "19"
     @api jtp
 
@@ -29,11 +30,14 @@ export default class SelectPatient extends LightningElement {
         this.contact.lastName = localStorage.getItem('lastName') || '';
         this.contact.email = localStorage.getItem('email') || '';
         this.contact.phone = localStorage.getItem('phone') || '';
-        this.contact.street = localStorage.getItem('street') || '';
-        this.contact.city = localStorage.getItem('city') || '';
-        this.contact.country = localStorage.getItem('country') || '';
+        this.contact.street = localStorage.getItem('contactStreet') || '';
+        this.contact.city = localStorage.getItem('contactCity') || '';
+        this.contact.country = localStorage.getItem('contactCountry') || '';
         this.contact.birthdate = localStorage.getItem('birthdate') || ''; 
+        this.contact.postalCode = localStorage.getItem('contactPostalCode') || '';
+        this.contact.province = localStorage.getItem('contactProvince') || '';
         this.contact.bookedForSelf = this.checked; 
+        this.checkCompletion();
     }
 
     disconnectedCallback() {
@@ -59,21 +63,25 @@ export default class SelectPatient extends LightningElement {
         const value = event.target.value;
         this.contact.firstName = value;
         localStorage.setItem('firstName', value);
+        this.checkCompletion()
     }
     handleLastNameChange(event) {
         const value = event.target.value;
         this.contact.lastName = event.target.value;
         localStorage.setItem('lastName', value);
+        this.checkCompletion()
     }
     handleEmailChange(event) {
         const value = event.target.value;
         this.contact.email = event.target.value;
         localStorage.setItem('email', value);
+        this.checkCompletion()
     }
     handlePhoneChange(event) {
         const value = event.target.value;
         this.contact.phone = event.target.value;
         localStorage.setItem('phone', value);
+        this.checkCompletion()
     }
 
     handleRSZChange(event) {
@@ -116,6 +124,16 @@ export default class SelectPatient extends LightningElement {
     
         return checksum === lastTwoDigits;
     }
+
+    checkCompletion(){
+        if(this.contact.firstName && this.contact.lastName && this.contact.email && this.contact.phone) {
+            this.contactInfoComplete = true;
+        } else {
+            this.contactInfoComplete = false;
+        }
+
+        this.screenOneCompletion()
+    }
     
 
     setBirthDate(value) {
@@ -133,19 +151,32 @@ export default class SelectPatient extends LightningElement {
     
 
     async handleAddressChange(event) {
-        const streetValue = event.target.street;
-        const cityValue = event.target.city;
-        const countryValue = event.target.country;
-        const provinceValue = event.target.province;
-        const postalCodeValue = event.target.postalCode;;
+        this.contact.street = event.target.street;
+        this.contact.city = event.target.city;
+        this.contact.country = event.target.country;
+        this.contact.province= event.target.province;
+        this.contact.postalCode = event.target.postalCode;
 
-        localStorage.setItem('contactStreet', streetValue);
-        localStorage.setItem('contactCity', cityValue);
-        localStorage.setItem('contactCountry', countryValue);
-        localStorage.setItem('contactProvince', provinceValue);
-        localStorage.setItem('contactPostalCode', postalCodeValue);
+       this.contact.address = this.contact.street + this.contact.city + this.contact.country +  this.contact.province + this.contact.postalCode        
+
+        localStorage.setItem('contactStreet', this.contact.street);
+        localStorage.setItem('contactCity', this.contact.city);
+        localStorage.setItem('contactCountry', this.contact.country);
+        localStorage.setItem('contactProvince', this.contact.province);
+        localStorage.setItem('contactPostalCode', this.contact.postalCode);
     }
 
+    @api screenOneCompletion() {
+        const contactInfoComplete = this.contactInfoComplete
+        const patientCompletion = new CustomEvent('screenonecompleted',{
+            detail: {
+                contactInfoComplete,
+                bubbles: true,
+                composed: true
+            }
+        });
+        this.dispatchEvent(patientCompletion);
+    }
     @api passToParent() {
         const patientInfo = new CustomEvent('patientdetails',{
             detail: {

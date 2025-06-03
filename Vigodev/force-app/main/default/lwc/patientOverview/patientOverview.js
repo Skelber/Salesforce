@@ -5,6 +5,7 @@ export default class PatientOverview extends LightningElement {
     @api contact= {}
     @api additionalinfo={}
     @api worktype = {}
+    @api location = {}
     
     @api jumpToScreen(event){
         const screenChange = new CustomEvent('screenchange',{

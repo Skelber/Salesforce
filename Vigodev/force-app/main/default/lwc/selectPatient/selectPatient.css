@@ -11,6 +11,11 @@ lightning-input, lightning-input-address, lightning-radio-group{
     font-weight: bold;
 }
 
+
+.slds-radio_button__label{
+    background-color: #C1E6EF;
+}
+
 @media only screen and (max-width: 600px) {
     lightning-input, lightning-input-address, input, lightning-radio-group{
         width: 90%;

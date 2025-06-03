@@ -43,7 +43,6 @@ export default class SelectWorktype extends LightningElement {
     getWorkTypology() {
       getWorkTypologies()
         .then(result => {
-          // If result is JSON string, parse it
           if (typeof result === 'string') {
             try {
               result = JSON.parse(result);
@@ -52,7 +51,6 @@ export default class SelectWorktype extends LightningElement {
             }
           }
   
-          // Store full selector data
           if (Array.isArray(result)) {
             this.workTypes = result;
   
@@ -90,7 +88,14 @@ export default class SelectWorktype extends LightningElement {
       }
       this.productSubGroups = [];
       this.activeSection = "B"
-  }
+      requestAnimationFrame(() => {
+        const anchor = this.template.querySelector('[data-scroll-anchor="section-b"]');
+        if (anchor) {
+          console.log('anchor found')
+            anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+    }
 
     handlePGClick(event) {
       this.productGroupId = event.currentTarget.dataset.id;
@@ -107,6 +112,13 @@ export default class SelectWorktype extends LightningElement {
         console.warn('No subgroups found for this product group:', selectedPG);
       }
       this.activeSection = "C"
+      requestAnimationFrame(() => {
+        const anchor = this.template.querySelector('[data-scroll-anchor="section-c"]');
+        if (anchor) {
+          console.log('anchor found')
+            anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
   }
 
   handlePSGClick(event) {
@@ -123,6 +135,20 @@ export default class SelectWorktype extends LightningElement {
       console.warn('No appointment types found for this sub group:', selectedPSG);
     }
     this.activeSection = "D"
+    requestAnimationFrame(() => {
+      const anchor = this.template.querySelector('[data-scroll-anchor="section-d"]');
+      if (anchor) {
+        console.log('anchor found')
+          anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+    const tappables = this.template.querySelectorAll('appointmentType');
+    tappables.forEach(el => {
+      el.removeEventListener('touchstart', this.handleATClick);
+      el.removeEventListener('click', this.handleATClick);
+      el.addEventListener('touchstart', this.handleATClick, { passive: true });
+      el.addEventListener('click', this.handleATClick);
+    });
 }
 
   setSectionVisibillity(){
@@ -137,32 +163,38 @@ export default class SelectWorktype extends LightningElement {
     }
   }
 
+handleATClick = (event) => {
+    const target = event.currentTarget.closest('[data-id]');
+    if (!target) {
+        console.warn('No data-id found on click target');
+        return;
+    }
 
-  @api handleATClick(event) {
-    this.appointmentTypeId = event.currentTarget.dataset.id;
-  
+    const recordId = target.dataset.id;
+    this.appointmentTypeId = recordId;
+    console.log('Appointment type selected:', recordId);
+
     getWorkType({
-      BusinessUnitId: this.businessUnitId,
-      ProductGroupId: this.productGroupId,
-      ProductSubGroupId: this.productSubGroupId,
-      AppointmentId: this.appointmentTypeId
+        BusinessUnitId: this.businessUnitId,
+        ProductGroupId: this.productGroupId,
+        ProductSubGroupId: this.productSubGroupId,
+        AppointmentId: this.appointmentTypeId
     })
     .then(result => {
-      if (typeof result === 'string') {
-        try {
-          result = JSON.parse(result);
-        } catch (e) {
-          result = {};
+        if (typeof result === 'string') {
+            try {
+                result = JSON.parse(result);
+            } catch (e) {
+                result = {};
+            }
         }
-      }
-  
-      this.workType = result;
-      this.passToParent();
+        this.workType = result;
+        this.passToParent();
     })
     .catch(error => {
-      console.error('Error in getWorkType:', error);
+        console.error('Error in getWorkType:', error);
     });
-  }
+}
 
     handleSectionHeaderClick(event){
         this.activeSection = event.target.value
@@ -170,12 +202,11 @@ export default class SelectWorktype extends LightningElement {
 
     @api passToParent() {
       const worktypeInfo = new CustomEvent('worktypedetails', {
-        detail: this.workType, // pass the object directly
+        detail: this.workType,
         bubbles: true,
         composed: true
       });
       this.dispatchEvent(worktypeInfo);
     }
-    
     
 }

@@ -9,6 +9,9 @@
     border: 2px solid #003f5c;
     border-radius: 15px;
     transition: 400ms;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
 }
 
 .worktypeSelection:hover {

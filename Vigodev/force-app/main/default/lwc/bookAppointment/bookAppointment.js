@@ -10,6 +10,12 @@ export default class BookAppointment extends LightningElement {
     showScreenFour;
     showScreenFive;
     showScreenSix;
+    screenOneComplete;
+    screenTwoComplete;
+    screenThreeComplete;
+    screenFourComplete;
+    screenFiveComplete;
+    disableNextButton;
     userLocale = locale;
     @track receivedContact;
     @track receivedWorktype;
@@ -33,6 +39,23 @@ export default class BookAppointment extends LightningElement {
         this.currentStep == "4" ? this.showScreenFour = true : this.showScreenFour = false;
         this.currentStep == "5" ? this.showScreenFive = true : this.showScreenFive = false;
         this.currentStep == "6" ? this.showScreenSix = true : this.showScreenSix = false;
+        this.enableNextButton();
+    }
+
+    enableNextButton() {
+        if(this.currentStep == "1" && this.screenOneComplete == true || 
+            this.currentStep == "2" && this.receivedWorktype !=null || 
+            this.currentStep == "3" && this.receivedLocation || 
+            this.currentStep == "4" ||
+            this.currentStep == "5" ||
+            this.currentStep == "6"
+        ) {
+            this.disableNextButton = false;
+        } else {
+            this.disableNextButton = true;
+        }
+        console.log('buttonstate: ' + this.disableNextButton)
+
     }
 
 
@@ -52,17 +75,26 @@ export default class BookAppointment extends LightningElement {
 
     receiveContact(event) {
         this.receivedContact = event.detail;
+        console.log(JSON.stringify(this.receivedContact))
+    }
+
+    validateScreenOne(event) {
+        this.screenOneComplete = event.detail.contactInfoComplete;
+        console.log('screen one complete: ' + JSON.stringify(this.screenOneComplete))
+        this.enableNextButton()
     }
 
     receiveWorktypeDetails(event){
         this.receivedWorktype = event.detail
         console.log('received worktype: ' + JSON.stringify(this.receivedWorktype))
+        this.enableNextButton()
     }
 
     receiveLocation(event){
         console.log('receiving location')
         this.receivedLocation = event.detail
         console.log('received location: ' + JSON.stringify(this.receivedLocation))
+        this.enableNextButton();
     }
 
     receiveAdditionalInfo(event) {
