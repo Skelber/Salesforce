@@ -3,21 +3,28 @@
 <template>
     <div class="patientinput slds-p-around_large">
         <div class="slds-align_absolute-center">
-            <lightning-input  type="toggle" label="Ik boek een afspraak voor mezelf" checked={checked} onchange={handleToggle}></lightning-input>
+            <lightning-input  type="toggle" label="Ik boek een afspraak voor iemand anders" checked={contact.bookedForSelf} onchange={handleToggle}></lightning-input>
         </div>
-        <template if:false={checked}>
+        <template if:true={checked}>
                 <div class="slds-align_absolute-center">
-                    <lightning-input type="Text" label="Voornaam Gebruiker"></lightning-input>
+                    <lightning-input type="Text" label="Uw voornaam" value={contact.bookedForFirstName} onchange={handleForContactFirstNameChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
-                    <lightning-input type="Text" label="Achternaam Gebruiker"></lightning-input>
+                    <lightning-input type="Text" label="Uw achternaam" value={contact.bookedForLastName} onchange={handleForContactLastNameChange}></lightning-input>
+                </div>
+                <div class="slds-align_absolute-center">
+                    <lightning-input  type="email" label="Uw email" value={contact.email} onchange={handleEmailChange}></lightning-input>
+                </div>
+                <div class="slds-align_absolute-center">
+                    <lightning-input  type="text" label="Uw telefoonnummer" value={contact.phone} onchange={handlePhoneChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
                     <lightning-radio-group name="radioGroup"
                     label="Relatie tot gebruiker"
-                    class="radioGroup"
+                    class="radioGroup slds-align_absolute-center"
                     options={options}
-                    value={value}
+                    value={contact.relationToPatient}
+                    onclick={handleRelationToPatient}
                     type="button">
                 </lightning-radio-group>
             </div>
@@ -29,13 +36,16 @@
         <div class="slds-align_absolute-center">
             <lightning-input  type="text" label="Achternaam" value={contact.lastName} onchange={handleLastNameChange}></lightning-input>
         </div>
-        <div class="slds-align_absolute-center">
-            <lightning-input  type="email" label="Email" value={contact.email} onchange={handleEmailChange}></lightning-input>
-        </div>
-        <div class="slds-align_absolute-center">
-            <lightning-input  type="text" label="Telefoonnummer" value={contact.phone} onchange={handlePhoneChange}></lightning-input>
-        </div>
-        <div class="slds-align_absolute-center">
+        <template if:false={checked}>
+
+            <div class="slds-align_absolute-center">
+                <lightning-input  type="email" label="Email" value={contact.email} onchange={handleEmailChange}></lightning-input>
+            </div>
+            <div class="slds-align_absolute-center">
+                <lightning-input  type="text" label="Telefoonnummer" value={contact.phone} onchange={handlePhoneChange}></lightning-input>
+            </div>
+        </template>
+            <div class="slds-align_absolute-center">
             <lightning-input class="inputCmp"  type="text" label="Rijksregisternummer" value={contact.RSZ} onchange={handleRSZChange}></lightning-input>
         </div>
         <div class="slds-align_absolute-center">

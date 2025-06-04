@@ -53,12 +53,11 @@ export default class SelectWorktype extends LightningElement {
   
           if (Array.isArray(result)) {
             this.workTypes = result;
-  
+            
             this.businessUnits = result.map(item => item.businessUnit);
           } else if (result.workTypeSelector) {
             this.workTypes = Array.from(result.workTypeSelector);
             this.businessUnits = this.workTypes.map(item => item.businessUnit);
-            console.log(this.businessUnits)
           } else {
             this.workTypes = [];
             this.businessUnits = [];
@@ -69,13 +68,27 @@ export default class SelectWorktype extends LightningElement {
         });
   }
 
+  // showSelection(recordId) {
+  //      const previouslySelected = this.template.querySelector('.worktypeSelection.selected');
+  //      if (previouslySelected) {
+  //          previouslySelected.classList.remove('selected');
+  //      }
+   
+  //      const wrapper = this.template.querySelector(`[data-id="${recordId}"]`);
+  //      if (wrapper) {
+  //          const innerDiv = wrapper.querySelector('.worktypeSelection');
+  //          if (innerDiv) {
+  //              innerDiv.classList.add('selected');
+  //          }
+  //      }
+  // }
+
     handleBUClick(event) {
       this.businessUnitId = event.currentTarget.dataset.id;
       const recordId = event.currentTarget.dataset.id
       const selected = this.workTypes.find(
         wt => wt.businessUnit?.recordId === recordId
       );
-      
       if (selected) {
         this.productGroups = selected.productGroups || [];
         this.productSubGroups = [];
@@ -87,14 +100,29 @@ export default class SelectWorktype extends LightningElement {
         console.warn('No matching business unit found for:', recordId);
       }
       this.productSubGroups = [];
-      this.activeSection = "B"
-      requestAnimationFrame(() => {
-        const anchor = this.template.querySelector('[data-scroll-anchor="section-b"]');
-        if (anchor) {
-          console.log('anchor found')
+
+      const previouslySelected = this.template.querySelector('.buSelection.selected');
+       if (previouslySelected) {
+           previouslySelected.classList.remove('selected');
+       }
+   
+       const wrapper = this.template.querySelector(`[data-id="${recordId}"]`);
+       if (wrapper) {
+           const innerDiv = wrapper.querySelector('.buSelection');
+           if (innerDiv) {
+               innerDiv.classList.add('selected');
+           }
+       }
+
+      setTimeout(() => {
+        this.activeSection = "B"
+        requestAnimationFrame(() => {
+          const anchor = this.template.querySelector('[data-scroll-anchor="section-b"]');
+          if (anchor) {
             anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    });
+          }
+        });
+      }, 300)
     }
 
     handlePGClick(event) {
@@ -111,14 +139,29 @@ export default class SelectWorktype extends LightningElement {
         this.productSubGroups = [];
         console.warn('No subgroups found for this product group:', selectedPG);
       }
-      this.activeSection = "C"
-      requestAnimationFrame(() => {
-        const anchor = this.template.querySelector('[data-scroll-anchor="section-c"]');
-        if (anchor) {
-          console.log('anchor found')
-            anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    });
+
+      const previouslySelected = this.template.querySelector('.pgSelection.selected');
+       if (previouslySelected) {
+           previouslySelected.classList.remove('selected');
+       }
+   
+       const wrapper = this.template.querySelector(`[data-id="${this.productGroupId}"]`);
+       if (wrapper) {
+           const innerDiv = wrapper.querySelector('.pgSelection');
+           if (innerDiv) {
+               innerDiv.classList.add('selected');
+           }
+       }
+
+      setTimeout(() => {
+        this.activeSection = "C"
+        requestAnimationFrame(() => {
+          const anchor = this.template.querySelector('[data-scroll-anchor="section-c"]');
+          if (anchor) {
+              anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+      });
+    }, 300)
   }
 
   handlePSGClick(event) {
@@ -134,21 +177,29 @@ export default class SelectWorktype extends LightningElement {
     } else {
       console.warn('No appointment types found for this sub group:', selectedPSG);
     }
-    this.activeSection = "D"
-    requestAnimationFrame(() => {
-      const anchor = this.template.querySelector('[data-scroll-anchor="section-d"]');
-      if (anchor) {
-        console.log('anchor found')
-          anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-    const tappables = this.template.querySelectorAll('appointmentType');
-    tappables.forEach(el => {
-      el.removeEventListener('touchstart', this.handleATClick);
-      el.removeEventListener('click', this.handleATClick);
-      el.addEventListener('touchstart', this.handleATClick, { passive: true });
-      el.addEventListener('click', this.handleATClick);
-    });
+
+    const previouslySelected = this.template.querySelector('.psgSelection.selected');
+       if (previouslySelected) {
+           previouslySelected.classList.remove('selected');
+       }
+   
+       const wrapper = this.template.querySelector(`[data-id="${this.productSubGroupId}"]`);
+       if (wrapper) {
+           const innerDiv = wrapper.querySelector('.psgSelection');
+           if (innerDiv) {
+               innerDiv.classList.add('selected');
+           }
+       }
+    setTimeout(() => {
+      this.activeSection = "D"
+      requestAnimationFrame(() => {
+        const anchor = this.template.querySelector('[data-scroll-anchor="section-d"]');
+        if (anchor) {
+          console.log('anchor found')
+            anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+  }, 300)
 }
 
   setSectionVisibillity(){
@@ -172,7 +223,19 @@ handleATClick = (event) => {
 
     const recordId = target.dataset.id;
     this.appointmentTypeId = recordId;
-    console.log('Appointment type selected:', recordId);
+
+    const previouslySelected = this.template.querySelector('.atSelection.selected');
+       if (previouslySelected) {
+           previouslySelected.classList.remove('selected');
+       }
+   
+       const wrapper = this.template.querySelector(`[data-id="${recordId}"]`);
+       if (wrapper) {
+           const innerDiv = wrapper.querySelector('.atSelection');
+           if (innerDiv) {
+               innerDiv.classList.add('selected');
+           }
+       }
 
     getWorkType({
         BusinessUnitId: this.businessUnitId,
@@ -198,6 +261,7 @@ handleATClick = (event) => {
 
     handleSectionHeaderClick(event){
         this.activeSection = event.target.value
+        console.log('active section: ' + this.activeSection)
     }
 
     @api passToParent() {

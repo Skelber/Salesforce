@@ -6,8 +6,8 @@
         <div class="slds-grid slds-wrap slds-p-around_medium">
             <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
                 <template if:false={contact.bookedForSelf}>
-                    <p>Voornaam Patient:</p>
-                    <p>Achternaam Patient:</p>
+                    <p>Voornaam Patient: {contact.bookedForFirstName}</p>
+                    <p>Achternaam Patient: {contact.bookedForLastName}</p>
                     <p>Uw relatie tot de Patient:</p>
                 </template>
                 <p>Uw voornaam: {contact.firstName}</p>

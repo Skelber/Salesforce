@@ -1,5 +1,10 @@
-lightning-input, lightning-input-address, lightning-radio-group{
+lightning-input, lightning-input-address{
     width: 40%;
+}
+
+lightning-radio-group{
+    width: 40%;
+    /* border: 1px solid black; */
 }
 
 .patientSelect {
@@ -18,6 +23,6 @@ lightning-input, lightning-input-address, lightning-radio-group{
 
 @media only screen and (max-width: 600px) {
     lightning-input, lightning-input-address, input, lightning-radio-group{
-        width: 90%;
+        width: 100%;
     }
   }

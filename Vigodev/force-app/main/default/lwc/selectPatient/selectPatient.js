@@ -18,14 +18,20 @@ export default class SelectPatient extends LightningElement {
         bookedForSelf: null,
         bookedForFirstName : null,
         bookedForLastName: null,
+        relationToPatient: null,
     }
     contactInfoComplete = false
     birthyearPrefix = "19"
     @api jtp
 
     connectedCallback() {
-        this.checked = true;
-        this.checked = localStorage.getItem('checked');     
+        const storedValue = localStorage.getItem('checked');
+        this.contact.bookedForSelf = storedValue !== null ? storedValue === 'true' : true;
+        console.log('booked for self in connected callback: ' + this.contact.bookedForSelf)   
+        this.checked = this.contact.bookedForSelf;
+        this.contact.bookedForFirstName = localStorage.getItem('bookedForFirstName') || '';
+        this.contact.bookedForLastName = localStorage.getItem('bookedForLastName') || '';
+        this.contact.relationToPatient = localStorage.getItem('relationToPatient') || '';
         this.contact.firstName = localStorage.getItem('firstName') || '';
         this.contact.lastName = localStorage.getItem('lastName') || '';
         this.contact.email = localStorage.getItem('email') || '';
@@ -36,7 +42,6 @@ export default class SelectPatient extends LightningElement {
         this.contact.birthdate = localStorage.getItem('birthdate') || ''; 
         this.contact.postalCode = localStorage.getItem('contactPostalCode') || '';
         this.contact.province = localStorage.getItem('contactProvince') || '';
-        this.contact.bookedForSelf = this.checked; 
         this.checkCompletion();
     }
 
@@ -54,9 +59,33 @@ export default class SelectPatient extends LightningElement {
     }
     
     handleToggle() {
-        this.checked = !this.checked;
-        localStorage.setItem('checked', this.checked);
-        this.contact.bookedForSelf = this.checked;
+        if(this.contact.bookedForSelf) {
+            this.contact.bookedForSelf = false
+        } else {
+            this.contact.bookedForSelf = true
+        }
+        const value = this.contact.bookedForSelf;   
+        this.checked = this.contact.bookedForSelf;
+        localStorage.setItem('checked', value);
+        console.log(this.contact.bookedForSelf)
+    }
+
+    handleForContactFirstNameChange(event){
+        const value = event.target.value;
+        this.contact.bookedForFirstName = value;
+        localStorage.setItem('bookedForFirstName', value);
+    }
+
+    handleForContactLastNameChange(event){
+        const value = event.target.value;
+        this.contact.bookedForLastName = value;
+        localStorage.setItem('bookedForLastName', value);
+    }
+
+    handleRelationToPatient(event){
+        const value = event.target.value;
+        this.contact.relationToPatient = value;
+        localStorage.setItem('relationToPatient', value);
     }
 
     handleFirstNameChange(event) {
@@ -177,6 +206,7 @@ export default class SelectPatient extends LightningElement {
         });
         this.dispatchEvent(patientCompletion);
     }
+    
     @api passToParent() {
         const patientInfo = new CustomEvent('patientdetails',{
             detail: {
