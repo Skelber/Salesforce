@@ -2,8 +2,8 @@
 
 <template>
     <div class="slds-p-around_large slds-grid slds-wrap slds-gutters">
-        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4">
-            <h2 class="slds-m-vertical_medium header slds-align_absolute-center">Selecteer een werktype</h2>
+        <div class="slds-align_absolute-center header">
+            <h2 class="slds-m-vertical_medium slds-align_absolute-center">Selecteer een werktype</h2>
         </div>
 
 
@@ -73,44 +73,5 @@
               </template>
         </lightning-accordion>
     </div>
-
-
-           <!-- <template for:each={businessUnits} for:item="bu">
-            <div key={bu.recordId}>
-              <p onclick={handleBUClick} data-id={bu.recordId} style="border: 1px solid orange;">
-                {bu.Typology_Name_EN}
-              </p>
-            </div>
-          </template>
-
-          <template if:true={showProductGroups}>
-
-            <template for:each={productGroups} for:item="pg" for:index="pgIndex">
-                <div key={pg.productGroup.recordId}>
-                  <p onclick={handlePGClick} data-index={pgIndex} style="border: 1px solid blue;">
-                    {pg.productGroup.Typology_Name_EN}
-                  </p>
-                </div>
-              </template>
-            </template>
-
-            <template for:each={productSubGroups} for:item="psg" for:index="psgIndex">
-                <div key={psg.productSubGroup.recordId}>
-                  <p onclick={handlePSGClick} data-index={psgIndex} style="border: 1px solid red;">
-                    {psg.productSubGroup.Typology_Name_EN}
-                  </p>
-                </div>
-              </template>
-
-
-
-              <template for:each={appointmentTypes} for:item="at" for:index="atIndex">
-                <div key={at.recordId}>
-                  <p style="border: 1px solid green;" data-index={atIndex}>
-                    {at.Typology_Name_EN}
-                  </p>
-                </div>
-              </template>  -->
-    
     </div>
 </template>

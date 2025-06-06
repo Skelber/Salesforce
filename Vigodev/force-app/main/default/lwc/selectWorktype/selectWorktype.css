@@ -1,7 +1,7 @@
 .header {
     background-color: #C1E6EF;
-    padding: 10px;
-    border-radius: 15px;
+    border-radius: 12px;
+    width: 40%;
 }
 
 .worktypeSelection {

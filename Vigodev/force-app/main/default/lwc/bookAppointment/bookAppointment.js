@@ -20,6 +20,7 @@ export default class BookAppointment extends LightningElement {
     @track receivedContact;
     @track receivedWorktype;
     @track receivedLocation;
+    @track receivedSlot;
     @track receivedAdditionalInfo;
 
     connectedCallback() {
@@ -46,7 +47,7 @@ export default class BookAppointment extends LightningElement {
         if(this.currentStep == "1" && this.screenOneComplete == true || 
             this.currentStep == "2" && this.receivedWorktype !=null || 
             this.currentStep == "3" && this.receivedLocation || 
-            this.currentStep == "4" ||
+            this.currentStep == "4" && this.receivedSlot ||
             this.currentStep == "5" ||
             this.currentStep == "6"
         ) {
@@ -96,6 +97,13 @@ export default class BookAppointment extends LightningElement {
         console.log('received location: ' + JSON.stringify(this.receivedLocation))
         this.enableNextButton();
     }
+
+    receiveSlotDetails(event){
+        this.receivedSlot = event.detail
+        console.log('selected slot: ' + JSON.stringify(this.receivedSlot))
+        this.enableNextButton()
+    }
+    
 
     receiveAdditionalInfo(event) {
         this.receiveAdditionalInfo = event.detail

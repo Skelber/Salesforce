@@ -46,6 +46,10 @@
     border: none;
 }
 
+.fillerSlot {
+    border: none !important;
+}
+
 img {
     height: 50px;
     width: auto;

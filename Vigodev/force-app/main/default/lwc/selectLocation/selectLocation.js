@@ -45,6 +45,19 @@ export default class SelectLocation extends LightningElement {
       this.selectedLocation = selectedLocation
       console.log(JSON.stringify(selectedLocation))
       this.passToParent();
+
+      const previouslySelected = this.template.querySelector('.locationSelection.selected');
+       if (previouslySelected) {
+           previouslySelected.classList.remove('selected');
+       }
+   
+       const wrapper = this.template.querySelector(`[data-id="${this.locationId}"]`);
+       if (wrapper) {
+           const innerDiv = wrapper.querySelector('.locationSelection');
+           if (innerDiv) {
+               innerDiv.classList.add('selected');
+           }
+       }
    }
 
    @api passToParent() {

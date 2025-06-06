@@ -10,13 +10,7 @@ public class WorktypeSelection {
               FROM WorkTypeGroup 
              WHERE IsActive = TRUE AND Visible_on_website__c = TRUE
         ]);
-        
-        List<Work_Type_Typology__c> typologyList = new List<Work_Type_Typology__c>([
-            SELECT Id, Name, 
-            	   Guiding_Text_EN__c, Guiding_Text_NL__c, Guiding_Text_FR__c, 
-            	   Image_Link__c, Typology_Name_NL__c, Typology_Name_FR__c            
-              FROM Work_Type_Typology__c 
-        ]);        
+             
         Map<Id, Work_Type_Typology__c> typologyMap = new Map<Id, Work_Type_Typology__c>();
         typologyMap.putAll(new List<Work_Type_Typology__c>([SELECT Id, Name, 
                                                                    Guiding_Text_EN__c, Guiding_Text_NL__c, Guiding_Text_FR__c, 
@@ -96,8 +90,8 @@ public class WorktypeSelection {
                 buList.add(new BusinessUnit (bu, pgList));
             }
         }
+        
         String JSONstring = JSON.serializePretty(buList);
-        //System.debug(JSONstring);
         return JSONString;
     }
     
@@ -105,7 +99,7 @@ public class WorktypeSelection {
     public static String getWorkType(Id BusinessUnitId, Id ProductGroupId, Id ProductSubGroupId, Id AppointmentId) {
         
         List<WorkTypeGroupMember> wtgroupmember = new List<WorkTypeGroupMember>([SELECT Id, WorkTypeId, WorkTypeGroupId, WorkTypeGroup.Bookable_on_website__c,
-                                                                                 		WorkType.ApptStartTimeIntvlInMin, WorkType.EstimatedDuration, WorkType.Name
+                                                                                 		WorkType.Work_Type_Name_FR__c, WorkType.EstimatedDuration, WorkType.Name
                                                                                    FROM WorkTypeGroupMember
                                                                                   WHERE WorkTypeGroup.Appointment_Type_Lookup__c = :AppointmentId
                                                                                         AND WorkTypeGroup.Business_Unit_Lookup__c = :BusinessUnitId
@@ -115,15 +109,101 @@ public class WorktypeSelection {
                                                                                        AND WorkTypeGroup.Visible_on_website__c = TRUE]);
         FullWorkType fullwt;        
         if(wtGroupMember.size() > 0) 
-            fullwt = new FullWorkType (wtgroupmember[0].WorkType.Name, wtgroupmember[0].WorkType.ApptStartTimeIntvlInMin, 
+            fullwt = new FullWorkType (wtgroupmember[0].WorkType.Name, wtgroupmember[0].WorkType.Work_Type_Name_FR__c, 
                                        wtgroupmember[0].WorkType.EstimatedDuration, wtgroupmember[0].WorkTypeId, wtgroupmember[0].WorkTypeGroup.Bookable_on_website__c);
         
         String JSONstring = JSON.serializePretty(fullwt);
         return JSONString;
     }
     
+    @AuraEnabled(cacheable=true)
+    public static String getLocations(Id WorkTypeId) {
+        List<ServiceTerritoryWorkType> territories = new List<ServiceTerritoryWorkType>([SELECT Id, ServiceTerritoryId, ServiceTerritory.Name, ServiceTerritory.Address
+                                                                                           FROM ServiceTerritoryWorkType 
+                                                                                          WHERE WorkTypeId = :WorkTypeId
+                                                                                        ORDER BY ServiceTerritory.Name DESC]);
+        List<FullAddress> addressList = new List<FullAddress>();        
+        if(territories.size() > 0) {
+            for(ServiceTerritoryWorkType terr : territories) {
+            	FullAddress fullad = new FullAddress (terr.ServiceTerritoryId, terr.ServiceTerritory.Name, terr.ServiceTerritory.Address);
+                addressList.add(fullad);
+            }
+        }
+            
+        String JSONstring = JSON.serializePretty(addressList);
+        return JSONString;
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static String getPossibleTimeslot(Date selectedDate, Id locatonId, Id workTypeId ) {
+        
+        //Get policy
+        List <AppointmentSchedulingPolicy> policyId = [SELECT Id FROM AppointmentSchedulingPolicy WHERE MasterLabel ='VIGO Scheduling Policy' LIMIT 1];
+        
+        //Build WorkType
+        lxscheduler.WorkType workType = new lxscheduler.WorkTypeBuilder()
+            .setId(workTypeId)
+            .build();
+        
+        //getAppointmentCandidates        
+        Datetime startdatetime = DateTime.newInstance(selectedDate, Time.newInstance(0, 0, 0, 0));
+        lxscheduler.GetAppointmentCandidatesInput input = new lxscheduler.GetAppointmentCandidatesInputBuilder()
+            .setWorkType(workType)
+            .setTerritoryIds(new List<String>{locatonId})
+            .setStartTime(startdatetime.format('yyyy-MM-dd\'T\'HH:mm:ssZ'))
+            .setEndTime(startdatetime.addDays(1).format('yyyy-MM-dd\'T\'HH:mm:ssZ'))
+            //  .setAccountId('001RM0000053iQgYAI')
+            .setSchedulingPolicyId(policyId[0].Id)
+            .setApiVersion(Double.valueOf('59.0'))
+            .build();
+        
+        String response = lxscheduler.SchedulerResources.getAppointmentCandidates(input);
+        System.debug(response);
+        
+        List<ResponseWrapper> wrapperResult = (List<ResponseWrapper>)JSON.deserialize(response, List<ResponseWrapper>.class);
+        System.debug(wrapperResult);
+        
+        Map<Id, List<DateTime>> resultMap = new Map<Id, List<DateTime>>();
+        Set<Id> resourceList = new Set<Id>();
+        for (ResponseWrapper wrapper : wrapperResult) {
+                        
+            List<String> dateList = wrapper.startTime.split('T');
+            DateTime slot = Datetime.newInstance(Integer.valueOf(dateList[0].split('-')[0]), Integer.valueOf(dateList[0].split('-')[1]), Integer.valueOf(dateList[0].split('-')[2]), Integer.valueOf(dateList[1].split(':')[0]), Integer.valueOf(dateList[1].split(':')[1]), 0);
+            TimeZone tz = UserInfo.getTimeZone();
+            Integer milliSeconds = tz.getOffset(slot);
+            Integer minutes = milliSeconds / 60000;
+            Integer offSetHours = minutes / 60;
+            slot = slot.addHours(offSetHours);
+            
+            for (Id resourceId : wrapper.resources) {         
+                String keyname = string.valueOf(resourceId);
+                if(!resultMap.containsKey(keyname)){
+                    resultMap.put(keyname, new List<DateTime>());
+                }
+                resultMap.get(keyname).add(slot);
+                resourceList.add(resourceId);
+            }
+            
+        }
+
+        List<AvailableSlot> fullSlots = new List<AvailableSlot>();
+        Map<Id, ServiceResource> resourceMap = new Map<Id, ServiceResource>([SELECT Id, Name, RelatedRecord.FirstName, RelatedRecord.LastName FROM ServiceResource WHERE Id IN :resourceList]);
+        for(Id resourceId : resultMap.keySet()) {
+            List<DateTime> slots = resultMap.get(resourceId);
+            if(slots <> null && slots.size() > 0) {
+                ServiceResource2 sr = new ServiceResource2(resourceId, resourceMap.get(resourceId).RelatedRecord.FirstName + ' ' + resourceMap.get(resourceId).RelatedRecord.LastName.left(1) );
+                AvailableSlot av = new AvailableSlot(sr, slots);
+                fullSlots.add(av);
+            }
+        }
+        
+        String JSONstring = JSON.serializePretty(fullSlots);
+        System.debug(JSONstring);
+        return JSONString;
+    }
     
 /*	########################################     INNER CLASSES	   ########################################*/
+    
     private class BusinessUnit {
         
         private WorkType2 businessUnit {get; set;}
@@ -164,7 +244,8 @@ public class WorktypeSelection {
         
         private String Guiding_Text_EN  {get; set;}
         private String Guiding_Text_FR  {get; set;}
-        private String Guiding_Text_NL  {get; set;}
+        private String Guiding_Text_NL  {get; set;} 
+        private Boolean Has_Image_Link  {get; set;}
         private String Image_Link       {get; set;}
         private String Typology_Name_EN {get; set;}
         private String Typology_Name_FR {get; set;}
@@ -175,6 +256,7 @@ public class WorktypeSelection {
             Guiding_Text_EN = gtEN;
             Guiding_Text_FR = gtFR;
             Guiding_Text_NL = gtNL;
+            Has_Image_Link = !(String.isEmpty(image) || String.isBlank(image));
             Image_Link = image;
             Typology_Name_EN = tnEN;
             Typology_Name_FR = tnFR;
@@ -187,18 +269,66 @@ public class WorktypeSelection {
     private class FullWorkType {
         
         private String WorkTypeName {get; set;}
-        private Integer StartTimeInterval {get; set;}
+        private String WorkTypeNameFR {get; set;}
         private Decimal EstimatedDuration {get; set;}
         private Id RecordId {get; set;}
         private Boolean Bookable {get; set;}
         
-        private FullWorkType (String wtn, Integer sti, Decimal ed, Id ri, Boolean b) {
+        private FullWorkType (String wtn, String wtnFR, Decimal ed, Id ri, Boolean b) {
             WorkTypeName = wtn;
-            StartTimeInterval = sti;
+            WorkTypeNameFR = wtnFR;
             EstimatedDuration = ed;
             RecordId = ri;
             Bookable = b;
         }
         
     }
+    
+    private class FullAddress {
+        
+        private String recordId {get; set;}
+        private String recordName {get; set;}
+        private System.Address recordAdress {get; set;}
+        
+        private FullAddress (Id addressId, String name, System.Address adres) {
+            recordId = addressId;
+            recordName = name;
+            recordAdress = adres;
+        }
+        
+    }
+    
+    private class ServiceResource2 {
+        
+        private String recordId {get; set;}
+        private String recordName {get; set;}
+        
+        private ServiceResource2 (Id resourceId, String resourceName) {
+            recordId = resourceId;
+            recordName = resourceName;
+        }
+        
+    }
+    
+    private class AvailableSlot {
+        
+        private ServiceResource2 resource {get; set;}
+        private List<DateTime> slots {get; set;}
+        
+        private AvailableSlot (ServiceResource2 resourceRecord, List<DateTime> slotList) {
+            resource = resourceRecord;
+            slots = slotList;
+        }
+        
+    }
+    
+    public class ResponseWrapper {
+        
+        public String startTime;
+        public String endTime;
+        public List<Id> resources;
+        public Id territoryId;
+        
+    }
+    
 }

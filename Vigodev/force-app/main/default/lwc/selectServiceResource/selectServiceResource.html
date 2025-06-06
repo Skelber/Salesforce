@@ -27,12 +27,11 @@
                     
                     <div class="slds-grid slds-gutters slds-wrap slds-m-vertical_medium slds-align_absolute-center">
                         <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3">
-                            <lightning-input type="Date" label="Datum" name="Datum"></lightning-input>
+                            <lightning-input type="Date" value={selectedDate} label="Datum" name="Datum" onchange={handleDateChange}></lightning-input>
                         </div>
                         <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-align_absolute-center">
                             <div class="slds-m-vertical_medium">
-                                <h3>Geschatte duur afspraak: </h3>
-                                <p>{worktype.EstimatedDuration} minuten</p>
+                                <h3>Geschatte duur afspraak: {worktype.EstimatedDuration} minuten</h3>
                             </div>
                         </div>
                         <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-align_absolute-center">
@@ -43,92 +42,55 @@
                         </div>
                     </div>
                     <div class="slds-wrap">
-                        <div class="slds-grid slds-gutters serviceResourceSelect slds-col-size_1-of-1 slds-wrap slds-m-vertical_medium">
-                            <div class="slds-grid slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-p-vertical_medium">
-                                    <h3>Martijn Reekmans</h3>
-                            </div>
-                            <div class="slds-large-size_2-of-3 slds-medium-size_3-of-3 slds-small-size_3-of-3 slds-grid slds-align_absolute-center slds-gutters slds-p-vertical_medium">
-                                <div class="slds-col slds-size_1-of-1 slds-grid slds-align_absolute-center">
 
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        &#60;
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        13:00
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        14:00                   
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        15:00
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        16:00
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        &#62;
+
+                        <template for:each={paginatedTimeslotMap} for:item="item">
+                            <div class="slds-grid slds-gutters serviceResourceSelect slds-col-size_1-of-1 slds-wrap slds-m-vertical_medium" key={item.resource.recordId}>
+                                <div class="slds-grid slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-p-vertical_medium">
+                                    <h3>{item.resource.recordName}</h3>
+                                </div>
+                                <div class="slds-large-size_2-of-3 slds-medium-size_3-of-3 slds-small-size_3-of-3 slds-grid slds-align_absolute-center slds-gutters slds-p-vertical_medium">
+                                    <div class="slds-col slds-size_1-of-1 slds-grid slds-align_absolute-center">
+
+                                        <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer" data-resourceid={item.resource.recordId} onclick={handlePrev}>
+                                                <lightning-button variant="base" label="<"  disabled={item.disablePrev}>&#60;</lightning-button>
+
+                                        </div>
+                        
+                                        <template for:each={item.paginatedSlots} for:item="slot">
+                                            <div 
+                                            class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer" 
+                                            key={slot.raw}
+                                            data-slot={slot.raw}
+                                            data-resourceid={item.resource.recordId}
+                                            data-resourcename={item.resource.recordName}
+                                            onclick={handleTimeslotClick}>
+                                               {slot.display}
+                                            </div>
+                                        </template>
+
+                                        <template for:each={item.slotFillers} for:item="blank">
+                                            <div class="slds-col slds-size_1-of-6 slds-align_absolute-center fillerSlot" key={blank.key}>
+                                                &nbsp;
+                                            </div>
+                                        </template>
+
+                                        <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer" data-resourceid={item.resource.recordId} onclick={handleNext}>
+                                                <lightning-button variant="base" label=">"  disabled={item.disableNext}>&#62;</lightning-button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="slds-grid slds-gutters serviceResourceSelect slds-col-size_1-of-1 slds-wrap slds-m-vertical_medium">
-                            <div class="slds-grid slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-p-vertical_medium">
-                                    <h3>Anke Bellens</h3>
-                            </div>
-                            <div class="slds-large-size_2-of-3 slds-medium-size_3-of-3 slds-small-size_3-of-3 slds-grid slds-align_absolute-center slds-gutters slds-p-vertical_medium">
-                                <div class="slds-col slds-size_1-of-1 slds-grid slds-align_absolute-center">
+                        </template>
 
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        &#60;
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        13:00
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        14:00                   
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        15:00
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        16:00
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        &#62;
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="slds-grid slds-gutters serviceResourceSelect slds-col-size_1-of-1 slds-wrap slds-m-vertical_medium">
-                            <div class="slds-grid slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-p-vertical_medium">
-                                    <h3>Steven Kelber</h3>
-                            </div>
-                            <div class="slds-large-size_2-of-3 slds-medium-size_3-of-3 slds-small-size_3-of-3 slds-grid slds-align_absolute-center slds-gutters slds-p-vertical_medium">
-                                <div class="slds-col slds-size_1-of-1 slds-grid slds-align_absolute-center">
 
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        &#60;
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        13:00
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        14:00                   
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        15:00
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        16:00
-                                    </div>
-                                    <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer">
-                                        &#62;
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    
                     </div>
                 </div>
+
+
+                   
+
                 
             </div>
         </div>
