@@ -1,10 +1,10 @@
 <!-- LLP-2052 -->
 
 <template>
-    <div class="slds-p-around_large slds-grid slds-wrap slds-gutters">
-        <div class="slds-align_absolute-center header">
-            <h2 class="slds-m-vertical_medium slds-align_absolute-center">Selecteer een werktype</h2>
-        </div>
+    <div class="slds-p-around_large">
+      <div class="slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4">
+        <h2 class="slds-m-vertical_medium header slds-align_absolute-center">Selecteer een werktype</h2>
+    </div>
 
 
         <div class="slds-grid slds-wrap slds-col slds-size_1-of-1">
@@ -13,12 +13,16 @@
                 <div class="slds-grid slds-gutters slds-wrap">
                     <template for:each={businessUnits} for:item="bu">
                         <div key={bu.recordId} data-id={bu.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handleBUClick}>
-                            <div class="worktypeSelection buSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                                <img src={bandageIcon} alt="bandage icon">
-                                <!-- <img src={bu.Image_Link} alt="bandage icon"> -->
-                                <h3>{bu.Typology_Name_EN}</h3>
-                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                          <div class="worktypeSelection buSelection">
+                            <div class="cardHeader slds-align_absolute-center">
+                              <h3>{bu.Typology_Name_EN}</h3>
                             </div>
+                            <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                              <img src={bandageIcon} alt="bandage icon">
+                              <!-- <img src={bu.Image_Link} alt="bandage icon"> -->
+                              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                            </div>
+                          </div>
                         </div>
                     </template>
                     </div>
@@ -29,11 +33,16 @@
                 <div class="slds-grid slds-gutters slds-wrap">
                   <template for:each={productGroups} for:item="pg" for:index="pgIndex">
                     <div key={pg.productGroup.recordId}  data-id={pg.productGroup.recordId} data-index={pgIndex} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handlePGClick}>
-                      <div class="worktypeSelection pgSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                        <img src={bandageIcon} alt="bandage icon">
-                        <h3>{pg.productGroup.Typology_Name_EN}</h3>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                      <div class="worktypeSelection pgSelection">
+                        <div class="cardHeader slds-align_absolute-center">
+                          <h3>{pg.productGroup.Typology_Name_EN}</h3>
+                        </div>
+                        <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                          <img src={bandageIcon} alt="bandage icon">
+                          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                        </div>
                       </div>
+
                     </div>
                   </template>
                 </div>
@@ -45,10 +54,14 @@
                   <div class="slds-grid slds-gutters slds-wrap">
                     <template for:each={productSubGroups} for:item="psg" for:index="psgIndex">
                       <div key={psg.productSubGroup.recordId} data-id={psg.productSubGroup.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" data-index={psgIndex} onclick={handlePSGClick}>
-                        <div class="worktypeSelection psgSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                          <img src={bandageIcon} alt="bandage icon">
-                          <h3>{psg.productSubGroup.Typology_Name_EN}</h3>
-                          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                        <div class="worktypeSelection psgSelection">
+                          <div class="cardHeader slds-align_absolute-center">
+                            <h3>{psg.productSubGroup.Typology_Name_EN}</h3>
+                          </div>
+                          <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical">
+                            <img src={bandageIcon} alt="bandage icon">
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                          </div>
                         </div>
                       </div>
                     </template>
@@ -61,10 +74,14 @@
                   <div class="slds-grid slds-gutters slds-wrap">
                     <template for:each={appointmentTypes} for:item="at" for:index="atIndex">
                       <div key={at.recordId} data-id={at.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small appointmentType"  onclick={handleATClick}>
-                        <div class="worktypeSelection atSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical" data-index={atIndex} >
-                          <img src={bandageIcon} alt="appointment type icon" />
-                          <h3>{at.Typology_Name_EN}</h3>
-                          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                        <div class="worktypeSelection atSelection">
+                          <div class="cardHeader slds-align_absolute-center">
+                            <h3>{at.Typology_Name_EN}</h3>
+                          </div>
+                          <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical" data-index={atIndex} >
+                            <img src={bandageIcon} alt="appointment type icon" />
+                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                          </div>
                         </div>
                       </div>
                     </template>

@@ -28,7 +28,8 @@ export default class SelectWorktype extends LightningElement {
     WorkTypeName: null,
     RecordId: null,
     EstimatedDuration: null,
-    Bookable: null
+    Bookable: null,
+    buImage: null,
     
    };
    
@@ -68,20 +69,6 @@ export default class SelectWorktype extends LightningElement {
         });
   }
 
-  // showSelection(recordId) {
-  //      const previouslySelected = this.template.querySelector('.worktypeSelection.selected');
-  //      if (previouslySelected) {
-  //          previouslySelected.classList.remove('selected');
-  //      }
-   
-  //      const wrapper = this.template.querySelector(`[data-id="${recordId}"]`);
-  //      if (wrapper) {
-  //          const innerDiv = wrapper.querySelector('.worktypeSelection');
-  //          if (innerDiv) {
-  //              innerDiv.classList.add('selected');
-  //          }
-  //      }
-  // }
 
     handleBUClick(event) {
       this.businessUnitId = event.currentTarget.dataset.id;
@@ -89,6 +76,7 @@ export default class SelectWorktype extends LightningElement {
       const selected = this.workTypes.find(
         wt => wt.businessUnit?.recordId === recordId
       );
+      console.log('selected BU: ' + selected.Image_Link)
       if (selected) {
         this.productGroups = selected.productGroups || [];
         this.productSubGroups = [];
@@ -114,7 +102,7 @@ export default class SelectWorktype extends LightningElement {
            }
        }
 
-      setTimeout(() => {
+       setTimeout(() => {
         this.activeSection = "B"
         requestAnimationFrame(() => {
           const anchor = this.template.querySelector('[data-scroll-anchor="section-b"]');
@@ -261,7 +249,6 @@ handleATClick = (event) => {
 
     handleSectionHeaderClick(event){
         this.activeSection = event.target.value
-        console.log('active section: ' + this.activeSection)
     }
 
     @api passToParent() {

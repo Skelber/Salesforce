@@ -1,12 +1,21 @@
 import { LightningElement, api, track } from 'lwc';
 import avatar from "@salesforce/resourceUrl/avatar";
+import loationIcon from "@salesforce/resourceUrl/locationIcon";
+import clock from "@salesforce/resourceUrl/clock";
+import calendar from "@salesforce/resourceUrl/calendar";
 import getTimeSlots from '@salesforce/apex/WorktypeSelection.getPossibleTimeslot';
 
 export default class SelectServiceResource extends LightningElement {
     @api notBookableViaWebsite = false;
     @api worktype = {};
     @api location = {};
+    @track timeValue;
     avatar = avatar;
+    clock = clock;
+    calendar = calendar;
+    locationIcon = loationIcon;
+    @track showSlots = false;
+    @track showSpinner = false;
 
     selectedDate;
     showTimeSlots = false;
@@ -27,16 +36,28 @@ export default class SelectServiceResource extends LightningElement {
         this.amButtonActive = true;
         this.pmButtonActive = true;
         this.selectedDate = localStorage.getItem("selectedDate") || '';
-        this.handleTimeslotSection();
+        this.timeValue = 'All Day';
     }
 
-    handleTimeslotSection() {
-        this.showTimeSlots = !!this.selectedDate;
+    get timeOptions() {
+        return [
+            { label: "VM", value: 'AM' },
+            { label: "NM", value: 'PM' },
+            { label: "Hele Dag", value: 'All Day' },
+        ];
     }
+
 
     handleDateChange(event) {
+        this.showSpinner = true;
         this.selectedDate = new Date(event.target.value).toISOString();
         localStorage.setItem("selectedDate", this.selectedDate);
+        if(this.selectedDate != null) {
+            this.showSlots = true
+        } else {
+            this.showSlots = false;
+        }
+
 
         getTimeSlots({
             selectedDate: this.selectedDate,
@@ -44,6 +65,7 @@ export default class SelectServiceResource extends LightningElement {
             workTypeId: this.worktype.RecordId
         })
         .then(result => {
+            console.log(JSON.stringify(result))
             if (typeof result === 'string') {
                 try {
                     result = JSON.parse(result);
@@ -56,10 +78,25 @@ export default class SelectServiceResource extends LightningElement {
                 this.timeslotMap = result;
                 this.initializePagination();
             }
+            this.showSpinner = false;
         })
         .catch(error => {
             console.error('Error in getTimeSlots:', error);
         });
+    }
+
+    handleNextDate(){
+        const d = new Date(this.selectedDate);
+        d.setDate(d.getDate() + 1);
+        this.selectedDate = d.toISOString()
+        this.handleDateChange({target: {value: this.selectedDate}})
+    }
+
+    handlePrevDate(){
+        const d = new Date(this.selectedDate);
+        d.setDate(d.getDate() - 1);
+        this.selectedDate = d.toISOString()
+        this.handleDateChange({target: {value: this.selectedDate}})
     }
 
     initializePagination() {

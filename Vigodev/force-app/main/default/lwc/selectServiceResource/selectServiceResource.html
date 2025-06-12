@@ -1,9 +1,9 @@
 <!-- LLP-2052 -->
 
 <template>
-    <template if:false={notBookableViaWebsite}>
+    <template if:true={worktype.Bookable}>
         <div class="slds-p-around_large">
-            <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4">
+            <div class="slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4">
                 <h2 class="slds-m-vertical_medium header slds-align_absolute-center">Selecteer een tijd en zorgverstrekker</h2>
             </div>
             
@@ -17,75 +17,129 @@
                         <h3>Gekozen afspraaktype</h3>
                         <p>{worktype.WorkTypeName}</p>
                     </div>
-                    <div class="slds-m-vertical_medium">
-                        <h3>Geschatte duur afspraak: </h3>
-                        <p>{worktype.EstimatedDuration} minuten</p>
-                    </div>
 
                 </div>
                 <div class="slds-col slds-large-size_3-of-4 slds-medium-size_4-of-4">
+
+                    <template if:true={showSlots}>
                     
-                    <div class="slds-grid slds-gutters slds-wrap slds-m-vertical_medium slds-align_absolute-center">
-                        <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3">
-                            <lightning-input type="Date" value={selectedDate} label="Datum" name="Datum" onchange={handleDateChange}></lightning-input>
-                        </div>
-                        <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-align_absolute-center">
-                            <div class="slds-m-vertical_medium">
-                                <h3>Geschatte duur afspraak: {worktype.EstimatedDuration} minuten</h3>
+                    <div class="slds-grid slds-gutters slds-wrap slds-m-vertical_medium slds-grid_vertical-align-center selectors">
+                        <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3  slds-m-vertical_small">
+                            <div class="slds-align_absolute-center">
+                                <img src={clock} alt="clock icon">
+                                <h3> {worktype.EstimatedDuration} minuten</h3>
                             </div>
                         </div>
-                        <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-align_absolute-center">
-                            <lightning-button-group>
-                                <lightning-button variant={amButtonVariant} label="Voormiddag" onclick={handleAMButtonClick}></lightning-button>
-                                <lightning-button variant={pmButtonVariant} label="Namiddag" onclick={handlePMButtonClick}></lightning-button>
-                            </lightning-button-group>
+
+                        <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-align_absolute-center slds-m-vertical_small">
+                            <lightning-radio-group name="Time"
+                                label='Tijd'
+                                options={timeOptions}
+                                value={timeValue}
+                                type="button"
+                                variant="label-hidden">
+                            </lightning-radio-group>
                         </div>
+
+                        <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-m-vertical_small slds-grid_align-spread">
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_1-of-5">
+                                    <lightning-button variant="brand-outline" label="<" onclick={handlePrevDate}></lightning-button>
+                                </div>
+                                <div class="slds-col slds-size_3-of-5">
+                                    <lightning-input variant="label-hidden" type="Date" value={selectedDate} label="Datum" name="Datum" onchange={handleDateChange} style="margin-left: -15px;"></lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-5">
+                                    <lightning-button  variant="brand-outline" label=">" onclick={handleNextDate}></lightning-button>
+                                </div>
+                            </div>
+                        </div>
+                       
                     </div>
+
+
+                    
                     <div class="slds-wrap">
 
-
-                        <template for:each={paginatedTimeslotMap} for:item="item">
-                            <div class="slds-grid slds-gutters serviceResourceSelect slds-col-size_1-of-1 slds-wrap slds-m-vertical_medium" key={item.resource.recordId}>
-                                <div class="slds-grid slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-p-vertical_medium">
-                                    <h3>{item.resource.recordName}</h3>
-                                </div>
-                                <div class="slds-large-size_2-of-3 slds-medium-size_3-of-3 slds-small-size_3-of-3 slds-grid slds-align_absolute-center slds-gutters slds-p-vertical_medium">
-                                    <div class="slds-col slds-size_1-of-1 slds-grid slds-align_absolute-center">
-
-                                        <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer" data-resourceid={item.resource.recordId} onclick={handlePrev}>
-                                                <lightning-button variant="base" label="<"  disabled={item.disablePrev}>&#60;</lightning-button>
-
-                                        </div>
-                        
-                                        <template for:each={item.paginatedSlots} for:item="slot">
-                                            <div 
-                                            class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer" 
-                                            key={slot.raw}
-                                            data-slot={slot.raw}
-                                            data-resourceid={item.resource.recordId}
-                                            data-resourcename={item.resource.recordName}
-                                            onclick={handleTimeslotClick}>
-                                               {slot.display}
+                           <template if:false={showSpinner}>
+                            <template for:each={paginatedTimeslotMap} for:item="item">
+                                <div class="slds-grid slds-gutters serviceResourceSelect slds-col-size_1-of-1 slds-wrap slds-m-vertical_medium" key={item.resource.recordId}>
+                                    <div class="slds-grid slds-col slds-grid_vertical-align-center slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-p-vertical_medium">
+                                        <h3 class="resourceName">{item.resource.recordName}</h3>
+                                    </div>
+                                    <div class="slds-large-size_2-of-3 slds-medium-size_3-of-3 slds-small-size_3-of-3 slds-grid slds-align_absolute-center slds-gutters slds-p-vertical_medium">
+                                        <div class="slds-col slds-size_1-of-1 slds-grid slds-align_absolute-center">
+                                            
+                                            <div class="slds-col slds-size_1-of-6 slds-align_absolute-center" data-resourceid={item.resource.recordId} onclick={handlePrev}>
+                                                <template if:false={item.disablePrev}>
+                                                    <lightning-button variant="base" label="<"  disabled={item.disablePrev}></lightning-button>
+                                                </template>
+                                                <template if:true={item.disablePrev}>
+                                                    <lightning-button variant="base" label=" "  disabled={item.disablePrev}></lightning-button>
+                                                </template>
+                                                
+                                            </div>
+                                            
+                                            <template for:each={item.paginatedSlots} for:item="slot">
+                                                <div 
+                                                class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer" 
+                                                key={slot.raw}
+                                                data-slot={slot.raw}
+                                                data-resourceid={item.resource.recordId}
+                                                data-resourcename={item.resource.recordName}
+                                                onclick={handleTimeslotClick}>
+                                                {slot.display}
                                             </div>
                                         </template>
-
+                                        
                                         <template for:each={item.slotFillers} for:item="blank">
                                             <div class="slds-col slds-size_1-of-6 slds-align_absolute-center fillerSlot" key={blank.key}>
                                                 &nbsp;
+                                                &nbsp;
+                                                &nbsp;
+                                                &nbsp;
+                                                &nbsp;
                                             </div>
                                         </template>
-
-                                        <div class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer" data-resourceid={item.resource.recordId} onclick={handleNext}>
-                                                <lightning-button variant="base" label=">"  disabled={item.disableNext}>&#62;</lightning-button>
+                                        
+                                        <div class="slds-col slds-size_1-of-6 slds-align_absolute-center" data-resourceid={item.resource.recordId} onclick={handleNext}>
+                                            <template if:false={item.disableNext}>
+                                                <lightning-button variant="base" label=">"  disabled={item.disableNext}></lightning-button>
+                                            </template>
+                                            <template if:true={item.disableNext}>
+                                                <lightning-button variant="base" label=" "  disabled={item.disableNext}></lightning-button>
+                                            </template>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </template>
+                    </template>
+
+                    <template if:true={showSpinner}>
+                        <div>
+                            <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+                           </div>
+                       </template> 
+
+                    </div>
+                </template>
+
+
+
+                    <template if:false={showSlots}>
+                        <div class="slds-align_absolute-center">
+                            <img class="calendar" src={calendar} alt="calendarIcon">
+                        </div>
+                        <div class="slds-align_absolute-center">
+                            <div>
+                                <lightning-input type="Date" value={selectedDate} label="Gelieve een datum te selecteren" name="Datum" onchange={handleDateChange} style="margin-left: -15px;"></lightning-input>
+                            </div>
+                        </div>
+                    </template>
 
 
                     
-                    </div>
                 </div>
 
 
@@ -95,11 +149,13 @@
             </div>
         </div>
     </template>
-    <template if:true={notBookableViaWebsite}>
+    <template if:false={worktype.Bookable}>
         <div class="slds-p-around_large">
             <div class="slds-grid slds-gutters slds-wrap">
                 <div class="slds-col slds-size_1-of-1 slds-align_absolute-center">
-                    <h3>Dit type afspraak kan niet geboekt worden via de website, neem contact op met het betreffende center via: </h3>
+                    <h3>Dit type afspraak kan niet geboekt worden via de website, neem telefonisch contact op met het desbetreffende center.</h3>
+                    <h3>{location.recordName}</h3>
+                    <p>{location.phone}</p>
                 </div>
             </div>
         </div>

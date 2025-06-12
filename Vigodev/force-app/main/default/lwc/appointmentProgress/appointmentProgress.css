@@ -1,0 +1,22 @@
+.slds-is-complete::after,
+.slds-is-complete::before,
+.slds-is-current,
+.slds-is-current::before,
+.slds-is-current::after,
+.slds-path__item,
+.slds-is-active, 
+.slds-is-active::before, 
+.slds-is-active::after,
+.slds-path__title,
+.slds-path__link  {
+    background-color: #00167a;
+}
+
+.slds-is-incomplete{
+    background-color: #F3F3F3;
+}
+
+
+/* .slds-is-current {
+    background-color: #91ad41;
+} */
