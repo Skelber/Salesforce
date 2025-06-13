@@ -4,6 +4,7 @@ import loationIcon from "@salesforce/resourceUrl/locationIcon";
 import clock from "@salesforce/resourceUrl/clock";
 import calendar from "@salesforce/resourceUrl/calendar";
 import getTimeSlots from '@salesforce/apex/WorktypeSelection.getPossibleTimeslot';
+import getTimeSlotsByHour from '@salesforce/apex/WorktypeSelection.getPossibleTimeslotByHour';
 
 export default class SelectServiceResource extends LightningElement {
     @api notBookableViaWebsite = false;
@@ -16,6 +17,7 @@ export default class SelectServiceResource extends LightningElement {
     locationIcon = loationIcon;
     @track showSlots = false;
     @track showSpinner = false;
+    @track selectedSlotRaw = '';
 
     selectedDate;
     showTimeSlots = false;
@@ -115,18 +117,20 @@ export default class SelectServiceResource extends LightningElement {
             const end = start + this.slotsPerPage;
 
             const allSlots = item.slots || [];
+            
 
             const paginatedSlots = allSlots.slice(start, end).map(slot => {
                 const date = new Date(slot);
+                const isSelected = this.selectedSlotRaw === slot && this.selectedResourceId === resourceId;
+    
                 return {
                     raw: slot,
-                    display: new Intl.DateTimeFormat('nl-BE', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hourCycle: 'h23'
-                    }).format(date)
+                    display: date.toISOString().substring(11, 16),
+                    cssClass: `slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer` +
+                              (isSelected ? ' selected' : '')
                 };
             });
+    
 
             const slotFillers = Array.from(
                 { length: Math.max(0, this.slotsPerPage - paginatedSlots.length) },
@@ -173,22 +177,28 @@ export default class SelectServiceResource extends LightningElement {
         const resourceId = event.currentTarget.dataset.resourceid;
         const resourceName = event.currentTarget.dataset.resourcename;
     
-        this.selectedSlot = {
-            slot,
-            resourceId,
-            resourceName
-        };
-
-        const slotInfo = new CustomEvent('slotdetails',{
-            detail: {
-                ...this.selectedSlot,
-                bubbles: true,
-                composed: true
-            }
-        });
-        this.dispatchEvent(slotInfo);
+        this.selectedSlotRaw = slot;
+        this.selectedResourceId = resourceId;
+    
+        this.selectedSlot = { slot, resourceId, resourceName };
+    
+        this.processTimeslotMapWithPagination();
+    
+        this.dispatchEvent(new CustomEvent('slotdetails', {
+            detail: { ...this.selectedSlot },
+            bubbles: true,
+            composed: true
+        }));
     }
     
+
+    getTimeslotClass(slotRaw) {
+        let base = 'slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer';
+        if (this.selectedSlotRaw === slotRaw) {
+            base += ' selected';
+        }
+        return base;
+    }
 
 
     handleAMButtonClick() {

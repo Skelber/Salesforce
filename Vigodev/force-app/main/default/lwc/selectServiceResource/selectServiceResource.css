@@ -59,7 +59,8 @@
     border-radius: 5px;
 }
 
-.timeslotContainer:Hover {
+.timeslotContainer:hover,
+.timeslotContainer.selected {
     background-color: #C1E6EF;
     border-radius: 12px;
     border: 1px solid #C1E6EF;

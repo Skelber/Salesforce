@@ -31,7 +31,7 @@
                             </div>
                         </div>
 
-                        <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-align_absolute-center slds-m-vertical_small">
+                        <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-align_absolute-center slds-m-vertical_small slds-m-top_xx-small">
                             <lightning-radio-group name="Time"
                                 label='Tijd'
                                 options={timeOptions}
@@ -39,17 +39,22 @@
                                 type="button"
                                 variant="label-hidden">
                             </lightning-radio-group>
+                            <!-- <div class="slds-button-group" role="group" aria-label="Time Selection">
+                                <button class={amButtonClass} onclick={handleAMButtonClick}>VM</button>
+                                <button class={pmButtonClass} onclick={handlePMButtonClick}>NM</button>
+                                <button class={allDayButtonClass} onclick={handleAllDayButtonClick}>Hele Dag</button>
+                            </div> -->
                         </div>
 
                         <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-m-vertical_small slds-grid_align-spread">
                             <div class="slds-grid">
-                                <div class="slds-col slds-size_1-of-5">
+                                <div class="slds-col slds-size_1-of-5 slds-m-top_x-small">
                                     <lightning-button variant="brand-outline" label="<" onclick={handlePrevDate}></lightning-button>
                                 </div>
-                                <div class="slds-col slds-size_3-of-5">
+                                <div class="slds-col slds-size_3-of-5 slds-m-top_x-small">
                                     <lightning-input variant="label-hidden" type="Date" value={selectedDate} label="Datum" name="Datum" onchange={handleDateChange} style="margin-left: -15px;"></lightning-input>
                                 </div>
-                                <div class="slds-col slds-size_1-of-5">
+                                <div class="slds-col slds-size_1-of-5 slds-m-top_x-small">
                                     <lightning-button  variant="brand-outline" label=">" onclick={handleNextDate}></lightning-button>
                                 </div>
                             </div>
@@ -79,10 +84,10 @@
                                                 </template>
                                                 
                                             </div>
-                                            
-                                            <template for:each={item.paginatedSlots} for:item="slot">
-                                                <div 
-                                                class="slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer" 
+
+                                        <template for:each={item.paginatedSlots} for:item="slot">
+                                            <div 
+                                                class={slot.cssClass}
                                                 key={slot.raw}
                                                 data-slot={slot.raw}
                                                 data-resourceid={item.resource.recordId}

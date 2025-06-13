@@ -12,6 +12,15 @@
     background-color: #00167a;
 }
 
+.slds-is-current,
+.slds-is-current::before,
+.slds-is-current::after,
+.slds-is-active, 
+.slds-is-active::before, 
+.slds-is-active::after {
+     background-color: #c1e6ef;
+}
+
 .slds-is-incomplete{
     background-color: #F3F3F3;
 }
