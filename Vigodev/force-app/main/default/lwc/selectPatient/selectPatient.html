@@ -19,14 +19,13 @@
                     <lightning-input  type="text" label="Uw telefoonnummer" value={contact.phone} onchange={handlePhoneChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
-                    <lightning-radio-group name="radioGroup"
-                    label="Relatie tot gebruiker"
-                    class="radioGroup slds-align_absolute-center"
-                    options={options}
-                    value={contact.relationToPatient}
-                    onclick={handleRelationToPatient}
-                    type="button">
-                </lightning-radio-group>
+                    <lightning-combobox name="relation to user"
+                        label="Relatie tot gebruiker"
+                        class="slds-align_absolute-center"
+                        options={options}
+                        value={contact.relationToPatient}
+                        onchange={handleRelationToPatient}>
+                    </lightning-combobox>
             </div>
 
         </template>

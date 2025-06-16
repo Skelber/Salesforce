@@ -2,7 +2,7 @@ import { LightningElement, track, api } from 'lwc';
 
 export default class SelectPatient extends LightningElement {
     @track checked;
-    contact = {
+    @ track contact = {
         firstName: null,
         lastName: null,
         email: null,
@@ -49,6 +49,15 @@ export default class SelectPatient extends LightningElement {
         this.passToParent();
     }
 
+    get optionsWithClass() {
+        return this.options.map(option => {
+            return {
+                ...option,
+                class: `button ${option.value === this.contact.relationToPatient ? 'active' : ''}`
+            };
+        });
+    }
+
     get options() {
         return [
             { label: 'Ouder', value: 'Ouder' },
@@ -82,7 +91,7 @@ export default class SelectPatient extends LightningElement {
         localStorage.setItem('bookedForLastName', value);
     }
 
-    handleRelationToPatient(event){
+    handleRelationToPatient(event) {
         const value = event.target.value;
         this.contact.relationToPatient = value;
         localStorage.setItem('relationToPatient', value);

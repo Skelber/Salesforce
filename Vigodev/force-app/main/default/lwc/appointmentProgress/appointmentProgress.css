@@ -18,12 +18,14 @@
 .slds-is-active, 
 .slds-is-active::before, 
 .slds-is-active::after {
-     background-color: #c1e6ef;
+     background-color: #A0C6CF;
+     color: #00167a;
 }
 
 .slds-is-incomplete{
     background-color: #F3F3F3;
 }
+
 
 
 /* .slds-is-current {

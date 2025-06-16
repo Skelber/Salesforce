@@ -76,7 +76,7 @@ export default class SelectWorktype extends LightningElement {
       const selected = this.workTypes.find(
         wt => wt.businessUnit?.recordId === recordId
       );
-      console.log('selected BU: ' + selected.Image_Link)
+      console.log('selected BU: ' + JSON.stringify(selected))
       if (selected) {
         this.productGroups = selected.productGroups || [];
         this.productSubGroups = [];

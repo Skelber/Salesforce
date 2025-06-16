@@ -2,6 +2,7 @@
 
 <template>
     <div class="slds-p-around_medium">
+        <div class="progressBar">
         <lightning-progress-indicator current-step={currentstep} type={pathType} variant="shade">
             <lightning-progress-step label="Contactgegevens" value="1"></lightning-progress-step>
             <lightning-progress-step label="Hulpmiddel" value="2"></lightning-progress-step>
@@ -10,5 +11,6 @@
             <lightning-progress-step label="Bijkomende informatie" value="5"></lightning-progress-step>
             <lightning-progress-step label="Samenvatting" value="6"></lightning-progress-step>
         </lightning-progress-indicator>
+    </div>
     </div>
 </template>

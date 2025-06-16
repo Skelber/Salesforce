@@ -3,7 +3,7 @@
 <template>
     <div class="slds-p-around_large">
       <div class="slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4">
-        <h2 class="slds-m-vertical_medium header slds-align_absolute-center">Selecteer een werktype</h2>
+        <h2 class="slds-m-vertical_medium header slds-align_absolute-center">Selecteer een hulpmiddel</h2>
     </div>
 
 
@@ -18,8 +18,10 @@
                               <h3>{bu.Typology_Name_EN}</h3>
                             </div>
                             <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                              <img src={bandageIcon} alt="bandage icon">
-                              <!-- <img src={bu.Image_Link} alt="bandage icon"> -->
+                              <!-- <img src={bandageIcon} alt="bandage icon"> -->
+                               <template if:true={bu.Has_Image_Link}>
+                                 <img src={bu.Image_Link} alt="worktype icon">
+                               </template>
                               <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
                             </div>
                           </div>
@@ -38,7 +40,10 @@
                           <h3>{pg.productGroup.Typology_Name_EN}</h3>
                         </div>
                         <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                          <img src={bandageIcon} alt="bandage icon">
+                          <!-- <img src={bandageIcon} alt="bandage icon"> -->
+                           <template if:true={pg.Has_Image_Link}>
+                             <img src={pg.Image_Link} alt="worktype icon">
+                           </template>
                           <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
                         </div>
                       </div>
@@ -59,7 +64,11 @@
                             <h3>{psg.productSubGroup.Typology_Name_EN}</h3>
                           </div>
                           <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                            <img src={bandageIcon} alt="bandage icon">
+                            <!-- <img src={bandageIcon} alt="bandage icon"> -->
+                             <template if:true={psg.Has_Image_Link}>
+                               <img src={psg.Image_Link} alt="worktype icon">
+                             </template>
+
                             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
                           </div>
                         </div>
@@ -79,7 +88,11 @@
                             <h3>{at.Typology_Name_EN}</h3>
                           </div>
                           <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical" data-index={atIndex} >
-                            <img src={bandageIcon} alt="appointment type icon" />
+                            <!-- <img src={bandageIcon} alt="appointment type icon" /> -->
+                             <template if:true={at.Has_Image_Link}>
+                               <img src={at.Image_Link} alt="worktype icon">
+                             </template>
+
                             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
                           </div>
                         </div>

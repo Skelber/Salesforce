@@ -39,10 +39,15 @@ img {
     width: 10em;
     border-radius: 15px;
     padding: 5px;
-    border: 1px solid #003f5c;
+    /* border: 1px solid #003f5c; */
     margin-bottom: 10px;
 
 }
+
+lightning-accordion-section {
+    width: 100%;
+}
+
 
 @media only screen and (max-width: 600px) {
    
@@ -53,7 +58,6 @@ img {
     img {
         height: 7em;
         width: 7em;
-        border-radius: 50%;
     }
 }
 

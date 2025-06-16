@@ -22,6 +22,13 @@ export default class AdditionalInfo extends LightningElement {
         this.passToParent();
     }
 
+    handleFileChange(event){
+        const file = event.target.files[0];
+        this.additionalInfo.file = file;
+        localStorage.setItem('file', file);
+        this.passToParent();
+    }
+
         @api passToParent() {
             const additionalInfo = new CustomEvent('additionalinfodetails',{
                 detail: {

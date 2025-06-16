@@ -1,6 +1,7 @@
 import { LightningElement, api, track } from 'lwc';
 import avatar from "@salesforce/resourceUrl/avatar";
 import loationIcon from "@salesforce/resourceUrl/locationIcon";
+import notFoundIcon from "@salesforce/resourceUrl/notFound2";
 import clock from "@salesforce/resourceUrl/clock";
 import calendar from "@salesforce/resourceUrl/calendar";
 import getTimeSlots from '@salesforce/apex/WorktypeSelection.getPossibleTimeslot';
@@ -15,12 +16,14 @@ export default class SelectServiceResource extends LightningElement {
     clock = clock;
     calendar = calendar;
     locationIcon = loationIcon;
+    notFoundIcon = notFoundIcon;
     @track showSlots = false;
     @track showSpinner = false;
     @track selectedSlotRaw = '';
 
     selectedDate;
     showTimeSlots = false;
+    showNoSlotsAvailable = false;
 
     @track timeslotMap = [];
     @track paginatedTimeslotMap = [];
@@ -37,16 +40,33 @@ export default class SelectServiceResource extends LightningElement {
     connectedCallback() {
         this.amButtonActive = true;
         this.pmButtonActive = true;
-        this.selectedDate = localStorage.getItem("selectedDate") || '';
+        this.selectedDate = localStorage.getItem("selectedDate");
+        if(this.selectedDate != null) {
+            this.callForData()
+            this.showSlots = true
+        } 
         this.timeValue = 'All Day';
     }
 
+    get timeOptionsWithClass() {
+        return this.timeOptions.map(option => {
+            return {
+                ...option,
+                class: `button ${option.value === this.timeValue ? 'active' : ''}`
+            };
+        });
+    }
+    
     get timeOptions() {
         return [
             { label: "VM", value: 'AM' },
             { label: "NM", value: 'PM' },
             { label: "Hele Dag", value: 'All Day' },
         ];
+    }
+
+    handleButtonClick(event){
+        this.timeValue = event.currentTarget.dataset.value;
     }
 
 
@@ -60,7 +80,10 @@ export default class SelectServiceResource extends LightningElement {
             this.showSlots = false;
         }
 
+        this.callForData();
+    }
 
+    callForData(){
         getTimeSlots({
             selectedDate: this.selectedDate,
             locatonId: this.location.recordId,
@@ -68,6 +91,12 @@ export default class SelectServiceResource extends LightningElement {
         })
         .then(result => {
             console.log(JSON.stringify(result))
+            console.log(result.length)
+            if(result.length == 3) {
+                this.showNoSlotsAvailable = true;
+            } else {
+                this.showNoSlotsAvailable = false;
+            }
             if (typeof result === 'string') {
                 try {
                     result = JSON.parse(result);

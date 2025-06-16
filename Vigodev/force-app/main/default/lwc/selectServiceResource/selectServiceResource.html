@@ -25,37 +25,47 @@
                     
                     <div class="slds-grid slds-gutters slds-wrap slds-m-vertical_medium slds-grid_vertical-align-center selectors">
                         <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3  slds-m-vertical_small">
-                            <div class="slds-align_absolute-center">
+                            <div class="slds-align_absolute-center duration">
                                 <img src={clock} alt="clock icon">
                                 <h3> {worktype.EstimatedDuration} minuten</h3>
                             </div>
                         </div>
 
-                        <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-align_absolute-center slds-m-vertical_small slds-m-top_xx-small">
-                            <lightning-radio-group name="Time"
+                        <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-align_absolute-center slds-m-vertical_small slds-m-top_x-small">
+                            <!-- <lightning-radio-group name="Time"
                                 label='Tijd'
                                 options={timeOptions}
                                 value={timeValue}
                                 type="button"
                                 variant="label-hidden">
-                            </lightning-radio-group>
-                            <!-- <div class="slds-button-group" role="group" aria-label="Time Selection">
-                                <button class={amButtonClass} onclick={handleAMButtonClick}>VM</button>
-                                <button class={pmButtonClass} onclick={handlePMButtonClick}>NM</button>
-                                <button class={allDayButtonClass} onclick={handleAllDayButtonClick}>Hele Dag</button>
-                            </div> -->
+                            </lightning-radio-group> -->
+
+                            <div class="buttonGroup slds-align_absolute-center">
+                                <template for:each={timeOptionsWithClass} for:item="option">
+                                    <div 
+                                        key={option.value}
+                                        data-value={option.value}
+                                        onclick={handleButtonClick}
+                                        class={option.class}>
+                                        {option.label}
+                                    </div>
+                                </template>
+                            </div>
+
                         </div>
 
                         <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-m-vertical_small slds-grid_align-spread">
                             <div class="slds-grid">
                                 <div class="slds-col slds-size_1-of-5 slds-m-top_x-small">
-                                    <lightning-button variant="brand-outline" label="<" onclick={handlePrevDate}></lightning-button>
+                                    <!-- <lightning-button variant="brand-outline" label="<" onclick={handlePrevDate}></lightning-button> -->
+                                    <button label="<" onclick={handlePrevDate}> &#60; </button>
                                 </div>
-                                <div class="slds-col slds-size_3-of-5 slds-m-top_x-small">
-                                    <lightning-input variant="label-hidden" type="Date" value={selectedDate} label="Datum" name="Datum" onchange={handleDateChange} style="margin-left: -15px;"></lightning-input>
+                                <div class="slds-col slds-size_3-of-5">
+                                    <lightning-input class="slds-m-top_x-small" variant="label-hidden" type="Date" value={selectedDate} name="Datum" onchange={handleDateChange} style="margin-right: 20px;"></lightning-input>
                                 </div>
                                 <div class="slds-col slds-size_1-of-5 slds-m-top_x-small">
-                                    <lightning-button  variant="brand-outline" label=">" onclick={handleNextDate}></lightning-button>
+                                    <!-- <lightning-button  variant="brand-outline" label=">" onclick={handleNextDate}></lightning-button> -->
+                                    <button label="<" onclick={handleNextDate}> &gt; </button>
                                 </div>
                             </div>
                         </div>
@@ -67,6 +77,12 @@
                     <div class="slds-wrap">
 
                            <template if:false={showSpinner}>
+                            <template if:true={showNoSlotsAvailable}>
+                                <div class="slds-grid slds-wrap slds-p-top_large slds-align_absolute-center slds-grid_vertical">
+                                    <img class="largeIcon" src={notFoundIcon} alt="Not found image">
+                                    <h3>Geen tijdsloten beschikbaar op deze datum. Selecteer een andere datum.</h3>
+                                </div>
+                                </template>
                             <template for:each={paginatedTimeslotMap} for:item="item">
                                 <div class="slds-grid slds-gutters serviceResourceSelect slds-col-size_1-of-1 slds-wrap slds-m-vertical_medium" key={item.resource.recordId}>
                                     <div class="slds-grid slds-col slds-grid_vertical-align-center slds-large-size_1-of-3 slds-medium-size_3-of-3 slds-p-vertical_medium">
@@ -119,6 +135,8 @@
                                 </div>
                             </div>
                         </template>
+
+                        
                     </template>
 
                     <template if:true={showSpinner}>
