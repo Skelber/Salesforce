@@ -183,6 +183,7 @@ export default class SelectPatient extends LightningElement {
         d.setMonth(parseInt(value.substring(2, 4) - 1, 10));
         d.setDate(parseInt(value.substring(4, 6), 10));
         this.contact.birthdate = d.toLocaleDateString('nl-BE');
+        console.log('birthdate: ' + this.contact.birthdate);
         localStorage.setItem('birthdate', this.birthdate);
     }
 

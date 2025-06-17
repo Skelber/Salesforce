@@ -9,7 +9,7 @@
 
 
             <template for:each={locations} for:item="location">
-            <div key={location.recordId} data-id={location.recordId} onclick={handleLocationClick} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small">
+            <div key={location.recordId} data-id={location.recordId} onclick={handleLocationClick} class="slds-col slds-large-size_1-of-4 slds-medium-size_1-of-1 slds-p-vertical_small">
                 <div class="locationSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
                     <img src={locationIconURL} alt="Location pin">
                     <h3 class="slds-m-vertical_medium">{location.recordName}</h3>

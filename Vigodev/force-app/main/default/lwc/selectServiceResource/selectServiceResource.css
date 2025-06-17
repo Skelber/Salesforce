@@ -7,7 +7,6 @@
 .buttonGroup {
     padding: 5px;
     border-radius: 12px;
-    width: 50%;
     box-shadow: 0px 2px 5px grey;
 }
 
@@ -16,11 +15,12 @@
     border: none;
     background-color: inherit;
     cursor: pointer;
+    border-radius: 7px;
 }
 
 .active {
     background-color: #00167a;
-    border-radius: 12px;
+    border-radius: 7px;
 }
 
 button {
@@ -43,11 +43,13 @@ button {
 
 
 .button:first-child {
-    border-radius: 15px 0px 0px 15px;
+    border-radius: 7px 0px 0px 7px;
+    border-radius: 7px;
 }
 
 .button:last-child {
-    border-radius: 0px 15px 15px 0px;
+    border-radius: 0px 7px 7px 0px;
+    border-radius: 7px;
 }
 
 .active {
@@ -85,6 +87,7 @@ button {
     background-color: #C1E6EF;
     border-radius: 12px;
     border: 1px solid #C1E6EF;
+    /* box-shadow: 1px 1px 1px 1px #C1E6EF inset; */
     cursor: pointer;
 }
 
@@ -92,10 +95,10 @@ button {
     transition: 500ms;
     height: 50px;
     border: 1px solid #fff;
-    border-right: 1px solid grey;
-    /* border-radius: 12px;
-    box-shadow: 0px 2px 2px 2px lightgrey inset;
-    border-bottom: 2px solid lightgrey; */
+    /* border-right: 1px solid grey; */
+    border: 1px solid lightgrey;
+    border-radius: 12px;
+    /* box-shadow: 2px 0px 1px 1px lightgrey inset; */
 }
 .timeslotContainer:last-child {
     border: none;
@@ -139,9 +142,5 @@ img {
 
     .overview {
         display: none;
-    }
-
-    .buttonGroup{
-        width: 100%;
     }
 }

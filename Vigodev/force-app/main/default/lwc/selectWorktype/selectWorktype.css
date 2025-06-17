@@ -41,13 +41,17 @@ img {
     padding: 5px;
     /* border: 1px solid #003f5c; */
     margin-bottom: 10px;
-
 }
 
-lightning-accordion-section {
+.section {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  :host ::slotted(div.section) {
+    display: block;
     width: 100%;
 }
-
 
 @media only screen and (max-width: 600px) {
    

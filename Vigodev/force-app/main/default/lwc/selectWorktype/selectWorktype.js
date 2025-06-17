@@ -202,6 +202,7 @@ export default class SelectWorktype extends LightningElement {
     }
   }
 
+
 handleATClick = (event) => {
     const target = event.currentTarget.closest('[data-id]');
     if (!target) {
@@ -246,7 +247,6 @@ handleATClick = (event) => {
         console.error('Error in getWorkType:', error);
     });
 }
-
     handleSectionHeaderClick(event){
         this.activeSection = event.target.value
     }

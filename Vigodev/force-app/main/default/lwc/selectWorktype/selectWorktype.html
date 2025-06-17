@@ -8,7 +8,7 @@
 
 
         <div class="slds-grid slds-wrap slds-col slds-size_1-of-1">
-        <lightning-accordion active-section-name={activeSection} class="slds-p-around_small">
+        <lightning-accordion active-section-name={activeSection} class="slds-p-around_small" style="width: 100%;">
             <lightning-accordion-section name="A" value="A" onclick={handleSectionHeaderClick} label="Selecteer een business unit">
                 <div class="slds-grid slds-gutters slds-wrap">
                     <template for:each={businessUnits} for:item="bu">
@@ -78,29 +78,30 @@
                 </lightning-accordion-section>
               </template>
 
-              <template if:true={showAppointmentTypes}>
-                <lightning-accordion-section name="D" value="D" label="Selecteer een afspraak type" data-scroll-anchor="section-d">
-                  <div class="slds-grid slds-gutters slds-wrap">
-                    <template for:each={appointmentTypes} for:item="at" for:index="atIndex">
-                      <div key={at.recordId} data-id={at.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small appointmentType"  onclick={handleATClick}>
-                        <div class="worktypeSelection atSelection">
-                          <div class="cardHeader slds-align_absolute-center">
-                            <h3>{at.Typology_Name_EN}</h3>
-                          </div>
-                          <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical" data-index={atIndex} >
-                            <!-- <img src={bandageIcon} alt="appointment type icon" /> -->
-                             <template if:true={at.Has_Image_Link}>
-                               <img src={at.Image_Link} alt="worktype icon">
-                             </template>
 
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
-                          </div>
-                        </div>
-                      </div>
-                    </template>
-                  </div>
+              <template if:true={showAppointmentTypes}>
+                <lightning-accordion-section name="D" value="D" label="Selecteer een afspraak type" data-scroll-anchor="section-d" class="slds-col slds-size_1-of-1">
+                    <div class="slds-grid slds-gutters slds-wrap">
+                        <template for:each={appointmentTypes} for:item="at" for:index="atIndex">
+                            <div key={at.recordId} data-id={at.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small appointmentType" onclick={handleATClick}>
+                                <div class="worktypeSelection atSelection">
+                                    <div class="cardHeader slds-align_absolute-center">
+                                        <h3>{at.Typology_Name_EN}</h3>
+                                    </div>
+                                    <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical" data-index={atIndex}>
+                                        <template if:true={at.Has_Image_Link}>
+                                            <img src={at.Image_Link} alt="worktype icon">
+                                        </template>
+                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
                 </lightning-accordion-section>
-              </template>
+            </template>
+
+
         </lightning-accordion>
     </div>
     </div>
