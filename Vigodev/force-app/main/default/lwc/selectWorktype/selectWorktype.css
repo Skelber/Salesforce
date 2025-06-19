@@ -43,16 +43,6 @@ img {
     margin-bottom: 10px;
 }
 
-.section {
-    width: 100%;
-    min-width: 100%;
-  }
-
-  :host ::slotted(div.section) {
-    display: block;
-    width: 100%;
-}
-
 @media only screen and (max-width: 600px) {
    
     .worktypeSelection {

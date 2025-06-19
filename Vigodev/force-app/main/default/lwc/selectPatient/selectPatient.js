@@ -36,6 +36,7 @@ export default class SelectPatient extends LightningElement {
         this.contact.lastName = localStorage.getItem('lastName') || '';
         this.contact.email = localStorage.getItem('email') || '';
         this.contact.phone = localStorage.getItem('phone') || '';
+        this.contact.RSZ = localStorage.getItem('contactRSZ') || '';
         this.contact.street = localStorage.getItem('contactStreet') || '';
         this.contact.city = localStorage.getItem('contactCity') || '';
         this.contact.country = localStorage.getItem('contactCountry') || '';
@@ -131,6 +132,7 @@ export default class SelectPatient extends LightningElement {
             inputCmp.setCustomValidity('');
             inputCmp.reportValidity();
             this.setBirthDate(value);
+            this.checkCompletion()
 
         } else {
             inputCmp.setCustomValidity('Incorrecte rijksregister nummer');
@@ -164,7 +166,7 @@ export default class SelectPatient extends LightningElement {
     }
 
     checkCompletion(){
-        if(this.contact.firstName && this.contact.lastName && this.contact.email && this.contact.phone) {
+        if(this.contact.firstName && this.contact.lastName && this.contact.email && this.contact.phone && this.contact.RSZ) {
             this.contactInfoComplete = true;
         } else {
             this.contactInfoComplete = false;

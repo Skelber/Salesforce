@@ -169,11 +169,11 @@ public class WorktypeSelection {
                         
             List<String> dateList = wrapper.startTime.split('T');
             DateTime slot = Datetime.newInstance(Integer.valueOf(dateList[0].split('-')[0]), Integer.valueOf(dateList[0].split('-')[1]), Integer.valueOf(dateList[0].split('-')[2]), Integer.valueOf(dateList[1].split(':')[0]), Integer.valueOf(dateList[1].split(':')[1]), 0);
-            TimeZone tz = UserInfo.getTimeZone();
-            Integer milliSeconds = tz.getOffset(slot);
-            Integer minutes = milliSeconds / 60000;
-            Integer offSetHours = minutes / 60;
-            slot = slot.addHours(offSetHours);
+           // TimeZone tz = UserInfo.getTimeZone();
+           // Integer milliSeconds = tz.getOffset(slot);
+           // Integer minutes = milliSeconds / 60000;
+           // Integer offSetHours = minutes / 60;
+           // slot = slot.addHours(offSetHours);
             
             for (Id resourceId : wrapper.resources) {         
                 String keyname = string.valueOf(resourceId);
@@ -200,6 +200,71 @@ public class WorktypeSelection {
         String JSONstring = JSON.serializePretty(fullSlots);
         System.debug(JSONstring);
         return JSONString;
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static String getPossibleTimeslotByHour(Date selectedDate, Id locatonId, Id workTypeId ) {
+        
+        //Get policy
+        List <AppointmentSchedulingPolicy> policyId = [SELECT Id FROM AppointmentSchedulingPolicy WHERE MasterLabel ='VIGO Scheduling Policy' LIMIT 1];
+        
+        //Build WorkType
+        lxscheduler.WorkType workType = new lxscheduler.WorkTypeBuilder()
+            .setId(workTypeId)
+            .build();
+        
+        //getAppointmentCandidates        
+        Datetime startdatetime = DateTime.newInstance(selectedDate, Time.newInstance(0, 0, 0, 0));
+        lxscheduler.GetAppointmentCandidatesInput input = new lxscheduler.GetAppointmentCandidatesInputBuilder()
+            .setWorkType(workType)
+            .setTerritoryIds(new List<String>{locatonId})
+            .setStartTime(startdatetime.format('yyyy-MM-dd\'T\'HH:mm:ssZ'))
+            .setEndTime(startdatetime.addDays(1).format('yyyy-MM-dd\'T\'HH:mm:ssZ'))
+            //  .setAccountId('001RM0000053iQgYAI')
+            .setSchedulingPolicyId(policyId[0].Id)
+            .setApiVersion(Double.valueOf('59.0'))
+            .build();
+        
+        String response = lxscheduler.SchedulerResources.getAppointmentCandidates(input);
+        System.debug(response);
+        
+        return response;
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static String getPossibleTimeslotByAPI(Date selectedDate, Id locatonId, Id workTypeId ) {
+        Datetime startdatetime = DateTime.newInstance(selectedDate, Time.newInstance(0, 0, 0, 0));
+        List <AppointmentSchedulingPolicy> policyId = [SELECT Id FROM AppointmentSchedulingPolicy WHERE MasterLabel ='VIGO Scheduling Policy' LIMIT 1];
+        
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint('https://ottobock-b2c-na--dev.sandbox.lightning.force.com/services/data/v62.0/connect/scheduling/available-territory-slots');
+        //req.setEndpoint('/services/data/v62.0/connect/scheduling/available-territory-slots');
+        
+        req.setMethod('POST');
+        String myData = '{"startTime": "' + startdatetime.format('yyyy-MM-dd\'T\'HH:mm:ssZ') + '",'
+            				+ '"endTime": "' + startdatetime.addDays(1).format('yyyy-MM-dd\'T\'HH:mm:ssZ') + '",'
+            				+ '"schedulingPolicyId": "' + policyId[0].Id + '",'
+            + '"workType" : "{"id":' + workTypeId + '"},'
+            				+ '"territoryIds": ["' + locatonId + '"]}';
+        req.setBody(myData);
+        req.setHeader('Content-Type', 'application/json');
+        
+        Http http = new Http();
+                
+        HttpResponse res = http.send(req);
+        
+        while (res.getStatusCode() == 302) { 
+            	req.setEndpoint(res.getHeader('Location')); 
+            res = new Http().send(req); 
+        }
+        
+        if (res.getStatusCode() == 201) { // 201 indicates creation
+            System.debug('Successful.');
+        } else {
+            System.debug('Failed: ' + res.getStatusCode());
+        }
+        
+        return res.getBody();
     }
     
 /*	########################################     INNER CLASSES	   ########################################*/

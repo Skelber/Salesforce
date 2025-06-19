@@ -4,18 +4,23 @@
     <template if:true={worktype.Bookable}>
         <div class="slds-p-around_large">
             <div class="slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4">
-                <h2 class="slds-m-vertical_medium header slds-align_absolute-center">Selecteer een tijd en zorgverstrekker</h2>
+                <div class="header">
+                    <h2 class="slds-m-vertical_medium slds-align_absolute-center">Selecteer een tijd en zorgverstrekker</h2>
+                </div>
             </div>
             
             <div class="slds-grid slds-gutters slds-wrap">
-                <div class="slds-grid slds-grid_vertical slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4 overview">
-                    <div class="slds-m-vertical_medium">
-                        <h3>Gekozen Locatie</h3>
-                        <p>{location.recordName}</p>
-                    </div>
-                    <div class="slds-m-vertical_medium">
-                        <h3>Gekozen afspraaktype</h3>
-                        <p>{worktype.WorkTypeName}</p>
+                <div class="slds-grid slds-grid_vertical slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4">
+                    <div class="overview slds-m-vertical_medium slds-p-around_small">
+
+                        <div class="slds-m-vertical_medium">
+                            <h3>Gekozen Locatie</h3>
+                            <p>{location.recordName}</p>
+                        </div>
+                        <div class="slds-m-vertical_medium">
+                            <h3>Gekozen afspraaktype</h3>
+                            <p>{worktype.WorkTypeName}</p>
+                        </div>
                     </div>
 
                 </div>
@@ -45,7 +50,7 @@
                                     <div 
                                         key={option.value}
                                         data-value={option.value}
-                                        onclick={handleButtonClick}
+                                        onclick={handleTimechange}
                                         class={option.class}>
                                         {option.label}
                                     </div>
@@ -61,7 +66,7 @@
                                     <button onclick={handlePrevDate}> &#60; </button>
                                 </div>
                                 <div class="slds-col slds-size_3-of-5">
-                                    <lightning-input class="slds-m-top_medium" variant="label-hidden" type="Date" value={selectedDate} name="Datum" onchange={handleDateChange} style="margin-right: 20px;"></lightning-input>
+                                    <lightning-input class="slds-m-top_medium input date" variant="label-hidden" type="Date" value={selectedDate} name="Datum" onchange={handleDateChange} style="margin-right: 20px;"></lightning-input>
                                 </div>
                                 <div class="slds-col slds-size_1-of-5 slds-m-top_medium">
                                     <!-- <lightning-button  variant="brand-outline" label=">" onclick={handleNextDate}></lightning-button> -->
@@ -173,13 +178,61 @@
         </div>
     </template>
     <template if:false={worktype.Bookable}>
-        <div class="slds-p-around_large">
-            <div class="slds-grid slds-gutters slds-wrap">
-                <div class="slds-col slds-size_1-of-1 slds-align_absolute-center">
-                    <h3>Dit type afspraak kan niet geboekt worden via de website, neem telefonisch contact op met het desbetreffende center.</h3>
-                    <h3>{location.recordName}</h3>
-                    <p>{location.phone}</p>
+        <div class="slds-p-around_large slds-align_absolute-center">
+            <div class="container">
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <div class="slds-text-align_center slds-size_1-of-1 slds-m-vertical_medium">
+                        <h3 class="slds-text-heading_medium slds-p-horizontal_medium">
+                            Dit type afspraak kan niet geboekt worden via de website. Vul hieronder uw moment van voorkeur in voor een afspraak, wij contacteren u zo spoedig mogelijk.
+                        </h3>
+                    </div>
+
+                    
+                    <div class="slds-large-size_1-of-2 slds-medium-size_2-of-2 slds-align_absolute-center slds-m-vertical_medium">
+                        <div class="buttonGroup slds-align_absolute-center">
+                            <template for:each={timeOptionsWithClass} for:item="option">
+                                <div 
+                                key={option.value}
+                                data-value={option.value}
+                                onclick={handleTimechange}
+                                class={option.class}>
+                                {option.label}
+                            </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="slds-large-size_1-of-2 slds-medium-size_2-of-2 slds-align_absolute-center slds-m-vertical_medium">
+                        <div class="buttonGroup slds-align_absolute-center">
+                            <template for:each={dayOptionsWithClass} for:item="option">
+                                <div 
+                                key={option.value}
+                                data-value={option.value}
+                                onclick={handleButtonClick}
+                                class={option.class}>
+                                {option.label}
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                
+                    <div class="slds-col slds-large-size_1-of-2 slds-medium-size_2-of-2 slds-small-size_1-of-1 slds-align_absolute-center slds-m-vertical_medium">
+                        <lightning-input class="input" type="checkbox" label="Ik heb een voorschrift" name="Voorschrift"></lightning-input>
+                    </div>
+                    <div class="slds-col slds-large-size_1-of-2 slds-medium-size_2-of-2 slds-small-size_1-of-1 slds-align_absolute-center slds-m-vertical_medium">
+                        <div class="input">
+                            <lightning-input variant="label-hidden"  type="file" label="Laad je voorschrift op" name="VoorschriftInput"></lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-large-size_1-of-1 slds-medium-size_1-of-1 slds-small-size_1-of-1 slds-align_absolute-center slds-m-vertical_medium">
+                        <lightning-textarea class="input" label="Opmerkingen" name="comment" ></lightning-textarea>
+                    </div>
+                    <div class="slds-col slds-large-size_1-of-1 slds-medium-size_1-of-1 slds-small-size_1-of-1 slds-align_absolute-center slds-m-vertical_medium">
+                        <lightning-button variant="brand" label="Submit" ></lightning-button>
+                    </div>
                 </div>
+
             </div>
         </div>
         </template>

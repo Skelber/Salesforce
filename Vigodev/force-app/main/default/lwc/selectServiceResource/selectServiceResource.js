@@ -12,6 +12,8 @@ export default class SelectServiceResource extends LightningElement {
     @api worktype = {};
     @api location = {};
     @track timeValue;
+    @track dayValue;
+    selectedDays = new Set();
     avatar = avatar;
     clock = clock;
     calendar = calendar;
@@ -26,21 +28,20 @@ export default class SelectServiceResource extends LightningElement {
     showNoSlotsAvailable = false;
 
     @track timeslotMap = [];
+    @track notFilteredTimeslotMap = [];
     @track paginatedTimeslotMap = [];
     slotsPerPage = 4;
     @track selectedSlot = {};
 
     paginationState = {};
 
-    @track amButtonActive = false;
-    pmButtonActive = false;
-    @track amButtonVariant = "brand";
-    @track pmButtonVariant = "brand";
 
     connectedCallback() {
         this.amButtonActive = true;
         this.pmButtonActive = true;
-        this.selectedDate = localStorage.getItem("selectedDate");
+        const d = new Date();
+        d.setDate(d.getDate() + 1);
+        this.selectedDate = d.toISOString()
         if(this.selectedDate != null) {
             this.callForData()
             this.showSlots = true
@@ -56,6 +57,14 @@ export default class SelectServiceResource extends LightningElement {
             };
         });
     }
+    get dayOptionsWithClass() {
+        return this.dayOptions.map(option => {
+            return {
+                ...option,
+                class: `dayButton ${this.selectedDays.has(option.value) ? 'dayActive ' : ''}`
+            };
+        });
+    }
     
     get timeOptions() {
         return [
@@ -65,15 +74,54 @@ export default class SelectServiceResource extends LightningElement {
         ];
     }
 
-    handleButtonClick(event){
+    get dayOptions() {
+        return [
+            { label: "Ma", value: 'Mondag' },
+            { label: "Di", value: 'Tuesday' },
+            { label: "Woe", value: 'Wednesday' },
+            { label: "Do", value: 'Thursday' },
+            { label: "Vrij", value: 'Friday' },
+        ];
+    }
+
+    handleTimechange(event) {
         this.timeValue = event.currentTarget.dataset.value;
+        let filteredMap = JSON.parse(JSON.stringify(this.notFilteredTimeslotMap));
+    
+        filteredMap.forEach(resource => {
+            resource.slots = resource.slots.filter(slotTime => {
+                let dateObj = new Date(slotTime);
+                let hour = dateObj.getUTCHours(); // Use getHours() if you want local time
+                if (this.timeValue === 'AM') {
+                    return hour >= 0 && hour < 12;
+                } else if (this.timeValue === 'PM') {
+                    return hour >= 12 && hour < 24;
+                } else {
+                    return true; // All Day
+                }
+            });
+        });
+    
+        // If you want to also remove resources with empty slots after filtering:
+        filteredMap = filteredMap.filter(resource => resource.slots.length > 0);
+        this.timeslotMap = filteredMap;
+        this.processTimeslotMapWithPagination();
+    }
+
+    handleButtonClick(event) {
+        const value = event.currentTarget.dataset.value;
+        if (this.selectedDays.has(value)) {
+            this.selectedDays.delete(value);
+        } else {
+            this.selectedDays.add(value);
+        }
+        this.selectedDays = new Set(this.selectedDays);
     }
 
 
     handleDateChange(event) {
         this.showSpinner = true;
         this.selectedDate = new Date(event.target.value).toISOString();
-        localStorage.setItem("selectedDate", this.selectedDate);
         if(this.selectedDate != null) {
             this.showSlots = true
         } else {
@@ -91,7 +139,6 @@ export default class SelectServiceResource extends LightningElement {
         })
         .then(result => {
             console.log(JSON.stringify(result))
-            console.log(result.length)
             if(result.length == 3) {
                 this.showNoSlotsAvailable = true;
             } else {
@@ -107,6 +154,7 @@ export default class SelectServiceResource extends LightningElement {
 
             if (Array.isArray(result)) {
                 this.timeslotMap = result;
+                this.notFilteredTimeslotMap = result;
                 this.initializePagination();
             }
             this.showSpinner = false;
@@ -229,14 +277,4 @@ export default class SelectServiceResource extends LightningElement {
         return base;
     }
 
-
-    handleAMButtonClick() {
-        this.amButtonActive = !this.amButtonActive;
-        this.amButtonVariant = this.amButtonActive ? "brand" : "neutral";
-    }
-
-    handlePMButtonClick() {
-        this.pmButtonActive = !this.pmButtonActive;
-        this.pmButtonVariant = this.pmButtonActive ? "brand" : "neutral";
-    }
 }

@@ -3,25 +3,25 @@
 <template>
     <div class="patientinput slds-p-around_large">
         <div class="slds-align_absolute-center">
-            <lightning-input  type="toggle" label="Ik boek een afspraak voor iemand anders" checked={contact.bookedForSelf} onchange={handleToggle}></lightning-input>
+            <lightning-input class="input" type="toggle" label="Ik boek een afspraak voor iemand anders" checked={contact.bookedForSelf} onchange={handleToggle}></lightning-input>
         </div>
         <template if:true={checked}>
                 <div class="slds-align_absolute-center">
-                    <lightning-input type="Text" label="Uw voornaam" value={contact.bookedForFirstName} onchange={handleForContactFirstNameChange}></lightning-input>
+                    <lightning-input class="input" type="Text" label="Uw voornaam" value={contact.bookedForFirstName} onchange={handleForContactFirstNameChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
-                    <lightning-input type="Text" label="Uw achternaam" value={contact.bookedForLastName} onchange={handleForContactLastNameChange}></lightning-input>
+                    <lightning-input class="input" type="Text" label="Uw achternaam" value={contact.bookedForLastName} onchange={handleForContactLastNameChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
-                    <lightning-input  type="email" label="Uw email" value={contact.email} onchange={handleEmailChange}></lightning-input>
+                    <lightning-input class="input"  type="email" label="Uw email" value={contact.email} onchange={handleEmailChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
-                    <lightning-input  type="text" label="Uw telefoonnummer" value={contact.phone} onchange={handlePhoneChange}></lightning-input>
+                    <lightning-input class="input"  type="text" label="Uw telefoonnummer" value={contact.phone} onchange={handlePhoneChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
                     <lightning-combobox name="relation to user"
                         label="Relatie tot gebruiker"
-                        class="slds-align_absolute-center"
+                        class="slds-align_absolute-center input"
                         options={options}
                         value={contact.relationToPatient}
                         onchange={handleRelationToPatient}>
@@ -30,22 +30,22 @@
 
         </template>
         <div class="slds-align_absolute-center">
-            <lightning-input  type="text" label="Voornaam" value={contact.firstName} onchange={handleFirstNameChange} required="true"></lightning-input>
+            <lightning-input class="input"  type="text" label="Voornaam" value={contact.firstName} onchange={handleFirstNameChange} required="true"></lightning-input>
         </div>
         <div class="slds-align_absolute-center">
-            <lightning-input  type="text" label="Achternaam" value={contact.lastName} onchange={handleLastNameChange} required="true"></lightning-input>
+            <lightning-input class="input"  type="text" label="Achternaam" value={contact.lastName} onchange={handleLastNameChange} required="true"></lightning-input>
         </div>
         <template if:false={checked}>
 
             <div class="slds-align_absolute-center">
-                <lightning-input  type="email" label="Email" value={contact.email} onchange={handleEmailChange} required="true"></lightning-input>
+                <lightning-input class="input"  type="email" label="Email" value={contact.email} onchange={handleEmailChange} required="true"></lightning-input>
             </div>
             <div class="slds-align_absolute-center">
-                <lightning-input  type="text" label="Telefoonnummer" value={contact.phone} onchange={handlePhoneChange} required="true"></lightning-input>
+                <lightning-input class="input"  type="text" label="Telefoonnummer" value={contact.phone} onchange={handlePhoneChange} required="true"></lightning-input>
             </div>
         </template>
             <div class="slds-align_absolute-center">
-            <lightning-input class="inputCmp"  type="text" label="Rijksregisternummer" value={contact.RSZ} onchange={handleRSZChange} required="true"></lightning-input>
+            <lightning-input class="inputCmp input"  type="text" label="Rijksregisternummer" value={contact.RSZ} onchange={handleRSZChange} required="true"></lightning-input>
         </div>
         <!-- <div class="slds-align_absolute-center">
             <lightning-input type="date" label="Geboortedatum" value={contact.birthdate}></lightning-input>
@@ -53,6 +53,7 @@
         </div> -->
         <div class="slds-align_absolute-center">
         <lightning-input-address
+            class="input"
             address-label="Adres"
             street-label="Straat"
             city-label="Plaats"

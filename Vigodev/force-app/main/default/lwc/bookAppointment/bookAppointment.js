@@ -21,7 +21,10 @@ export default class BookAppointment extends LightningElement {
     @track receivedWorktype;
     @track receivedLocation;
     @track receivedSlot;
-    @track receivedAdditionalInfo;
+    @track receivedAdditionalInfo ={
+        comment:null,
+        file:null
+    };
 
     connectedCallback() {
         this.currentStep = "1"
@@ -106,8 +109,8 @@ export default class BookAppointment extends LightningElement {
     
 
     receiveAdditionalInfo(event) {
-        this.receiveAdditionalInfo = event.detail
-        console.log('received info: ' + JSON.stringify(this.receiveAdditionalInfo))
+        this.receiveAdditionalInfo.comment = event.detail.comment;
+        this.receiveAdditionalInfo.file = event.detail.file;
     }
     
 }

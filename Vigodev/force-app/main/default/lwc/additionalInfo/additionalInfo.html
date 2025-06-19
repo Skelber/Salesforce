@@ -13,11 +13,12 @@
             <div class=" slds-col slds-size_1-of-1 slds-align_absolute-center slds-p-around_medium">
                 <lightning-input 
                 type="File" 
+                class="input"
                 onchange={handleFileChange} 
                 label="Indien u een afspraak maakt op voorschrift, gelieve hier uw voorschrift op te laden" ></lightning-input>
             </div>
             <div class="slds-col slds-size_1-of-1 slds-align_absolute-center slds-p-around_medium">
-                <lightning-textarea  label="Heeft u nog andere opmerkingen?" onchange={handleCommentChange}></lightning-textarea>
+                <lightning-textarea class="input"  label="Heeft u nog andere opmerkingen?" onchange={handleCommentChange}></lightning-textarea>
             </div>
         </div>
     </div>

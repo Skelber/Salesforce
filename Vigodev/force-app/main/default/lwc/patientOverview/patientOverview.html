@@ -63,9 +63,11 @@
                 <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
                     <p>Opmerking: {additionalinfo.comment}</p>
                 </div>
-                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                    <p>Bijkomende documenten: {additionalinfo.file.name}</p>
-                </div>
+                <template if:true={showFile}>
+                    <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                        <p>Bijkomende documenten: {additionalinfo.file.name}</p>
+                    </div>
+                </template>
             </div>
     </div>
     

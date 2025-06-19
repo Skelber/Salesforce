@@ -6,6 +6,15 @@ export default class PatientOverview extends LightningElement {
     @api additionalinfo={}
     @api worktype = {}
     @api location = {}
+    @api showFile = false
+
+    connectedCallback(){
+        if(this.contact.file != null) {
+            this.showFile = true
+        } else {
+            this.showFile = false
+        }
+    }
     
     @api jumpToScreen(event){
         const screenChange = new CustomEvent('screenchange',{
