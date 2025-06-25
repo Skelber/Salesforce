@@ -1,8 +1,7 @@
 .header {
-    /* border: 1px solid #003f5c; */
+    border: 1px solid #003f5c;
     padding: 10px;
     border-radius: 15px;
-    box-shadow: 0px 2px 5px grey;
 }
 
 .overview{
@@ -53,8 +52,16 @@ button {
     border-radius: 12px;
     background-color: inherit;
     /* border: 1px solid #00167a; */
+    border: none;
     box-shadow: 0px 1px 4px grey;;
     cursor: pointer;
+}
+
+.navButton {
+    width: 50%;
+    box-shadow: 0px 1px 4px grey;
+    cursor: pointer;
+    border-radius: 12px;
 }
 
 .date {
@@ -109,9 +116,6 @@ button {
 
 }
 
-.timeslot {
-    border-radius: 5px;
-}
 
 .timeslotContainer:hover,
 .timeslotContainer.selected {
@@ -128,7 +132,7 @@ button {
     height: 50px;
     border: 1px solid lightgrey;
     border-radius: 12px;
-    box-shadow:  0px 3px 8px lightgrey inset
+    box-shadow:  0px 3px 8px lightgrey inset;
 }
 
 
@@ -171,10 +175,11 @@ lightning-textarea {
     --slds-c-input-color-border: #fff;
     --slds-c-input-shadow: 0px 1px 4px grey;
     outline: none;
+    background: inherit;
 }
 
 .container {
-    width: 40%;
+    width: 50%;
     border-radius: 12px;
     box-shadow: 0px 2px 5px grey;
 }
@@ -197,6 +202,10 @@ lightning-textarea {
 
     .container {
         box-shadow: none;
+    }
+
+    .navButton {
+        width: 100%;
     }
     
 }

@@ -2,27 +2,45 @@
 
 <template>
     <div class="slds-p-around_large">
-      <div class="slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4">
-        <h2 class="slds-m-vertical_medium header slds-align_absolute-center">Selecteer een hulpmiddel</h2>
-    </div>
+      <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4">
+          <h2 class="slds-m-vertical_medium header slds-align_absolute-center">Selecteer een hulpmiddel</h2>
+        </div>
+      </div>
 
 
         <div class="slds-grid slds-wrap slds-col slds-size_1-of-1">
         <lightning-accordion active-section-name={activeSection} class="slds-p-around_small" style="width: 100%;">
             <lightning-accordion-section name="A" value="A" onclick={handleSectionHeaderClick} label="Selecteer een business unit">
-                <div class="slds-grid slds-gutters slds-wrap">
+                 <div class="slds-grid slds-gutters slds-wrap worktypeContainer" data-id="worktypeContainer">
                     <template for:each={businessUnits} for:item="bu">
-                        <div key={bu.recordId} data-id={bu.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handleBUClick}>
-                          <div class="worktypeSelection buSelection">
+                        <div key={bu.recordId} data-id={bu.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_1-of-1 slds-small-size_1-of-1 slds-p-vertical_small overflowContainer" onclick={handleBUClick}>
+                          <div class="worktypeSelection buSelection" style="width: 100%; overflow: hidden;">
                             <div class="cardHeader slds-align_absolute-center">
-                              <h3>{bu.Typology_Name_EN}</h3>
+                              <template if:true={displayEnglish}>
+                                <h3>{bu.Typology_Name_EN}</h3>
+                              </template>
+                              <template if:true={displayDutch}>
+                                <h3>{bu.Typology_Name_NL}</h3>
+                              </template>
+                              <template if:true={displayFrench}>
+                                <h3>{bu.Typology_Name_FR}</h3>
+                              </template>
                             </div>
                             <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical">
                               <!-- <img src={bandageIcon} alt="bandage icon"> -->
                                <template if:true={bu.Has_Image_Link}>
                                  <img src={bu.Image_Link} alt="worktype icon">
                                </template>
-                              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                               <template if:true={displayDutch}>
+                                 <p>{bu.Guiding_Text_NL}</p>
+                               </template>
+                                <template if:true={displayEnglish}>
+                                  <p>{bu.Guiding_Text_EN}</p>
+                               </template>
+                               <template if:true={displayFrench}>
+                                  <p>{bu.Guiding_Text_FR}</p>
+                               </template>
                             </div>
                           </div>
                         </div>
@@ -37,14 +55,30 @@
                     <div key={pg.productGroup.recordId}  data-id={pg.productGroup.recordId} data-index={pgIndex} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handlePGClick}>
                       <div class="worktypeSelection pgSelection">
                         <div class="cardHeader slds-align_absolute-center">
-                          <h3>{pg.productGroup.Typology_Name_EN}</h3>
+                          <template if:true={displayEnglish}>
+                            <h3>{pg.productGroup.Typology_Name_EN}</h3>
+                          </template>
+                          <template if:true={displayDutch}>
+                            <h3>{pg.productGroup.Typology_Name_NL}</h3>
+                          </template>
+                          <template if:true={displayFrench}>
+                            <h3>{pg.productGroup.Typology_Name_FR}</h3>
+                          </template>
                         </div>
                         <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical">
                           <!-- <img src={bandageIcon} alt="bandage icon"> -->
                            <template if:true={pg.Has_Image_Link}>
                              <img src={pg.Image_Link} alt="worktype icon">
                            </template>
-                          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                            <template if:true={displayEnglish}>
+                              <p>{pg.Guiding_Text_EN}</p>
+                            </template>
+                            <template if:true={displayDutch}>
+                              <p>{pg.Guiding_Text_NL}</p>
+                            </template>
+                            <template if:true={displayFrench}>
+                              <p>{pg.Guiding_Text_FR}</p>
+                            </template>
                         </div>
                       </div>
 
@@ -61,15 +95,30 @@
                       <div key={psg.productSubGroup.recordId} data-id={psg.productSubGroup.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" data-index={psgIndex} onclick={handlePSGClick}>
                         <div class="worktypeSelection psgSelection">
                           <div class="cardHeader slds-align_absolute-center">
-                            <h3>{psg.productSubGroup.Typology_Name_EN}</h3>
+                            <template if:true={displayEnglish}>
+                              <h3>{psg.productSubGroup.Typology_Name_EN}</h3>
+                            </template>
+                            <template if:true={displayDutch}>
+                              <h3>{psg.productSubGroup.Typology_Name_NL}</h3>
+                              </template>
+                            <template if:true={displayFrench}>
+                              <h3>{psg.productSubGroup.Typology_Name_FR}</h3>
+                            </template>
                           </div>
                           <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical">
                             <!-- <img src={bandageIcon} alt="bandage icon"> -->
                              <template if:true={psg.Has_Image_Link}>
                                <img src={psg.Image_Link} alt="worktype icon">
                              </template>
-
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                             <template if:true={displayDutch}>
+                               <p>{psg.Guiding_Text_NL}</p>
+                             </template>
+                             <template if:true={displayEnglish}>
+                               <p>{psg.Guiding_Text_EN}</p>
+                             </template>
+                             <template if:true={displayFrench}>
+                               <p>{psg.Guiding_Text_FR}</p>
+                             </template>
                           </div>
                         </div>
                       </div>
@@ -86,13 +135,29 @@
                             <div key={at.recordId} data-id={at.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small appointmentType" onclick={handleATClick}>
                                 <div class="worktypeSelection atSelection">
                                     <div class="cardHeader slds-align_absolute-center">
+                                      <template if:true={displayEnglish}>
                                         <h3>{at.Typology_Name_EN}</h3>
+                                      </template>
+                                      <template if:true={displayDutch}>
+                                        <h3>{at.Typology_Name_NL}</h3>
+                                      </template>
+                                      <template if:true={displayFrench}>
+                                        <h3>{at.Typology_Name_FR}</h3>
+                                      </template>
                                     </div>
                                     <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical" data-index={atIndex}>
                                         <template if:true={at.Has_Image_Link}>
                                             <img src={at.Image_Link} alt="worktype icon">
                                         </template>
-                                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ullam sit necessitatibus animi, vitae autem dolorum quasi maxime. Aut, aliquam eveniet.</p>
+                                        <template if:true={displayDutch}>
+                                          <p>{at.Guiding_Text_NL}</p>
+                                        </template>
+                                        <template if:true={displayEnglish}>
+                                          <p>{at.Guiding_Text_EN}</p>
+                                          </template>
+                                        <template if:true={displayFrench}>
+                                          <p>{at.Guiding_Text_FR}</p>
+                                        </template>
                                     </div>
                                 </div>
                             </div>

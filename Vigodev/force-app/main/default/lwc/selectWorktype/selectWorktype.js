@@ -4,9 +4,11 @@ import getWorkType from '@salesforce/apex/WorktypeSelection.getWorkType';
 import bandageIcon from "@salesforce/resourceUrl/bandage";
 import prostheticIcon from "@salesforce/resourceUrl/prosthetic";
 import orthoticIcon from "@salesforce/resourceUrl/orthotics";
+import LANG from '@salesforce/i18n/lang';
 
 export default class SelectWorktype extends LightningElement {
 
+  LANG = LANG
    workTypes = []
    businessUnits = [];
    @track  productGroups = [];
@@ -15,10 +17,13 @@ export default class SelectWorktype extends LightningElement {
    showProductSubGroups = false
    @track appointmentTypes =[]
    showAppointmentTypes = false
-   businessUnitId;
-   productGroupId;
-   productSubGroupId;
-   appointmentTypeId;
+   @api businessUnitId;
+   @api productGroupId;
+   @api productSubGroupId;
+   @api appointmentTypeId;
+   displayDutch = false;
+   displayEnglish = false;
+   displayFrench = false;
    bandageIcon = bandageIcon;
    prostheticIcon = prostheticIcon;
    orthoticIcon = orthoticIcon;
@@ -39,6 +44,107 @@ export default class SelectWorktype extends LightningElement {
         this.showProductGroups = true;
         this.showProductSubGroups = true;
         this.showAppointmentTypes = true;
+        this.setLang();
+        // this.updateWrapClass();
+        // window.addEventListener('resize', this.updateWrapClass.bind(this));
+        let baseUrl = window.location.origin;
+
+        console.log(`Base URL: ${baseUrl}`)
+      
+        if (!this.businessUnitId) return;
+
+    // Prevent repeated work if already applied
+    if (this.lastStyledBUId === this.businessUnitId) return;
+
+    window.requestAnimationFrame(() => {
+      const wrapper = this.template.querySelector(`[data-id="${this.businessUnitId}"]`);
+      if (wrapper) {
+        const innerDiv = wrapper.querySelector('.buSelection');
+        if (innerDiv) {
+          // Clear previous selections
+          const all = this.template.querySelectorAll('.buSelection.selected');
+          all.forEach(el => el.classList.remove('selected'));
+
+          innerDiv.classList.add('selected');
+          this.lastStyledBUId = this.businessUnitId;
+        } else {
+          console.warn('Could not find .buSelection inside wrapper for BU ID:', this.businessUnitId);
+        }
+      } else {
+        console.warn('No wrapper found for BU ID:', this.businessUnitId);
+      }
+    });
+        
+    }
+
+    styleSelectedRecords() {
+      window.requestAnimationFrame(() => {
+        // ----- BUSINESS UNIT -----
+        if (this.businessUnitId) {
+          this.template.querySelectorAll('.buSelection.selected')
+            .forEach(el => el.classList.remove('selected'));
+    
+          const buWrapper = this.template.querySelector(`[data-id="${this.businessUnitId}"]`);
+          if (buWrapper) {
+            const innerDiv = buWrapper.querySelector('.buSelection');
+            if (innerDiv) {
+              innerDiv.classList.add('selected');
+            }
+          }
+        }
+    
+        // ----- PRODUCT GROUP -----
+        if (this.productGroupId) {
+          this.template.querySelectorAll('.pgSelection.selected')
+            .forEach(el => el.classList.remove('selected'));
+    
+          const pgWrapper = this.template.querySelector(`[data-id="${this.productGroupId}"]`);
+          if (pgWrapper) {
+            const innerDiv = pgWrapper.querySelector('.pgSelection');
+            if (innerDiv) {
+              innerDiv.classList.add('selected');
+            }
+          }
+        }
+    
+        // ----- PRODUCT SUBGROUP -----
+        if (this.productSubGroupId) {
+          this.template.querySelectorAll('.psgSelection.selected')
+            .forEach(el => el.classList.remove('selected'));
+    
+          const psgWrapper = this.template.querySelector(`[data-id="${this.productSubGroupId}"]`);
+          if (psgWrapper) {
+            const innerDiv = psgWrapper.querySelector('.psgSelection');
+            if (innerDiv) {
+              innerDiv.classList.add('selected');
+            }
+          }
+        }
+    
+        // ----- APPOINTMENT TYPE -----
+        if (this.appointmentTypeId) {
+          this.template.querySelectorAll('.atSelection.selected')
+            .forEach(el => el.classList.remove('selected'));
+    
+          const atWrapper = this.template.querySelector(`[data-id="${this.appointmentTypeId}"]`);
+          if (atWrapper) {
+            const innerDiv = atWrapper.querySelector('.atSelection');
+            if (innerDiv) {
+              innerDiv.classList.add('selected');
+            }
+          }
+        }
+      });
+    }
+
+    setLang() {
+      if (this.LANG == 'en-US') {
+        this.displayEnglish = true
+      } else if (this.LANG == 'fr') {
+        this.displayFrench = true
+      } else {
+        this.displayDutch = true
+      }
     }
 
     getWorkTypology() {
@@ -104,6 +210,7 @@ export default class SelectWorktype extends LightningElement {
 
        setTimeout(() => {
         this.activeSection = "B"
+        this.styleSelectedRecords()
         requestAnimationFrame(() => {
           const anchor = this.template.querySelector('[data-scroll-anchor="section-b"]');
           if (anchor) {
@@ -143,6 +250,7 @@ export default class SelectWorktype extends LightningElement {
 
       setTimeout(() => {
         this.activeSection = "C"
+        this.styleSelectedRecords();
         requestAnimationFrame(() => {
           const anchor = this.template.querySelector('[data-scroll-anchor="section-c"]');
           if (anchor) {
@@ -180,6 +288,7 @@ export default class SelectWorktype extends LightningElement {
        }
     setTimeout(() => {
       this.activeSection = "D"
+      this.styleSelectedRecords();
       requestAnimationFrame(() => {
         const anchor = this.template.querySelector('[data-scroll-anchor="section-d"]');
         if (anchor) {
@@ -253,7 +362,13 @@ handleATClick = (event) => {
 
     @api passToParent() {
       const worktypeInfo = new CustomEvent('worktypedetails', {
-        detail: this.workType,
+        detail: {
+          workType: this.workType,
+          businessUnitId: this.businessUnitId,
+          productGroupId: this.productGroupId,
+          productSubGroupId: this.productSubGroupId,
+          appointmentTypeId: this.appointmentTypeId
+        },
         bubbles: true,
         composed: true
       });

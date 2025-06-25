@@ -1,13 +1,33 @@
 import { LightningElement, track, api } from 'lwc';
+import LANG from '@salesforce/i18n/lang';
+import FirstName from "@salesforce/label/c.pbzInputFirstName"
+import LastName from "@salesforce/label/c.pbzInputLastName"
+import FirstNamePatient from "@salesforce/label/c.pbzInputFirstNamePatient"
+import LastNamePatient from "@salesforce/label/c.pbzInputLastNamePatient"
+import BookedForSomeoneElse from "@salesforce/label/c.pbzBookAppointmentForSomeoneElse"
+import RSZ from "@salesforce/label/c.pbzInputNationalRegisterNumber"
+import NoRSZ from "@salesforce/label/c.pbzDoesNotHaveANationalRegistrationNumber"
+import RelationToUser from "@salesforce/label/c.pbzInputRelationToUser"
+import YourPhone from "@salesforce/label/c.pbzInputYourPhone"
+import YourEmail from "@salesforce/label/c.pbzInputYourEmail"
+import Phone from "@salesforce/label/c.pbzInputPhone"
+import Address from "@salesforce/label/c.pbzAddress"
+import City from "@salesforce/label/c.pbzInputCity"
+import Street from "@salesforce/label/c.pbzInputStreet"
+import Province from "@salesforce/label/c.pbzInputProvince"
+import PostalCode from "@salesforce/label/c.pbzInputPostalCode"
+import Country from "@salesforce/label/c.pbzInputCountry"
 
 export default class SelectPatient extends LightningElement {
     @track checked;
+    @track hasNoRSZ = false;
     @ track contact = {
         firstName: null,
         lastName: null,
         email: null,
         phone: null,
         RSZ: null,
+        hasNoRSZ: false,
         street: null,
         city: null,
         country: null,
@@ -23,11 +43,11 @@ export default class SelectPatient extends LightningElement {
     contactInfoComplete = false
     birthyearPrefix = "19"
     @api jtp
+    lang = LANG
 
     connectedCallback() {
         const storedValue = localStorage.getItem('checked');
-        this.contact.bookedForSelf = storedValue !== null ? storedValue === 'true' : true;
-        console.log('booked for self in connected callback: ' + this.contact.bookedForSelf)   
+        this.contact.bookedForSelf = storedValue !== null ? storedValue === 'false' : false;
         this.checked = this.contact.bookedForSelf;
         this.contact.bookedForFirstName = localStorage.getItem('bookedForFirstName') || '';
         this.contact.bookedForLastName = localStorage.getItem('bookedForLastName') || '';
@@ -43,7 +63,30 @@ export default class SelectPatient extends LightningElement {
         this.contact.birthdate = localStorage.getItem('birthdate') || ''; 
         this.contact.postalCode = localStorage.getItem('contactPostalCode') || '';
         this.contact.province = localStorage.getItem('contactProvince') || '';
-        this.checkCompletion();
+        const storedHasRSZ = localStorage.getItem('hasRSZ');
+        this.hasNoRSZ = storedHasRSZ === 'true';
+        this.checkCompletion(); 
+        console.log('lang ' + this.lang)
+    }
+
+    label = {
+        FirstName: FirstName,
+        LastName: LastName,
+        FirstNamePatient: FirstNamePatient,
+        LastNamePatient: LastNamePatient,
+        BookedForSomeoneElse: BookedForSomeoneElse,
+        RSZ: RSZ,
+        NoRSZ: NoRSZ,
+        RelationToUser: RelationToUser,
+        YourPhone: YourPhone,
+        YourEmail: YourEmail,
+        Phone: Phone,
+        Address: Address,
+        Street: Street,
+        City: City,
+        PostalCode: PostalCode,
+        Country: Country,
+        Province: Province
     }
 
     disconnectedCallback() {
@@ -123,6 +166,13 @@ export default class SelectPatient extends LightningElement {
         this.checkCompletion()
     }
 
+    handlehasRSZChange(event) {
+        this.hasNoRSZ = event.target.checked;
+        localStorage.setItem('hasRSZ', this.hasNoRSZ);
+        this.checkCompletion();
+    }
+    
+
     handleRSZChange(event) {
         var inputCmp = this.template.querySelector('.inputCmp')
         const value = event.target.value;
@@ -166,7 +216,7 @@ export default class SelectPatient extends LightningElement {
     }
 
     checkCompletion(){
-        if(this.contact.firstName && this.contact.lastName && this.contact.email && this.contact.phone && this.contact.RSZ) {
+        if(this.contact.firstName && this.contact.lastName && this.contact.email && this.contact.phone && this.contact.RSZ || this.contact.hasRSZ) {
             this.contactInfoComplete = true;
         } else {
             this.contactInfoComplete = false;

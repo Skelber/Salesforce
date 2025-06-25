@@ -7,6 +7,11 @@ lightning-card {
     border-radius: 15px;
 }
 
+lightning-button {
+    box-shadow: 0px 2px 5px grey;
+    border-radius: 15px;
+}
+
 @media only screen and (max-width: 600px) {
 
     footer{

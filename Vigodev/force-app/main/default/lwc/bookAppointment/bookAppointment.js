@@ -1,9 +1,13 @@
 import { LightningElement, track, api } from 'lwc';
 import locale from '@salesforce/i18n/locale';
+import Next from "@salesforce/label/c.pbzButtonNext"
+import Previous from "@salesforce/label/c.pbzButtonPrevious"
+import BookAnAppointment from "@salesforce/label/c.pbzButtonBookAppointment"
 
 export default class BookAppointment extends LightningElement {
 
     currentStep;
+    showDefaultProgress = false;
     showScreenOne;
     showScreenTwo;
     showScreenThree;
@@ -19,6 +23,10 @@ export default class BookAppointment extends LightningElement {
     userLocale = locale;
     @track receivedContact;
     @track receivedWorktype;
+    selectedBusinessUnitId
+    selectedProductGroupId
+    selectedProductSubGroupId;
+    selectedAppointmentTypeId;
     @track receivedLocation;
     @track receivedSlot;
     @track receivedAdditionalInfo ={
@@ -26,9 +34,16 @@ export default class BookAppointment extends LightningElement {
         file:null
     };
 
+    label = {
+        Next: Next,
+        Previous: Previous,
+        BookAnAppointment: BookAnAppointment
+    }
+
     connectedCallback() {
         this.currentStep = "1"
         this.showScreenOne = true;
+        this.showDefaultProgress = true;
     }
 
     receiveScreenChange(event) {
@@ -88,10 +103,37 @@ export default class BookAppointment extends LightningElement {
         this.enableNextButton()
     }
 
-    receiveWorktypeDetails(event){
-        this.receivedWorktype = event.detail
-        console.log('received worktype: ' + JSON.stringify(this.receivedWorktype))
-        this.enableNextButton()
+    receiveWorktypeDetails(event) {
+        const {
+            workType,
+            businessUnitId,
+            productGroupId,
+            productSubGroupId,
+            appointmentTypeId
+        } = event.detail;
+    
+        this.receivedWorktype = workType;
+    
+        // Store the business unit and other IDs for later use or rehydration
+        this.selectedBusinessUnitId = businessUnitId;
+        this.selectedProductGroupId = productGroupId;
+        this.selectedProductSubGroupId = productSubGroupId;
+        this.selectedAppointmentTypeId = appointmentTypeId;
+    
+        console.log('Received worktype:', JSON.stringify(workType));
+        console.log('Selected BU ID:', businessUnitId);
+    
+        if (workType?.Bookable === false) {
+            this.showDefaultProgress = false;
+        } else {
+            this.showDefaultProgress = true;
+        }
+    
+        this.enableNextButton();
+    
+        setTimeout(() => {
+            this.handleNext();
+        }, 500);
     }
 
     receiveLocation(event){
@@ -99,6 +141,10 @@ export default class BookAppointment extends LightningElement {
         this.receivedLocation = event.detail
         console.log('received location: ' + JSON.stringify(this.receivedLocation))
         this.enableNextButton();
+        // this.currentStep = "4";
+        setTimeout(() => {
+            this.handleNext();
+        }, 500);
     }
 
     receiveSlotDetails(event){

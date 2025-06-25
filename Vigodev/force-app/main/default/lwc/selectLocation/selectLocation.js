@@ -38,7 +38,6 @@ export default class SelectLocation extends LightningElement {
 
    handleLocationClick(event) {
       this.locationId = event.currentTarget.dataset.id;
-      console.log('location id ' + this.locationId);
       const selectedLocation = this.locations.find(
          location => location.recordId === this.locationId
       );

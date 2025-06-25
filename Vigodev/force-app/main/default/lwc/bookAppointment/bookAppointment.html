@@ -4,7 +4,8 @@
     <div class="slds-scope container">
 
         <lightning-card>       
-            <c-appointment-progress></c-appointment-progress>
+            <c-appointment-progress
+            show-default-progress={showDefaultProgress}></c-appointment-progress>
             <template if:true={showScreenOne}>
                 <c-select-patient 
                 onpatientdetails={receiveContact}
@@ -13,6 +14,10 @@
             </template>
             <template if:true={showScreenTwo}>
                 <c-select-worktype
+                business-unit-id={selectedBusinessUnitId}
+                product-group-id={selectedProductGroupId}
+                product-sub-group-id={selectedProductSubGroupId}
+                appointment-type-id={selectedAppointmentTypeId}
                 onworktypedetails={receiveWorktypeDetails}></c-select-worktype>
             </template>
             <template if:true={showScreenThree}>
@@ -45,13 +50,13 @@
             <footer>
                 <div class="slds-grid slds-grid_align-end">
                     <template if:false={showScreenOne}>
-                        <lightning-button label="Vorige" onclick={handlePrevious} class="slds-m-right_small"></lightning-button>
+                        <lightning-button label={label.Previous} onclick={handlePrevious} class="slds-m-right_small"></lightning-button>
                     </template>
                     <template if:false={showScreenSix}>
-                        <lightning-button variant="brand"  label="Volgende" onclick={handleNext} class="slds-m-right_small" disabled={disableNextButton}></lightning-button>
+                        <lightning-button variant="brand"  label={label.Next} onclick={handleNext} class="slds-m-right_small" disabled={disableNextButton}></lightning-button>
                     </template>
                     <template if:true={showScreenSix}>
-                        <lightning-button variant="brand"  label="Boek afspraak" class="slds-m-right_small"></lightning-button>
+                        <lightning-button variant="brand"  label={label.BookAnAppointment} class="slds-m-right_small"></lightning-button>
                     </template>
                 </div>
             </footer>

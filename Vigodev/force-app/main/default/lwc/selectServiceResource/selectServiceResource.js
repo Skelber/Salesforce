@@ -203,7 +203,7 @@ export default class SelectServiceResource extends LightningElement {
                 return {
                     raw: slot,
                     display: date.toISOString().substring(11, 16),
-                    cssClass: `slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer` +
+                    cssClass: `slds-col slds-size_2-of-10 slds-align_absolute-center timeslotContainer` +
                               (isSelected ? ' selected' : '')
                 };
             });
@@ -270,7 +270,7 @@ export default class SelectServiceResource extends LightningElement {
     
 
     getTimeslotClass(slotRaw) {
-        let base = 'slds-col slds-size_1-of-6 slds-align_absolute-center timeslotContainer';
+        let base = 'slds-col slds-size_2-of-10 slds-align_absolute-center timeslotContainer';
         if (this.selectedSlotRaw === slotRaw) {
             base += ' selected';
         }

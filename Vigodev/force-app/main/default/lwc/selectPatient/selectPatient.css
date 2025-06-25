@@ -1,17 +1,14 @@
 lightning-input, lightning-input-address, lightning-combobox{
-    width: 40%;
+    width: 90%;
 }
 
 lightning-radio-group{
-    width: 40%;
+    width: 90%;
 }
 
 .customInput {
     box-shadow: 0px 2px 5px grey;
 }
-
-
-
 
 .patientSelect {
     width: 70px;
@@ -28,13 +25,23 @@ lightning-radio-group{
 }
 
 .input, textarea {
-
     --slds-c-input-color-border: #fff;
     --slds-c-input-shadow: 0px 1px 4px grey;
+}
+
+.container {
+    width: 50%;
+    border-radius: 12px;
+    box-shadow: 0px 1px 4px grey;;
 }
 
 @media only screen and (max-width: 600px) {
     lightning-input, lightning-input-address, input, lightning-radio-group, lightning-combobox{
         width: 100%;
+    }
+
+    .container{
+        width: 100%;
+        box-shadow: none;
     }
   }
