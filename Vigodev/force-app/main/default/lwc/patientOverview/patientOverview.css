@@ -3,6 +3,14 @@
     border-bottom: 1px solid #003f5c;
 }
 
+.card {
+    box-shadow: 0px 2px 5px grey;
+    border-radius: 15px;
+    margin: 10px 0px;
+    height: 10em;
+    overflow: hidden;
+}
+
 
 svg {
     cursor: pointer;

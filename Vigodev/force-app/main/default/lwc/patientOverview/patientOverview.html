@@ -1,74 +1,116 @@
 <template>
-    <div class="overviewSection slds-p-around_large">
-        <header>
-            <h2>1. Wie <svg data-id="1"  onclick={jumpToScreen} width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.8 20.199A2.73 2.73 0 0 1 6.869 21H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m5 4.974l9.974-9.978M3.8 15.225l9.984-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991"/></svg></h2>
-        </header>
-        <div class="slds-grid slds-wrap slds-p-around_medium">
-            <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                <template if:false={contact.bookedForSelf}>
-                    <p>Voornaam Patient: {contact.bookedForFirstName}</p>
-                    <p>Achternaam Patient: {contact.bookedForLastName}</p>
-                    <p>Uw relatie tot de Patient:</p>
-                </template>
-                <p>Uw voornaam: {contact.firstName}</p>
-                <p>Uw achternaam: {contact.lastName}</p>
-            </div>
-            <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                <p>Email Patient: {contact.email}</p>
-                <p>Telefoonnummer Patient:{contact.phone}</p>
-            </div>
-        </div>
-
-            <header>
-                <h2>2. Waarvoor <svg data-id="2"  onclick={jumpToScreen} width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.8 20.199A2.73 2.73 0 0 1 6.869 21H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m5 4.974l9.974-9.978M3.8 15.225l9.984-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991"/></svg></h2>
-            </header>
-            <div class="slds-grid slds-wrap slds-p-around_medium">
-                <div class="slds-col slds-large-size_1-of-1 slds-medium-size_1-of-1">
-                    <p>Geselecteerd werktype: {worktype.WorkTypeName}</p>
-                </div>
+        <div class="slds-grid slds-wrap slds-p-around_large slds-gutters">
                 <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                </div>
-            </div>
-
-            <header>
-                <h2>3. Waar <svg data-id="3"  onclick={jumpToScreen} width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.8 20.199A2.73 2.73 0 0 1 6.869 21H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m5 4.974l9.974-9.978M3.8 15.225l9.984-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991"/></svg></h2>
-            </header>
-            <div class="slds-grid slds-wrap slds-p-around_medium">
-                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                    <p>Gekozen service center: {location.recordName}</p>
-                    <p>Address service center {location.recordAdress.street}, {location.recordAdress.postalCode}, {location.recordAdress.city}</p>
-                </div>
-                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                    <p>Contactgegevens service center</p>
-                </div>
-            </div>
-
-            <header>
-                <h2>4. Bij wie en wanneer <svg data-id="4"  onclick={jumpToScreen} width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.8 20.199A2.73 2.73 0 0 1 6.869 21H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m5 4.974l9.974-9.978M3.8 15.225l9.984-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991"/></svg></h2>
-            </header>
-            <div class="slds-grid slds-wrap slds-p-around_medium">
-                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                    <p>Datum van uw afspraak:</p>
-                    <p>Naam zorgverstrekker:</p>
-                </div>
-                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                </div>
-            </div>
-
-
-            <header>
-                <h2>5. Bijkomende informatie <svg data-id="5"  onclick={jumpToScreen} width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.8 20.199A2.73 2.73 0 0 1 6.869 21H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m5 4.974l9.974-9.978M3.8 15.225l9.984-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991"/></svg></h2>
-            </header>
-            <div class="slds-grid slds-wrap slds-p-around_medium">
-                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                    <p>Opmerking: {additionalinfo.comment}</p>
-                </div>
-                <template if:true={showFile}>
-                    <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
-                        <p>Bijkomende documenten: {additionalinfo.file.name}</p>
+                    <div class="card slds-grid slds-wrap slds-p-around_medium">
+                        <div class="slds-col slds-size_1-of-1 slds-grid">
+                            <h2>Contactgegevens <svg data-id="1"  onclick={jumpToScreen} width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.8 20.199A2.73 2.73 0 0 1 6.869 21H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m5 4.974l9.974-9.978M3.8 15.225l9.984-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991"/></svg></h2>
+                        </div>
+                        <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                            <p>{contact.firstName} {contact.lastName}</p>
+                            <p>Email Patient: {contact.email}</p>
+                            <p>Telefoonnummer Patient:{contact.phone}</p>
+                        </div>
+                        <template if:true={contact.bookedForSelf}>
+                            <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                                <p>Naam patient: {contact.bookedForFirstName} {contact.bookedForLastName}</p>
+                                <p>Uw relatie tot de Patient: {contact.relationToPatient}</p>
+                            </div>
+                        </template>
                     </div>
-                </template>
-            </div>
-    </div>
+                </div>
+
+
+
+                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                    <div class="card slds-grid slds-wrap  slds-p-around_medium">
+                        <div class="slds-col slds-size_1-of-1 slds-grid">
+                            <h2>Hulpmiddel <svg data-id="2"  onclick={jumpToScreen} width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.8 20.199A2.73 2.73 0 0 1 6.869 21H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m5 4.974l9.974-9.978M3.8 15.225l9.984-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991"/></svg></h2>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1">
+                            <p>{worktype.WorkTypeName}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                    <div class="card slds-grid slds-wrap slds-p-around_medium">
+                        <div class="slds-col slds-size_1-of-1 slds-grid">
+                            <h2>Locatie <svg data-id="3"  onclick={jumpToScreen} width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.8 20.199A2.73 2.73 0 0 1 6.869 21H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m5 4.974l9.974-9.978M3.8 15.225l9.984-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991"/></svg></h2>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1">
+                            <p>{location.recordName}</p>
+                            <p>{location.recordAdress.street}, {location.recordAdress.postalCode}, {location.recordAdress.city}</p>
+                            <p>Contactgegevens service center</p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                    <div class="card slds-grid slds-wrap slds-p-around_medium">
+                        <div class="slds-col slds-size_1-of-1 slds-grid">
+                            <h2>Details afpraak <svg data-id="4"  onclick={jumpToScreen} width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.8 20.199A2.73 2.73 0 0 1 6.869 21H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m5 4.974l9.974-9.978M3.8 15.225l9.984-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991"/></svg></h2>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1">
+                            <p>{timeslot.resourceName}</p>
+                            <p><lightning-formatted-date-time value={timeslot.slot} month="long" day="2-digit" weekday="long" hour="numeric" minute="2-digit"></lightning-formatted-date-time></p>
+                        </div>
+                    </div>
+                </div>
+
+            
+                
+                
+                
+            <template if:true={showFile}>
+            <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                <div class="card slds-p-around_medium slds-grid slds-wrap" style="height: 100%; min-height: 10em">
+                    <div class="slds-col slds-size_1-of-1 slds-grid">
+                        <h2>Bijkomende informatie <svg data-id="5"  onclick={jumpToScreen} width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.8 20.199A2.73 2.73 0 0 1 6.869 21H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m5 4.974l9.974-9.978M3.8 15.225l9.984-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991"/></svg></h2>
+                    </div>
+                    <div class="slds-col slds-large-size_2-of-3 slds-medium-size_3-of-3">
+                        <p>Opmerking: {additionalinfo.comment}</p>   
+                    </div>
+                       
+                        <!-- <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3">
+                            <template if:true={showFile}>
+                                <template if:true={previewUrl}>
+                                    <template if:true={isImage}>
+                                        <img src={previewUrl} alt="Uploaded preview" style="max-width: 100%; max-height: 200px;" />
+                                    </template>
+                                </template>
+                            </template>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="slds-col slds-large-size_1-of-2 slds-medium-size_1-of-1">
+                    <div class="card slds-p-around_medium slds-grid slds-wrap" style="height: 100%; min-height: 10em">
+                        <div class="slds-col slds-size_1-of-1 slds-grid">
+                            <h2>Documenten <svg data-id="5"  onclick={jumpToScreen} width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.8 20.199A2.73 2.73 0 0 1 6.869 21H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m5 4.974l9.974-9.978M3.8 15.225l9.984-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991"/></svg></h2>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-grid">
+                            <template for:each={fileNames} for:item="fileName">
+                                <p key={fileName}>{fileName}</p>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+            </template>
+
+            <template if:false={showFile}>
+                <div class="slds-col slds-large-size_1-of-1 slds-medium-size_1-of-1">
+                    <div class="card slds-p-around_medium slds-grid slds-wrap" style="height: 100%; min-height: 10em">
+                        <div class="slds-col slds-size_1-of-1 slds-grid">
+                            <h2>Bijkomende informatie <svg data-id="5"  onclick={jumpToScreen} width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.8 20.199A2.73 2.73 0 0 1 6.869 21H3v-3.844c0-.724.288-1.419.8-1.931m5 4.974l-5-4.974m5 4.974l9.974-9.978M3.8 15.225l9.984-9.995m0 0l1.426-1.428a2.733 2.733 0 0 1 3.867-.001l1.126 1.127a2.733 2.733 0 0 1 0 3.865l-1.428 1.428M13.783 5.23l4.991 4.991"/></svg></h2>
+                        </div>
+                        <div class="slds-col">
+                            <p>Opmerking: {additionalinfo.comment}</p>   
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+        </div>
     
 </template>

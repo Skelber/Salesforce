@@ -49,7 +49,14 @@
     
         <template if:false={hasNoRSZ}>
             <div class="slds-align_absolute-center">
-                <lightning-input class="inputCmp input" type="text" label={label.RSZ} value={contact.RSZ} onchange={handleRSZChange} required></lightning-input>
+                <lightning-input 
+                class="inputCmp input" 
+                type="text" 
+                label={label.RSZ} 
+                value={contact.RSZ} 
+                onchange={handleRSZChange} 
+                required={rszRequired}
+                field-level-help="help text national security number"></lightning-input>
             </div>
         </template>
         <template if:true={hasNoRSZ}>

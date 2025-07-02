@@ -5,7 +5,9 @@ import notFoundIcon from "@salesforce/resourceUrl/notFound2";
 import clock from "@salesforce/resourceUrl/clock";
 import calendar from "@salesforce/resourceUrl/calendar";
 import getTimeSlots from '@salesforce/apex/WorktypeSelection.getPossibleTimeslot';
+import TaskModal from 'c/taskModal';
 import getTimeSlotsByHour from '@salesforce/apex/WorktypeSelection.getPossibleTimeslotByHour';
+
 
 export default class SelectServiceResource extends LightningElement {
     @api notBookableViaWebsite = false;
@@ -13,7 +15,7 @@ export default class SelectServiceResource extends LightningElement {
     @api location = {};
     @track timeValue;
     @track dayValue;
-    selectedDays = new Set();
+    @track selectedDays = new Set();
     avatar = avatar;
     clock = clock;
     calendar = calendar;
@@ -22,6 +24,7 @@ export default class SelectServiceResource extends LightningElement {
     @track showSlots = false;
     @track showSpinner = false;
     @track selectedSlotRaw = '';
+    @track showModal = false;
 
     selectedDate;
     showTimeSlots = false;
@@ -76,7 +79,7 @@ export default class SelectServiceResource extends LightningElement {
 
     get dayOptions() {
         return [
-            { label: "Ma", value: 'Mondag' },
+            { label: "Ma", value: 'Monday' },
             { label: "Di", value: 'Tuesday' },
             { label: "Woe", value: 'Wednesday' },
             { label: "Do", value: 'Thursday' },
@@ -102,7 +105,6 @@ export default class SelectServiceResource extends LightningElement {
             });
         });
     
-        // If you want to also remove resources with empty slots after filtering:
         filteredMap = filteredMap.filter(resource => resource.slots.length > 0);
         this.timeslotMap = filteredMap;
         this.processTimeslotMapWithPagination();
@@ -116,6 +118,7 @@ export default class SelectServiceResource extends LightningElement {
             this.selectedDays.add(value);
         }
         this.selectedDays = new Set(this.selectedDays);
+        console.log('selected days:', JSON.stringify([...this.selectedDays]));
     }
 
 
@@ -276,5 +279,38 @@ export default class SelectServiceResource extends LightningElement {
         }
         return base;
     }
+
+    handleSubmit() {
+        this.showModal = true;
+    }
+
+    handleModalClose() {
+        this.showModal = false;
+    }
+
+    // async handleSubmit() {
+    //     try {
+    //         console.log('Loading modal...');
+    //         const modal = await loadCustomElement('c__taskModal');
+    //         console.log('Modal loaded:', modal);
+
+    //         modal.addEventListener('close', () => {
+    //             console.log('Modal closed');
+    //         });
+
+    //         document.body.appendChild(modal);
+
+    //         requestAnimationFrame(() => {
+    //             console.log('Opening modal...');
+    //             if (typeof modal.open === 'function') {
+    //                 modal.open();
+    //             } else {
+    //                 console.error('modal.open is not a function');
+    //             }
+    //         });
+    //     } catch (error) {
+    //         console.error('Error loading modal:', error);
+    //     }
+    // }
 
 }

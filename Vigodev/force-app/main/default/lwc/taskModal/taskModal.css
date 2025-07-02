@@ -1,0 +1,38 @@
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 50%;
+    width: 100%;
+    box-shadow: 0px 2px 5px grey;
+}
+
+.close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-backdrop.visible {
+    display: flex;
+}
+
+h2 {
+    font-weight: 600;
+    color: #00167a;
+    font-size: 20px;
+}

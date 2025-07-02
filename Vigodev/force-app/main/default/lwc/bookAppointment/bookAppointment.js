@@ -31,7 +31,7 @@ export default class BookAppointment extends LightningElement {
     @track receivedSlot;
     @track receivedAdditionalInfo ={
         comment:null,
-        file:null
+        files:null
     };
 
     label = {
@@ -155,8 +155,9 @@ export default class BookAppointment extends LightningElement {
     
 
     receiveAdditionalInfo(event) {
-        this.receiveAdditionalInfo.comment = event.detail.comment;
-        this.receiveAdditionalInfo.file = event.detail.file;
+        this.receivedAdditionalInfo.comment = event.detail.comment;
+        this.receivedAdditionalInfo.files = event.detail.files; // array of file metadata
+        console.log('Received files:', this.receivedAdditionalInfo.files.map(f => f.name).join(', '));
     }
     
 }

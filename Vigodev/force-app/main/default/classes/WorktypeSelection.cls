@@ -12,7 +12,7 @@ public class WorktypeSelection {
         ]);
              
         Map<Id, Work_Type_Typology__c> typologyMap = new Map<Id, Work_Type_Typology__c>();
-        typologyMap.putAll(new List<Work_Type_Typology__c>([SELECT Id, Name, 
+        typologyMap.putAll(new List<Work_Type_Typology__c>([SELECT Id, Name, Image_Developer_Name__c, 
                                                                    Guiding_Text_EN__c, Guiding_Text_NL__c, Guiding_Text_FR__c, 
                                                                    Image_Link__c, Typology_Name_NL__c, Typology_Name_FR__c            
                                                               FROM Work_Type_Typology__c]));
@@ -58,7 +58,7 @@ public class WorktypeSelection {
                         if(wtg4.Appointment_Type_Lookup__c <> null){
                             Work_Type_Typology__c typ = typologyMap.get(wtg4.Appointment_Type_Lookup__c);
                             WorkType2 at = new WorkType2(typ.Guiding_Text_EN__c, typ.Guiding_Text_FR__c, typ.Guiding_Text_NL__c, 
-                                                       									   typ.Image_Link__c, typ.Name, typ.Typology_Name_FR__c, typ.Typology_Name_NL__c, typ.id);
+                                                       									   typ.Image_Link__c, typ.Image_Developer_Name__c, typ.Name, typ.Typology_Name_FR__c, typ.Typology_Name_NL__c, typ.id);
                             atList.add(at); 
                         }
                         
@@ -67,7 +67,7 @@ public class WorktypeSelection {
                     if(id4 <> null) {
                         Work_Type_Typology__c typ = typologyMap.get(id4);
                         WorkType2 psg = new WorkType2(typ.Guiding_Text_EN__c, typ.Guiding_Text_FR__c, typ.Guiding_Text_NL__c, 
-                                                    									typ.Image_Link__c, typ.Name, typ.Typology_Name_FR__c, typ.Typology_Name_NL__c, typ.id);
+                                                    									typ.Image_Link__c, typ.Image_Developer_Name__c, typ.Name, typ.Typology_Name_FR__c, typ.Typology_Name_NL__c, typ.id);
                         ProductSubGroup item = new ProductSubGroup(psg, atList);
                         psgList.add(new ProductSubGroup (psg, atList)); 
                     }
@@ -77,7 +77,7 @@ public class WorktypeSelection {
                 if(id3 <> null) {
                     Work_Type_Typology__c typ = typologyMap.get(id3);
                     WorkType2 pg = new WorkType2(typ.Guiding_Text_EN__c, typ.Guiding_Text_FR__c, typ.Guiding_Text_NL__c, 
-                                               									   typ.Image_Link__c, typ.Name, typ.Typology_Name_FR__c, typ.Typology_Name_NL__c, typ.id);
+                                               									   typ.Image_Link__c, typ.Image_Developer_Name__c, typ.Name, typ.Typology_Name_FR__c, typ.Typology_Name_NL__c, typ.id);
                     pgList.add(new ProductGroup (pg, psgList));     
                 }
                 
@@ -86,7 +86,7 @@ public class WorktypeSelection {
             if(id2 <> null) {
                 Work_Type_Typology__c typ = typologyMap.get(id2);
                 WorkType2 bu = new WorkType2(typ.Guiding_Text_EN__c, typ.Guiding_Text_FR__c, typ.Guiding_Text_NL__c, 
-                                           									   typ.Image_Link__c, typ.Name, typ.Typology_Name_FR__c, typ.Typology_Name_NL__c, typ.id);
+                                           									   typ.Image_Link__c, typ.Image_Developer_Name__c, typ.Name, typ.Typology_Name_FR__c, typ.Typology_Name_NL__c, typ.id);
                 buList.add(new BusinessUnit (bu, pgList));
             }
         }
@@ -99,7 +99,9 @@ public class WorktypeSelection {
     public static String getWorkType(Id BusinessUnitId, Id ProductGroupId, Id ProductSubGroupId, Id AppointmentId) {
         
         List<WorkTypeGroupMember> wtgroupmember = new List<WorkTypeGroupMember>([SELECT Id, WorkTypeId, WorkTypeGroupId, WorkTypeGroup.Bookable_on_website__c,
-                                                                                 		WorkType.Work_Type_Name_FR__c, WorkType.EstimatedDuration, WorkType.Name
+                                                                                 		WorkType.Work_Type_Name_FR__c, WorkType.EstimatedDuration, WorkType.Name,
+                                                                                 		WorkTypeGroup.Appointment_Type_Translation__c, WorkTypeGroup.Appointment_Type_Translation_FR__c,
+                                                                                 		WorkTypeGroup.Product_Subgroup_Translation__c, WorkTypeGroup.Product_Subgroup_Translation_FR__c
                                                                                    FROM WorkTypeGroupMember
                                                                                   WHERE WorkTypeGroup.Appointment_Type_Lookup__c = :AppointmentId
                                                                                         AND WorkTypeGroup.Business_Unit_Lookup__c = :BusinessUnitId
@@ -110,7 +112,9 @@ public class WorktypeSelection {
         FullWorkType fullwt;        
         if(wtGroupMember.size() > 0) 
             fullwt = new FullWorkType (wtgroupmember[0].WorkType.Name, wtgroupmember[0].WorkType.Work_Type_Name_FR__c, 
-                                       wtgroupmember[0].WorkType.EstimatedDuration, wtgroupmember[0].WorkTypeId, wtgroupmember[0].WorkTypeGroup.Bookable_on_website__c);
+                                       wtgroupmember[0].WorkType.EstimatedDuration, wtgroupmember[0].WorkTypeId, wtgroupmember[0].WorkTypeGroup.Bookable_on_website__c,
+                                       wtgroupmember[0].WorkTypeGroup.Appointment_Type_Translation__c, wtgroupmember[0].WorkTypeGroup.Appointment_Type_Translation_FR__c,
+                                       wtgroupmember[0].WorkTypeGroup.Product_Subgroup_Translation__c, wtgroupmember[0].WorkTypeGroup.Product_Subgroup_Translation_FR__c);
         
         String JSONstring = JSON.serializePretty(fullwt);
         return JSONString;
@@ -267,6 +271,129 @@ public class WorktypeSelection {
         return res.getBody();
     }
     
+    @AuraEnabled(cacheable=true)
+    public static Response saveServiceAppointment(String firstName, String lastName, String email, string phone, string rrnumber, string street, String city, String Postalcode, String country,
+                                                  String Location, Datetime startTime, Datetime endTime, String user, String workType, String description) {
+           Id accountId;                                           
+/*           List<Account> paccs = new List<Account>([SELECT Id FROM Account WHERE Patient_Insurance_ID__pc = :rrnumber]);
+           if (paccs.size() > 0) {
+                accountId = paccs[0].Id;                        
+           } else {
+               if(rrnumber <> null) {
+                   Account a = new Account();
+                   a.firstName = firstName;
+                   a.LastName = lastname;
+                   a.PersonEmail = email;
+                   a.Phone = phone;
+                   a.Patient_Insurance_ID__pc = rrnumber;
+                   a.PersonMailingStreet = street;   
+                   a.PersonMailingcity = city;
+                   a.PersonMailingPostalCode = postalcode;
+                   a.PersonMailingcountry = country;
+                   a.Type = 'Patient';
+                   a.RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('PersonAccount').getRecordTypeId();
+                   insert a;
+                   accountId = a.Id;
+               } else {
+                   Lead l = new Lead();
+                   l.firstName = firstName;
+                   l.LastName = lastname;
+                   l.email = email;
+                   l.Phone = phone;
+                   //l.rrnumber
+                   l.Street = street;   
+                   l.city = city;
+                   l.PostalCode = postalcode;
+                   l.country = country;
+                   insert l;
+                   accountId = l.Id;
+               }
+           }*/
+
+/*        List<AssignedResource> overlappingAppointment = [SELECT id 
+                                                           FROM AssignedResource 
+                                                          WHERE ServiceResourceId = :user 
+                                                                AND ServiceAppointment.Status != 'Canceled' 
+                                                                AND (
+                                                                    (ServiceAppointment.SchedStartTime >= :startTime AND ServiceAppointment.SchedStartTime < :endTime)
+                                                                    OR (ServiceAppointment.SchedEndTime > :startTime AND ServiceAppointment.SchedEndTime <= :endTime)   
+                                                                    OR (ServiceAppointment.SchedStartTime <= :startTime AND ServiceAppointment.SchedEndTime >= :endTime) 
+                                                                    OR (ServiceAppointment.SchedStartTime >= :startTime AND ServiceAppointment.SchedEndTime <= :endTime) 
+                                                                    )
+                                                        ];
+        
+        List<ResourceAbsence> overlappingResourceAbsence = [SELECT Id FROM ResourceAbsence
+                                                            WHERE ResourceId = :user
+                                                            AND (
+                                                                (Start >= :startTime AND Start < :endTime)
+                                                                OR (End > :startTime AND End <= :endTime) 
+                                                                OR (Start <= :startTime AND End >= :endTime)
+                                                                OR (Start >= :startTime AND End <= :endTime) 
+                                                                )                                                                                                          
+                                                            ];*/
+
+        Response response = new Response();
+//        if(overlappingAppointment.size() == 0 && overlappingResourceAbsence.size() == 0) {
+       
+            // Create a ServiceAppointment
+            ServiceAppointment sa = new ServiceAppointment();
+            sa.ServiceTerritoryId = location;
+            sa.Status = 'Scheduled';
+            sa.DurationType = 'Minutes';
+            sa.SchedStartTime = startTime;
+            sa.EarliestStartTime = startTime;
+            sa.SchedEndTime = endtime;
+            sa.DueDate = endtime;
+            sa.ParentRecordId = accountId;
+            sa.workTypeId = workType;
+            sa.Description = description;
+            insert sa;
+            
+            AssignedResource asrec = new AssignedResource();
+            asrec.ServiceAppointmentId = sa.Id;
+            asrec.ServiceResourceId = user;
+            asrec.IsPrimaryResource = true;
+            asrec.IsRequiredResource = true;
+            insert asrec;
+            
+            response.title = System.label.AppointmentSchedulerSASuccessTitle;
+            response.message = System.label.AppointmentSchedulerSuccessBody;
+            response.type = 'success';
+            
+/*        } else {
+            
+            response.title = System.label.AppointmentSchedulerSAErrorTitle;
+            response.message = System.label.AppointmentSchedulerSAErroBody;
+            response.type = 'error';
+            
+        }*/
+        
+        return response;
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static String saveLead(String firstName, String lastName, String email, string phone, string rrnumber, string street,
+                                 String city, String Postalcode, String country) {
+        Lead l = new Lead();
+        l.firstName = firstName;
+        l.LastName = lastname;
+        l.email = email;
+        l.Phone = phone;
+        //l.rrnumber
+        l.Street = street;   
+        l.city = city;
+		l.PostalCode = postalcode;
+        l.country = country;
+        insert l;
+        return l.id;
+    }
+    
+    @AuraEnabled(cacheable=true)
+    public static String saveTask(Id leadid, String bu, String pg, String psg, String at, String locationName, String timing, Date datum) {
+        
+        return null;
+    }
+    
 /*	########################################     INNER CLASSES	   ########################################*/
     
     private class BusinessUnit {
@@ -312,17 +439,19 @@ public class WorktypeSelection {
         private String Guiding_Text_NL  {get; set;} 
         private Boolean Has_Image_Link  {get; set;}
         private String Image_Link       {get; set;}
+        private String Image_Dev_Name   {get; set;}
         private String Typology_Name_EN {get; set;}
         private String Typology_Name_FR {get; set;}
         private String Typology_Name_NL {get; set;}
         private String recordId			{get; set;}
         
-        private WorkType2 (String gtEN, String gtFR, String gtNL, String image, String tnEN, String tnFR, String tnNL, String id) {
+        private WorkType2 (String gtEN, String gtFR, String gtNL, String image, String dev_name, String tnEN, String tnFR, String tnNL, String id) {
             Guiding_Text_EN = gtEN;
             Guiding_Text_FR = gtFR;
             Guiding_Text_NL = gtNL;
             Has_Image_Link = !(String.isEmpty(image) || String.isBlank(image));
-            Image_Link = image;
+            Image_Link = image;       
+            Image_Dev_Name = image != null? image.substringAfterLast('/') : null;
             Typology_Name_EN = tnEN;
             Typology_Name_FR = tnFR;
             Typology_Name_NL = tnNL;
@@ -338,13 +467,21 @@ public class WorktypeSelection {
         private Decimal EstimatedDuration {get; set;}
         private Id RecordId {get; set;}
         private Boolean Bookable {get; set;}
+        private String AppTypeTranslation {get; set;}
+        private String AppTypeTranslationFR {get; set;}
+        private String ProdSubGroupTranslation {get; set;}
+        private String ProdSubGroupTranslationFR {get; set;}
         
-        private FullWorkType (String wtn, String wtnFR, Decimal ed, Id ri, Boolean b) {
+        private FullWorkType (String wtn, String wtnFR, Decimal ed, Id ri, Boolean b, String att, String attFR, String psgt, String psgtFR) {
             WorkTypeName = wtn;
             WorkTypeNameFR = wtnFR;
             EstimatedDuration = ed;
             RecordId = ri;
             Bookable = b;
+            AppTypeTranslation = att;
+            AppTypeTranslationFR = attFR;
+            ProdSubGroupTranslation = psgt;
+            ProdSubGroupTranslationFR = psgtFR;
         }
         
     }
@@ -394,6 +531,15 @@ public class WorktypeSelection {
         public List<Id> resources;
         public Id territoryId;
         
+    }
+    
+    public class Response {
+        @auraEnabled
+        public String title;
+        @auraEnabled
+        public String message;
+        @auraEnabled
+        public String type;
     }
     
 }

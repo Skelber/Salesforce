@@ -40,6 +40,7 @@ export default class SelectPatient extends LightningElement {
         bookedForLastName: null,
         relationToPatient: null,
     }
+    rszRequired = false
     contactInfoComplete = false
     birthyearPrefix = "19"
     @api jtp
@@ -66,7 +67,6 @@ export default class SelectPatient extends LightningElement {
         const storedHasRSZ = localStorage.getItem('hasRSZ');
         this.hasNoRSZ = storedHasRSZ === 'true';
         this.checkCompletion(); 
-        console.log('lang ' + this.lang)
     }
 
     label = {
@@ -216,7 +216,7 @@ export default class SelectPatient extends LightningElement {
     }
 
     checkCompletion(){
-        if(this.contact.firstName && this.contact.lastName && this.contact.email && this.contact.phone && this.contact.RSZ || this.contact.hasRSZ) {
+        if(this.contact.firstName && this.contact.lastName && this.contact.email && this.contact.phone && this.contact.RSZ || (this.hasNoRSZ && this.contact.birthdate)) {
             this.contactInfoComplete = true;
         } else {
             this.contactInfoComplete = false;

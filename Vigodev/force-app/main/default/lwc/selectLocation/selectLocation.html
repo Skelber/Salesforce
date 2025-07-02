@@ -11,9 +11,9 @@
 
 
             <template for:each={locations} for:item="location">
-            <div key={location.recordId} data-id={location.recordId} onclick={handleLocationClick} class="slds-col slds-large-size_1-of-4 slds-medium-size_1-of-1 slds-p-vertical_small">
-                <div class="locationSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical">
-                    <img src={locationIconURL} alt="Location pin">
+            <div key={location.recordId} data-id={location.recordId} onclick={handleLocationClick} class="slds-col slds-large-size_1-of-5 slds-medium-size_1-of-2 slds-p-vertical_small">
+                <div class="locationSelection slds-p-around_small slds-align_absolute-center slds-grid_vertical slds-wrap">
+                    <!-- <img src={locationIconURL} alt="Location pin"> -->
                     <h3 class="slds-m-vertical_medium">{location.recordName}</h3>
                     <p>{location.recordAdress.street}</p>
                     <p>{location.recordAdress.postalCode} {location.recordAdress.city}</p>

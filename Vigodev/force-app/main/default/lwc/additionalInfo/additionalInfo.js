@@ -1,4 +1,4 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
 
 export default class AdditionalInfo extends LightningElement {
 
@@ -7,12 +7,15 @@ export default class AdditionalInfo extends LightningElement {
         file: null
     }
 
+    @track fileName = []
+
     // disconnectedCallback(){
     //     this.passToParent();
     // }
 
     connectedCallback(){
         this.additionalInfo.comment = localStorage.getItem('comment') || ''; 
+
     }
 
     handleCommentChange(event){
@@ -22,22 +25,42 @@ export default class AdditionalInfo extends LightningElement {
         this.passToParent();
     }
 
-    handleFileChange(event){
-        const file = event.target.files[0];
-        this.additionalInfo.file = file;
-        console.log('additional info file ' + this.additionalInfo.file)
+    // handleFileChange(event) {
+    //     const file = event.target.files[0];
+    //     if (!this.additionalInfo) {
+    //         this.additionalInfo = {};
+    //     }
+    
+    //     this.additionalInfo.file = file;
+    //     console.log('Selected file name:', file?.name);
+    
+    //     this.passToParent();
+    // }
+
+
+    handleFileChange(event) {
+        const uploadedFiles = event.detail.files;
+    
+        if (!this.additionalInfo) {
+            this.additionalInfo = {};
+        }
+        this.additionalInfo.file = uploadedFiles;
+    
+        this.fileName = uploadedFiles.map(file => file.name);
+    
+        console.log('Uploaded files:', [...this.fileName]);
+    
         this.passToParent();
     }
-
+    
     @api passToParent() {
-        const additionalInfo = new CustomEvent('additionalinfodetails', {
+        this.dispatchEvent(new CustomEvent('additionalinfodetails', {
             detail: {
                 comment: this.additionalInfo.comment,
-                file: this.additionalInfo.file
+                files: this.additionalInfo.file 
             },
             bubbles: true,
             composed: true
-        });
-        this.dispatchEvent(additionalInfo);
+        }));
     }
 }

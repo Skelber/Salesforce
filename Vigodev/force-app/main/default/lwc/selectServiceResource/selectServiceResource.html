@@ -228,14 +228,21 @@
                         <lightning-input class="input" type="checkbox" label="Ik heb een voorschrift" name="Voorschrift"></lightning-input>
                     </div>
                     <div class="slds-col slds-large-size_1-of-1 slds-medium-size_1-of-1 slds-small-size_1-of-1 slds-align_absolute-center slds-m-vertical_medium">
-                        <lightning-textarea class="input" label="Opmerkingen" name="comment" ></lightning-textarea>
+                        <lightning-textarea class="input" label="Geef hier aan waarom je een afspraak met één van onze verstrekkers wenst te maken" name="comment" ></lightning-textarea>
                     </div>
                     <div class="slds-col slds-large-size_1-of-1 slds-medium-size_1-of-1 slds-small-size_1-of-1 slds-align_absolute-center slds-m-vertical_medium" style="width: 100%;">
-                        <lightning-button variant="brand" label="Submit" ></lightning-button>
+                        <lightning-button variant="brand" label="Aanvraag afspraak indienen" onclick={handleSubmit} ></lightning-button>
                     </div>
                 </div>
 
             </div>
         </div>
         </template>
+
+        <template if:true={showModal}>
+            <c-task-modal
+            selected-days={selectedDays}
+            time-value={timeValue} 
+            onclose={handleModalClose}></c-task-modal>
+          </template>
 </template>

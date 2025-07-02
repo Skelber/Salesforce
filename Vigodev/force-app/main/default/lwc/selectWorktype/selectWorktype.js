@@ -5,10 +5,13 @@ import bandageIcon from "@salesforce/resourceUrl/bandage";
 import prostheticIcon from "@salesforce/resourceUrl/prosthetic";
 import orthoticIcon from "@salesforce/resourceUrl/orthotics";
 import LANG from '@salesforce/i18n/lang';
+import basePath from '@salesforce/community/basePath';
 
 export default class SelectWorktype extends LightningElement {
 
   LANG = LANG
+  baseUrl = window.location.origin;
+  basePath = basePath;
    workTypes = []
    businessUnits = [];
    @track  productGroups = [];
@@ -49,7 +52,9 @@ export default class SelectWorktype extends LightningElement {
         // window.addEventListener('resize', this.updateWrapClass.bind(this));
         let baseUrl = window.location.origin;
 
-        console.log(`Base URL: ${baseUrl}`)
+        console.log('base url =' + this.baseUrl + this.basePath + '/sfsites/c/resource/');
+        // this.template.querySelector('.worktypeSelection'))
+
       
         if (!this.businessUnitId) return;
 
@@ -146,7 +151,6 @@ export default class SelectWorktype extends LightningElement {
         this.displayDutch = true
       }
     }
-
     getWorkTypology() {
       getWorkTypologies()
         .then(result => {
@@ -157,14 +161,33 @@ export default class SelectWorktype extends LightningElement {
               result = [];
             }
           }
-  
+    
           if (Array.isArray(result)) {
             this.workTypes = result;
-            
-            this.businessUnits = result.map(item => item.businessUnit);
+            this.businessUnits = result.map(item => {
+              const bu = { ...item.businessUnit };
+    
+              if (bu?.Image_Dev_Name) {
+                bu.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${bu.Image_Dev_Name}`;
+                console.log(bu.Image_Link)
+              }
+    
+              return bu;
+            });
+    
           } else if (result.workTypeSelector) {
             this.workTypes = Array.from(result.workTypeSelector);
-            this.businessUnits = this.workTypes.map(item => item.businessUnit);
+            this.businessUnits = this.workTypes.map(item => {
+              const bu = { ...item.businessUnit };
+    
+              if (bu?.Image_Dev_Name) {
+                bu.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${bu.Image_Dev_Name}`;
+                console.log(bu.Image_Link)
+              }
+    
+              return bu;
+            });
+    
           } else {
             this.workTypes = [];
             this.businessUnits = [];
@@ -173,7 +196,7 @@ export default class SelectWorktype extends LightningElement {
         .catch(error => {
           console.error('Error in getWorkTypology:', error);
         });
-  }
+    }
 
 
     handleBUClick(event) {
@@ -185,6 +208,18 @@ export default class SelectWorktype extends LightningElement {
       console.log('selected BU: ' + JSON.stringify(selected))
       if (selected) {
         this.productGroups = selected.productGroups || [];
+        this.productGroups = (selected.productGroups || []).map(pg => {
+          const pgCopy = { ...pg };
+        
+          if (pgCopy.Image_Dev_Name) {
+            pgCopy.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${pgCopy.Image_Dev_Name}`;
+            pgCopy.Has_Image_Link = true;
+          } else {
+            pgCopy.Has_Image_Link = false;
+          }
+        
+          return pgCopy;
+        });
         this.productSubGroups = [];
         this.appointmentTypeId = [];
         // this.setSectionVisibillity()
@@ -224,11 +259,24 @@ export default class SelectWorktype extends LightningElement {
       this.productGroupId = event.currentTarget.dataset.id;
       const index = event.currentTarget.dataset.index;
       const selectedPG = this.productGroups?.[index];
+      console.log('selected product group ' + JSON.stringify(selectedPG))
       
       if (selectedPG?.productSubGroups?.length) {
         this.productSubGroups = selectedPG.productSubGroups;
+        this.productSubGroups = (selectedPG.productSubGroups || []).map(psg => {
+          const psgCopy = { ...psg };
+        
+          if (psgCopy.Image_Dev_Name) {
+            psgCopy.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${psgCopy.Image_Dev_Name}`;
+            psgCopy.Has_Image_Link = true;
+          } else {
+            psgCopy.Has_Image_Link = false;
+          }
+        
+          return psgCopy;
+        });
+       
         this.appointmentTypes = [];
-        // this.setSectionVisibillity()
         
       } else {
         this.productSubGroups = [];

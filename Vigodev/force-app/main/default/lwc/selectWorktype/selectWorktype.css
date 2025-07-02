@@ -1,13 +1,13 @@
 .header {
-    border: 1px solid #003f5c;
+    border: 1px solid #00167a;
     padding: 10px;
     border-radius: 15px;
 }
 
 h3 {
-    font-weight: 500;
-    color: #003f5c;
-    font-size: larger;
+    font-weight: 600;
+    color: #00167a;
+    font-size: 20px;
 }
 
 .cardHeader {

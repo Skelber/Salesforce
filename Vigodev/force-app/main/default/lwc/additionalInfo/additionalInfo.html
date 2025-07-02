@@ -10,12 +10,20 @@
         <div class="slds-grid slds-wrap">
 
             
-            <div class=" slds-col slds-size_1-of-1 slds-align_absolute-center slds-p-around_medium">
-                <lightning-input 
+            <div class=" slds-col slds-grid_vertical slds-size_1-of-1 slds-align_absolute-center slds-p-around_medium">
+                <!-- <lightning-input 
                 type="File" 
                 class="input"
                 onchange={handleFileChange} 
-                label="Indien u een afspraak maakt op voorschrift, gelieve hier uw voorschrift op te laden" ></lightning-input>
+                multiple
+                file-field-value={additionalInfo.file}
+                label="Indien u een afspraak maakt op voorschrift, gelieve hier uw voorschrift op te laden" ></lightning-input> -->
+                <lightning-file-upload
+                class="input"
+                onuploadfinished={handleFileChange}
+                multiple
+                label="Indien u een afspraak maakt op voorschrift, gelieve hier uw voorschrift op te laden"></lightning-file-upload>
+                <p>{fileName}</p>
             </div>
             <div class="slds-col slds-size_1-of-1 slds-align_absolute-center slds-p-around_medium">
                 <lightning-textarea class="input"  label="Heeft u nog andere opmerkingen?" onchange={handleCommentChange}></lightning-textarea>

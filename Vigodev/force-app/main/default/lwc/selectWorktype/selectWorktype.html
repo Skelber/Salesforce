@@ -4,14 +4,14 @@
     <div class="slds-p-around_large">
       <div class="slds-grid slds-gutters">
         <div class="slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4">
-          <h2 class="slds-m-vertical_medium header slds-align_absolute-center">Selecteer een hulpmiddel</h2>
+          <h2 class="slds-m-vertical_medium header slds-align_absolute-center">Maak de juiste afspraak</h2>
         </div>
       </div>
 
 
         <div class="slds-grid slds-wrap slds-col slds-size_1-of-1">
         <lightning-accordion active-section-name={activeSection} class="slds-p-around_small" style="width: 100%;">
-            <lightning-accordion-section name="A" value="A" onclick={handleSectionHeaderClick} label="Selecteer een business unit">
+            <lightning-accordion-section name="A" value="A" onclick={handleSectionHeaderClick} label="Selecteer een hulpmiddel">
                  <div class="slds-grid slds-gutters slds-wrap worktypeContainer" data-id="worktypeContainer">
                     <template for:each={businessUnits} for:item="bu">
                         <div key={bu.recordId} data-id={bu.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_1-of-1 slds-small-size_1-of-1 slds-p-vertical_small overflowContainer" onclick={handleBUClick}>
@@ -49,7 +49,7 @@
                 </lightning-accordion-section>
 
             <template if:true={showProductGroups}>
-              <lightning-accordion-section name="B" value="B" label="Selecteer een product groep" data-scroll-anchor="section-b">
+              <lightning-accordion-section name="B" value="B" label="Selecteer een categorie" data-scroll-anchor="section-b">
                 <div class="slds-grid slds-gutters slds-wrap">
                   <template for:each={productGroups} for:item="pg" for:index="pgIndex">
                     <div key={pg.productGroup.recordId}  data-id={pg.productGroup.recordId} data-index={pgIndex} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handlePGClick}>
@@ -89,7 +89,7 @@
               </template>
 
               <template if:true={showProductSubGroups}>
-                <lightning-accordion-section name="C" value="C" label="Selecteer een product sub-groep" data-scroll-anchor="section-c">
+                <lightning-accordion-section name="C" value="C" label="Verfijn uw keuze" data-scroll-anchor="section-c">
                   <div class="slds-grid slds-gutters slds-wrap">
                     <template for:each={productSubGroups} for:item="psg" for:index="psgIndex">
                       <div key={psg.productSubGroup.recordId} data-id={psg.productSubGroup.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" data-index={psgIndex} onclick={handlePSGClick}>
@@ -129,7 +129,7 @@
 
 
               <template if:true={showAppointmentTypes}>
-                <lightning-accordion-section name="D" value="D" label="Selecteer een afspraak type" data-scroll-anchor="section-d" class="slds-col slds-size_1-of-1">
+                <lightning-accordion-section name="D" value="D" label="Selecteer een afspraaktype" data-scroll-anchor="section-d" class="slds-col slds-size_1-of-1">
                     <div class="slds-grid slds-gutters slds-wrap">
                         <template for:each={appointmentTypes} for:item="at" for:index="atIndex">
                             <div key={at.recordId} data-id={at.recordId} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small appointmentType" onclick={handleATClick}>
