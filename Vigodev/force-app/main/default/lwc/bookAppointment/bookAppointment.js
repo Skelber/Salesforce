@@ -6,7 +6,7 @@ import BookAnAppointment from "@salesforce/label/c.pbzButtonBookAppointment"
 
 export default class BookAppointment extends LightningElement {
 
-    currentStep;
+    @api currentStep;
     showDefaultProgress = false;
     showNextButton = false;
     showScreenOne;
@@ -32,9 +32,9 @@ export default class BookAppointment extends LightningElement {
     selectedAppointmentTypeId;
     @track receivedLocation;
     @track receivedSlot;
-    @track receivedAdditionalInfo ={
-        comment:null,
-        files:null
+    @track receivedAdditionalInfo = {
+        comment: '',
+        files: []
     };
 
     label = {
@@ -52,6 +52,8 @@ export default class BookAppointment extends LightningElement {
 
     receiveScreenChange(event) {
         this.currentStep = event.detail.screen;
+        const appointmentProgress = this.template.querySelector('c-appointment-progress');
+        appointmentProgress.currentstep = event.detail.screen;
         this.handleScreenChange();
     }
 

@@ -2,7 +2,7 @@
 
 <template>
     <div class="slds-scope container">
-        <lightning-card>       
+        <!-- <lightning-card>        -->
             <c-appointment-progress
             show-default-progress={showDefaultProgress}></c-appointment-progress>
             <template if:true={showScreenOne}>
@@ -26,6 +26,7 @@
             </template>
             <template if:true={showScreenFour}>
                 <c-select-service-resource
+                contact={receivedContact}
                 worktype={receivedWorktype}
                 location={receivedLocation}
                 onslotdetails={receiveSlotDetails}
@@ -33,6 +34,7 @@
             </template>
             <template if:true={showScreenFive}>
                 <c-additional-info
+                additional-info={receivedAdditionalInfo}
                 onadditionalinfodetails={receiveAdditionalInfo}></c-additional-info>
             </template>
             <template if:true={showScreenSix}>
@@ -63,7 +65,7 @@
                 </div>
             </footer>
             
-        </lightning-card>
+        <!-- </lightning-card> -->
         
     </div>
 

@@ -172,12 +172,12 @@ public class WorktypeSelection {
         for (ResponseWrapper wrapper : wrapperResult) {
                         
             List<String> dateList = wrapper.startTime.split('T');
-            DateTime slot = Datetime.newInstance(Integer.valueOf(dateList[0].split('-')[0]), Integer.valueOf(dateList[0].split('-')[1]), Integer.valueOf(dateList[0].split('-')[2]), Integer.valueOf(dateList[1].split(':')[0]), Integer.valueOf(dateList[1].split(':')[1]), 0);
-           // TimeZone tz = UserInfo.getTimeZone();
-           // Integer milliSeconds = tz.getOffset(slot);
-           // Integer minutes = milliSeconds / 60000;
-           // Integer offSetHours = minutes / 60;
-           // slot = slot.addHours(offSetHours);
+            DateTime slot = Datetime.newInstanceGMT(Integer.valueOf(dateList[0].split('-')[0]), Integer.valueOf(dateList[0].split('-')[1]), Integer.valueOf(dateList[0].split('-')[2]), Integer.valueOf(dateList[1].split(':')[0]), Integer.valueOf(dateList[1].split(':')[1]), 0);
+            TimeZone tz = Timezone.getTimeZone('Europe/Brussels');
+            Integer milliSeconds = tz.getOffset(slot);
+            Integer minutes = milliSeconds / 60000;
+            Integer offSetHours = minutes / 60;
+            slot = slot.addHours(offSetHours);
             
             for (Id resourceId : wrapper.resources) {         
                 String keyname = string.valueOf(resourceId);
@@ -233,42 +233,6 @@ public class WorktypeSelection {
         System.debug(response);
         
         return response;
-    }
-    
-    @AuraEnabled(cacheable=true)
-    public static String getPossibleTimeslotByAPI(Date selectedDate, Id locatonId, Id workTypeId ) {
-        Datetime startdatetime = DateTime.newInstance(selectedDate, Time.newInstance(0, 0, 0, 0));
-        List <AppointmentSchedulingPolicy> policyId = [SELECT Id FROM AppointmentSchedulingPolicy WHERE MasterLabel ='VIGO Scheduling Policy' LIMIT 1];
-        
-        HttpRequest req = new HttpRequest();
-        req.setEndpoint('https://ottobock-b2c-na--dev.sandbox.lightning.force.com/services/data/v62.0/connect/scheduling/available-territory-slots');
-        //req.setEndpoint('/services/data/v62.0/connect/scheduling/available-territory-slots');
-        
-        req.setMethod('POST');
-        String myData = '{"startTime": "' + startdatetime.format('yyyy-MM-dd\'T\'HH:mm:ssZ') + '",'
-            				+ '"endTime": "' + startdatetime.addDays(1).format('yyyy-MM-dd\'T\'HH:mm:ssZ') + '",'
-            				+ '"schedulingPolicyId": "' + policyId[0].Id + '",'
-            + '"workType" : "{"id":' + workTypeId + '"},'
-            				+ '"territoryIds": ["' + locatonId + '"]}';
-        req.setBody(myData);
-        req.setHeader('Content-Type', 'application/json');
-        
-        Http http = new Http();
-                
-        HttpResponse res = http.send(req);
-        
-        while (res.getStatusCode() == 302) { 
-            	req.setEndpoint(res.getHeader('Location')); 
-            res = new Http().send(req); 
-        }
-        
-        if (res.getStatusCode() == 201) { // 201 indicates creation
-            System.debug('Successful.');
-        } else {
-            System.debug('Failed: ' + res.getStatusCode());
-        }
-        
-        return res.getBody();
     }
     
     @AuraEnabled(cacheable=true)
@@ -372,26 +336,76 @@ public class WorktypeSelection {
     }
     
     @AuraEnabled(cacheable=true)
-    public static String saveLead(String firstName, String lastName, String email, string phone, string rrnumber, string street,
-                                 String city, String Postalcode, String country) {
+    public static String saveLead(String firstName, String lastName, String email, string phone, 
+                                  string rrNr, Boolean noRrNr, Date endUserBirthdate,
+                                  String street, String postalcode, String city, String country,
+                                  Boolean onBehalveOf, String relationship, String yourFirstName, String yourLastName, String yourEmail, String yourPhone) {
         Lead l = new Lead();
-        l.firstName = firstName;
-        l.LastName = lastname;
+        l.firstName = FirstName;
+        l.LastName = LastName;
         l.email = email;
         l.Phone = phone;
-        //l.rrnumber
+                                      
+        l.No_Medical_Record_Number__c = noRrNr;
+        if(noRrNr) {
+        	l.HealthCloudGA__BirthDate__c = endUserBirthdate;
+        } else {
+            l.HealthCloudGA__MedicalRecordNumber__c = rrNr;
+        }
+            
         l.Street = street;   
         l.city = city;
 		l.PostalCode = postalcode;
         l.country = country;
+                            
+		l.On_behalf_of_someone_else__c = onBehalveOf;    
+        if(onBehalveOf) {
+        	l.Relationship_Type__c = relationship;
+            l.First_Name_Relationship__c = yourFirstName;
+            l.Last_Name_Relationship__c = yourLastName;
+            l.email = yourEmail;
+        	l.Phone = yourPhone;
+        }
+        
+        l.RecordTypeId = Schema.SObjectType.Lead.getRecordTypeInfosByName().get('Vigo Lead').getRecordTypeId();
+		l.OBA__c = '90463';
+
         insert l;
         return l.id;
     }
     
     @AuraEnabled(cacheable=true)
-    public static String saveTask(Id leadid, String bu, String pg, String psg, String at, String locationName, String timing, Date datum) {
+    public static String saveTask(Id leadid, String worktypeName, String dagdeel, String dagen, Boolean voorschrift, String opmerkingen, String serviceTerritoryName, String rrNr) {
+        Task t = new Task();
         
-        return null;
+        t.Description = 'Gekozen werktype: ' + worktypeName
+            				+'<br/><br/><br/>'
+            				+ 'Voorkeur dag: ' + dagen
+            				+'<br/><br/><br/>'
+            				+ 'Voorkeur dagdeel: ' + dagen
+            				+'<br/><br/><br/>'
+            				+ 'Ik heb een voorschrift: ' + voorschrift
+            				+'<br/><br/><br/>'
+            				+ 'Opmerkingen: ' + opmerkingen;
+        
+        t.OwnerId = [SELECT Id, DeveloperName FROM Group WHERE Type = 'Queue' AND Name = 'VIGO Wetteren' LIMIT 1].Id;
+        
+        List<Account> accounts =  [SELECT Id FROM Account WHERE HealthCloudGA__MedicalRecordNumber__pc = :rrNr LIMIT 1];
+        if(accounts <> null && accounts.size() > 0) {
+            t.WhoId = accounts[0].Id;
+        } else {
+            t.WhoId = leadid;
+        }
+        
+        
+        t.RecordTypeId = Schema.SObjectType.Task.getRecordTypeInfosByName().get('Vigo Task').getRecordTypeId();
+        t.Subject = 'Bellen voor afspraak';
+        t.Type = 'Appointment Request';
+        t.Status = 'Not Started';
+        t.Priority = 'Normal';
+        
+        insert t;
+        return t.Id;
     }
     
 /*	########################################     INNER CLASSES	   ########################################*/

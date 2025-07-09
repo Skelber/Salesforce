@@ -50,7 +50,7 @@
 
             <template if:true={showProductGroups}>
               <lightning-accordion-section name="B" value="B" label={label.AccordionHeaderTwo} data-scroll-anchor="section-b">
-                <div class="slds-grid slds-gutters slds-wrap">
+                <div class="slds-grid slds-gutters slds-wrap product-group-wrapper">
                   <template for:each={productGroups} for:item="pg" for:index="pgIndex">
                     <div key={pg.productGroup.recordId}  data-id={pg.productGroup.recordId} data-index={pgIndex} class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4 slds-p-vertical_small" onclick={handlePGClick}>
                       <div class="worktypeSelection pgSelection">

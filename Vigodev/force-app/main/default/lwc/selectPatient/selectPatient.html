@@ -61,8 +61,8 @@
         </template>
         <template if:true={hasNoRSZ}>
             <div class="slds-align_absolute-center">
-                <lightning-input class="input" type="date" label="Geboortedatum" value={contact.birthdate}></lightning-input>
-                <lightning-formatted-date-time value={contact.birthdate} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time>
+                <lightning-input class="input" type="date" label="Geboortedatum" date-style="medium" value={contact.birthdate}></lightning-input>
+                <!-- <lightning-formatted-date-time value={contact.birthdate} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time> -->
             </div>
         </template>
 

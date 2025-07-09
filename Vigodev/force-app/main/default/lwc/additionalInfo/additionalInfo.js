@@ -1,72 +1,60 @@
 import { LightningElement, api, track } from 'lwc';
-import ScreenFiveTitle from "@salesforce/label/c.pbzScreenFiveTitle"
-import Prescription from "@salesforce/label/c.pbzTextPrescription"
-import AdditionalInfoText from "@salesforce/label/c.pbzLabelWhatDoWeNeedToKnow"
+import ScreenFiveTitle from "@salesforce/label/c.pbzScreenFiveTitle";
+import Prescription from "@salesforce/label/c.pbzTextPrescription";
+import AdditionalInfoText from "@salesforce/label/c.pbzLabelWhatDoWeNeedToKnow";
 
 export default class AdditionalInfo extends LightningElement {
-
-    additionalInfo = {
-        comment: null,
-        file: null
-    }
-
-    @track fileName = []
+    @track fileName = '';
+    @track comment = '';
 
     label = {
         ScreenFiveTitle,
         Prescription,
         AdditionalInfoText
+    };
+
+    @api
+    set additionalInfo(value) {
+        if (value) {
+            this.comment = value.comment || '';
+            this._files = value.files || [];
+            this.fileName = this._files.map(file => file.name).join(', ');
+        }
     }
 
-    // disconnectedCallback(){
-    //     this.passToParent();
-    // }
-
-    connectedCallback(){
-        this.additionalInfo.comment = localStorage.getItem('comment') || ''; 
-
+    get additionalInfo() {
+        return {
+            comment: this.comment,
+            files: this._files || []
+        };
     }
 
-    handleCommentChange(event){
-        const value = event.target.value
-        this.additionalInfo.comment = event.target.value;
-        localStorage.setItem('comment', value);
+   @track _files = [];
+
+    handleCommentChange(event) {
+        this.comment = event.target.value;
         this.passToParent();
     }
-
-    // handleFileChange(event) {
-    //     const file = event.target.files[0];
-    //     if (!this.additionalInfo) {
-    //         this.additionalInfo = {};
-    //     }
-    
-    //     this.additionalInfo.file = file;
-    //     console.log('Selected file name:', file?.name);
-    
-    //     this.passToParent();
-    // }
-
 
     handleFileChange(event) {
-        const uploadedFiles = event.detail.files;
-    
-        if (!this.additionalInfo) {
-            this.additionalInfo = {};
-        }
-        this.additionalInfo.file = uploadedFiles;
-    
-        this.fileName = uploadedFiles.map(file => file.name);
-    
-        console.log('Uploaded files:', [...this.fileName]);
-    
+        this._files = event.detail.files || [];
+        this.fileName = this._files.map(file => file.name).join(', ');
         this.passToParent();
     }
-    
-    @api passToParent() {
+
+    handleRemoveFile(event) {
+        const fileNameToDelete = event.currentTarget.dataset.filename;
+        this._files = this._files.filter(file => file.name !== fileNameToDelete);
+        this.fileName = this._files.map(file => file.name).join(', ');
+        this.passToParent();
+    }
+
+    @api
+    passToParent() {
         this.dispatchEvent(new CustomEvent('additionalinfodetails', {
             detail: {
-                comment: this.additionalInfo.comment,
-                files: this.additionalInfo.file 
+                comment: this.comment,
+                files: this._files
             },
             bubbles: true,
             composed: true

@@ -52,7 +52,7 @@ export default class PatientOverview extends LightningElement {
 
 get fileNames() {
     if (this.additionalinfo?.files) {
-        return this.additionalinfo.files.map(file => file.name);
+        return this.additionalinfo.files.map(file => file.name).join(', ');
     }
     return [];
 }

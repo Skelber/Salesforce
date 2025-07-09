@@ -60,17 +60,9 @@ export default class SelectWorktype extends LightningElement {
         this.showProductSubGroups = true;
         this.showAppointmentTypes = true;
         this.setLang();
-        // this.updateWrapClass();
-        // window.addEventListener('resize', this.updateWrapClass.bind(this));
         let baseUrl = window.location.origin;
-
-        console.log('base url =' + this.baseUrl + this.basePath + '/sfsites/c/resource/');
-        // this.template.querySelector('.worktypeSelection'))
-
-      
         if (!this.businessUnitId) return;
 
-    // Prevent repeated work if already applied
     if (this.lastStyledBUId === this.businessUnitId) return;
 
     window.requestAnimationFrame(() => {
@@ -235,25 +227,44 @@ export default class SelectWorktype extends LightningElement {
         this.productSubGroups = [];
         this.appointmentTypeId = [];
         // this.setSectionVisibillity()
+
+        if (this.productGroups.length === 1) {
+          const singlePG = this.productGroups[0];
+          const pgId = singlePG.productGroup?.recordId;
+      
+          if (!pgId) {
+              console.warn('Product Group recordId is missing!', singlePG);
+              return;
+          }
+      
+          const fakeClickEvent = {
+              currentTarget: {
+                  dataset: {
+                      id: pgId,
+                      index: 0
+                  }
+              }
+          };
+          setTimeout(() => {
+          requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                  // this.applyProductGroupStyling(pgId);
+                  this.applySelectionStyling(pgId, 'pgSelection', 'Product Group');
+              });
+          });
+        }, 400)
+          setTimeout(() => {
+              this.handlePGClick(fakeClickEvent);
+      
+          }, 800);
+      }
         
       } else {
         this.productGroups = [];
-        console.warn('No matching business unit found for:', recordId);
       }
       this.productSubGroups = [];
 
-      const previouslySelected = this.template.querySelector('.buSelection.selected');
-       if (previouslySelected) {
-           previouslySelected.classList.remove('selected');
-       }
-   
-       const wrapper = this.template.querySelector(`[data-id="${recordId}"]`);
-       if (wrapper) {
-           const innerDiv = wrapper.querySelector('.buSelection');
-           if (innerDiv) {
-               innerDiv.classList.add('selected');
-           }
-       }
+      this.applySelectionStyling(recordId, 'buSelection', 'Business Unit');
 
        setTimeout(() => {
         this.activeSection = "B"
@@ -289,24 +300,46 @@ export default class SelectWorktype extends LightningElement {
         });
        
         this.appointmentTypes = [];
+
+
+        if (this.productSubGroups.length === 1) {
+          const singlePSG = this.productSubGroups[0];
+          const psgId = singlePSG.productSubGroup?.recordId;
+      
+          if (!psgId) {
+              console.warn('Product Sub Group recordId is missing!', singlePSG);
+              return;
+          }
+      
+          const fakeClickEvent = {
+              currentTarget: {
+                  dataset: {
+                      id: psgId,
+                      index: 0
+                  }
+              }
+          };
+          setTimeout(() => {
+          requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                  // this.applyProductSubGroupStyling(psgId);
+                  this.applySelectionStyling(psgId, 'psgSelection', 'Product Subgroup');
+              });
+          });
+        }, 400)
+          setTimeout(() => {
+              this.handlePSGClick(fakeClickEvent);
+      
+          }, 800);
+      }
         
       } else {
         this.productSubGroups = [];
-        console.warn('No subgroups found for this product group:', selectedPG);
       }
 
-      const previouslySelected = this.template.querySelector('.pgSelection.selected');
-       if (previouslySelected) {
-           previouslySelected.classList.remove('selected');
-       }
-   
-       const wrapper = this.template.querySelector(`[data-id="${this.productGroupId}"]`);
-       if (wrapper) {
-           const innerDiv = wrapper.querySelector('.pgSelection');
-           if (innerDiv) {
-               innerDiv.classList.add('selected');
-           }
-       }
+      // this.applyProductGroupStyling(this.productGroupId);
+      this.applySelectionStyling(this.productGroupId, 'pgSelection', 'Product Group');
+
 
       setTimeout(() => {
         this.activeSection = "C"
@@ -320,6 +353,7 @@ export default class SelectWorktype extends LightningElement {
     }, 300)
   }
 
+
   handlePSGClick(event) {
     this.productSubGroupId = event.currentTarget.dataset.id;
     const index = event.currentTarget.dataset.index;
@@ -330,22 +364,9 @@ export default class SelectWorktype extends LightningElement {
         this.appointmentTypes = selectedPSG.appointmentTypes;
       });
       // this.setSectionVisibillity()
-    } else {
-      console.warn('No appointment types found for this sub group:', selectedPSG);
-    }
+    } 
 
-    const previouslySelected = this.template.querySelector('.psgSelection.selected');
-       if (previouslySelected) {
-           previouslySelected.classList.remove('selected');
-       }
-   
-       const wrapper = this.template.querySelector(`[data-id="${this.productSubGroupId}"]`);
-       if (wrapper) {
-           const innerDiv = wrapper.querySelector('.psgSelection');
-           if (innerDiv) {
-               innerDiv.classList.add('selected');
-           }
-       }
+
     setTimeout(() => {
       this.activeSection = "D"
       this.styleSelectedRecords();
@@ -358,6 +379,7 @@ export default class SelectWorktype extends LightningElement {
       });
   }, 300)
 }
+
 
   setSectionVisibillity(){
     if(this.productGroups.length > 0){
@@ -375,25 +397,13 @@ export default class SelectWorktype extends LightningElement {
 handleATClick = (event) => {
     const target = event.currentTarget.closest('[data-id]');
     if (!target) {
-        console.warn('No data-id found on click target');
         return;
     }
 
     const recordId = target.dataset.id;
     this.appointmentTypeId = recordId;
 
-    const previouslySelected = this.template.querySelector('.atSelection.selected');
-       if (previouslySelected) {
-           previouslySelected.classList.remove('selected');
-       }
-   
-       const wrapper = this.template.querySelector(`[data-id="${recordId}"]`);
-       if (wrapper) {
-           const innerDiv = wrapper.querySelector('.atSelection');
-           if (innerDiv) {
-               innerDiv.classList.add('selected');
-           }
-       }
+    this.applySelectionStyling(recordId, 'atSelection', 'Appointment Type');
 
     getWorkType({
         BusinessUnitId: this.businessUnitId,
@@ -416,6 +426,31 @@ handleATClick = (event) => {
         console.error('Error in getWorkType:', error);
     });
 }
+
+
+applySelectionStyling(recordId, cardClass, label = 'Record') {
+  // Remove previous selection
+  const allCards = this.template.querySelectorAll(`.${cardClass}`);
+  allCards.forEach(card => card.classList.remove('selected'));
+
+  // Find all wrappers that match the ID
+  const allWrappers = this.template.querySelectorAll(`[data-id="${recordId}"]`);
+  if (allWrappers.length === 0) {
+    console.warn(`No ${label} wrapper found for ID:`, recordId);
+  }
+
+  // Add styling to the matching card
+  for (const wrapper of allWrappers) {
+    const targetCard = wrapper.querySelector(`.${cardClass}`);
+    if (targetCard) {
+      targetCard.classList.add('selected');
+      console.log(`Applied styling to ${label}:`, recordId);
+      break;
+    }
+  }
+}
+
+
     handleSectionHeaderClick(event){
         this.activeSection = event.target.value
     }

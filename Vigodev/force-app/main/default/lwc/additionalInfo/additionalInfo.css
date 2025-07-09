@@ -3,7 +3,7 @@
     padding: 10px;
     border-radius: 15px;
 }
-lightning-textarea, lightning-file-upload {
+lightning-textarea, lightning-file-upload, .fileContainer {
     width: 50%;
 }
 
@@ -12,8 +12,12 @@ lightning-textarea, lightning-file-upload {
     --slds-c-input-shadow: 0px 1px 4px grey;
 }
 
+lightning-icon {
+    cursor: pointer;
+}
+
 @media only screen and (max-width: 600px) {
-    lightning-textarea, lightning-file-upload {
+    lightning-textarea, lightning-file-upload, .fileContainer {
         width: 100%;
     }
   }

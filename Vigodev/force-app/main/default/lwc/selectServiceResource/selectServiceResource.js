@@ -5,6 +5,7 @@ import notFoundIcon from "@salesforce/resourceUrl/notFound2";
 import clock from "@salesforce/resourceUrl/clock";
 import calendar from "@salesforce/resourceUrl/calendar";
 import getTimeSlots from '@salesforce/apex/WorktypeSelection.getPossibleTimeslot';
+import saveLead from '@salesforce/apex/WorktypeSelection.saveLead';
 import TaskModal from 'c/taskModal';
 import getTimeSlotsByHour from '@salesforce/apex/WorktypeSelection.getPossibleTimeslotByHour';
 import ScreenFourTitle from "@salesforce/label/c.pbzScreenFourTitle"
@@ -28,6 +29,7 @@ import Location from "@salesforce/label/c.pbzProgressStepLocation"
 
 export default class SelectServiceResource extends LightningElement {
     @api notBookableViaWebsite = false;
+    @api contact = {}
     @api worktype = {};
     @api location = {};
     @track timeValue;
@@ -86,6 +88,7 @@ export default class SelectServiceResource extends LightningElement {
             this.showSlots = true
         } 
         this.timeValue = 'All Day';
+        console.log('received contact: ' + JSON.stringify(this.contact))
     }
 
     get timeOptionsWithClass() {
@@ -318,7 +321,31 @@ export default class SelectServiceResource extends LightningElement {
 
     handleSubmit() {
         this.showModal = true;
-    }
+        saveLead({
+            firstName: this.contact.firstName,
+            lastName: this.contact.lastName,
+            email: this.contact.email,
+            phone: this.contact.phone,
+            rrNr: this.contact.RSZ,
+            noRrNr : this.contact.hasNoRSZ,
+            endUserBirthdate: this.contact.birthdate,
+            street: this.contact.street,
+            postalcode: this.contact.postalCode,
+            city: this.contact.city,
+            country: this.contact.country,
+            onBehalveOf: this.contact.bookedForSelf,
+            relationship: this.contactrelationToPatient,
+            yourFirstName:this.contact.bookedForFirstName,
+            yourLastName:this.contact.bookedForLastName,
+            yourEmail: 'test123@test.be',
+            yourPhone:'041234567'
+        }).then(result => {
+            console.log('savelead response' + result)
+            console.log(JSON.stringify(result))
+        }).catch(error => {
+            console.log('error' + JSON.stringify(error))
+        })
+ }
 
     handleModalClose() {
         this.showModal = false;
