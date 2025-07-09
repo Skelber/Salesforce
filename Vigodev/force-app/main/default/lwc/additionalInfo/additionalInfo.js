@@ -1,4 +1,7 @@
 import { LightningElement, api, track } from 'lwc';
+import ScreenFiveTitle from "@salesforce/label/c.pbzScreenFiveTitle"
+import Prescription from "@salesforce/label/c.pbzTextPrescription"
+import AdditionalInfoText from "@salesforce/label/c.pbzLabelWhatDoWeNeedToKnow"
 
 export default class AdditionalInfo extends LightningElement {
 
@@ -8,6 +11,12 @@ export default class AdditionalInfo extends LightningElement {
     }
 
     @track fileName = []
+
+    label = {
+        ScreenFiveTitle,
+        Prescription,
+        AdditionalInfoText
+    }
 
     // disconnectedCallback(){
     //     this.passToParent();

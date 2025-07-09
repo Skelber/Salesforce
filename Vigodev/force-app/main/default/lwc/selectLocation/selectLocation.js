@@ -1,6 +1,7 @@
 import { LightningElement, api ,track } from 'lwc';
 import loationIcon from "@salesforce/resourceUrl/locationIcon";
 import getLocation from '@salesforce/apex/WorktypeSelection.getLocations';
+import ScreenThreeTitle from "@salesforce/label/c.pbzScreenThreeTitle"
 
 
 export default class SelectLocation extends LightningElement {
@@ -10,6 +11,10 @@ export default class SelectLocation extends LightningElement {
    @track locations = [];
    locationId;
    selectedLocation = {}
+
+   label = {
+    ScreenThreeTitle,
+   }
 
 
    connectedCallback() {

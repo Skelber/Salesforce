@@ -2,7 +2,6 @@
 
 <template>
     <div class="slds-scope container">
-
         <lightning-card>       
             <c-appointment-progress
             show-default-progress={showDefaultProgress}></c-appointment-progress>
@@ -51,13 +50,15 @@
             <footer>
                 <div class="slds-grid slds-grid_align-end">
                     <template if:false={showScreenOne}>
-                        <lightning-button label={label.Previous} onclick={handlePrevious} class="slds-m-right_small"></lightning-button>
+                        <lightning-button label={label.Previous} onclick={handlePrevious} disabled={disableButtons} class="slds-m-right_small"></lightning-button>
                     </template>
                     <template if:false={showScreenSix}>
-                        <lightning-button variant="brand"  label={label.Next} onclick={handleNext} class="slds-m-right_small" disabled={disableNextButton}></lightning-button>
+                        <template if:true={showNextButton}>
+                            <lightning-button variant="brand"  label={label.Next} onclick={handleNext} class="slds-m-right_small" disabled={disableNextButton}></lightning-button>
+                        </template>
                     </template>
                     <template if:true={showScreenSix}>
-                        <lightning-button variant="brand"  label={label.BookAnAppointment} class="slds-m-right_small"></lightning-button>
+                        <lightning-button variant="brand"  label={label.BookAnAppointment} disabled={disableButtons} onclick={handleSubmit} class="slds-m-right_small"></lightning-button>
                     </template>
                 </div>
             </footer>
@@ -65,4 +66,9 @@
         </lightning-card>
         
     </div>
+
+
+    <template if:true={showModal}>
+        <c-success-modal onclose={handleModalClose}></c-success-modal>
+      </template>
 </template>

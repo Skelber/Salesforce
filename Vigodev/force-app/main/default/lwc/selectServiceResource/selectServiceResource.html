@@ -5,20 +5,20 @@
         <div class="slds-p-around_large">
             <div class="slds-grid slds-gutters">
                 <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4">
-                        <h2 class="slds-m-vertical_medium header slds-align_absolute-center">Selecteer een tijdslot</h2>
+                        <h2 class="slds-m-vertical_medium header slds-align_absolute-center">{label.ScreenFourTitle}</h2>
                 </div>
             </div>
                 
             <div class="slds-grid slds-gutters slds-wrap">
-                <div class="slds-grid slds-grid_vertical slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4">
+                <div class="slds-grid slds-grid_vertical slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4 sticky">
                     <div class="overview slds-m-vertical_medium slds-p-around_small">
 
                         <div class="slds-m-vertical_medium">
-                            <h3>Locatie</h3>
+                            <h3>{label.Location}</h3>
                             <p>{location.recordName}</p>
                         </div>
                         <div class="slds-m-vertical_medium">
-                            <h3>Uw afspraak</h3>
+                            <h3>{label.YourAppointment}</h3>
                             <p>{worktype.WorkTypeName}</p>
                         </div>
                     </div>
@@ -28,11 +28,11 @@
 
                     <template if:true={showSlots}>
                     
-                    <div class="slds-grid slds-gutters slds-wrap slds-m-vertical_medium slds-grid_vertical-align-center selectors">
+                    <div class="slds-grid slds-gutters slds-wrap slds-m-vertical_medium slds-grid_vertical-align-center selectors sticky">
                         <div class="slds-col slds-large-size_1-of-3 slds-medium-size_3-of-3  slds-m-vertical_small">
                             <div class="slds-align_absolute-center duration">
                                 <img src={clock} alt="clock icon">
-                                <h3> {worktype.EstimatedDuration} minuten</h3>
+                                <h3> {worktype.EstimatedDuration} {label.Minutes}</h3>
                             </div>
                         </div>
 
@@ -189,9 +189,7 @@
             <div class="container">
                 <div class="slds-grid slds-gutters slds-wrap">
                     <div class="slds-text-align_center slds-size_1-of-1 slds-m-vertical_medium">
-                        <h3 class="slds-text-heading_medium slds-p-horizontal_medium">
-                            Dit type afspraak kan niet geboekt worden via de website. Vul hieronder uw moment van voorkeur in voor een afspraak, wij contacteren u zo spoedig mogelijk.
-                        </h3>
+                        <h3 class="slds-text-heading_medium slds-p-horizontal_medium">{label.ScreenFourBTitle}</h3>
                     </div>
 
                     
@@ -225,13 +223,15 @@
 
                 
                     <div class="slds-col slds-large-size_1-of-3 slds-medium-size_2-of-2 slds-small-size_1-of-1 slds-align_absolute-center slds-m-vertical_medium">
-                        <lightning-input class="input" type="checkbox" label="Ik heb een voorschrift" name="Voorschrift"></lightning-input>
+                        <lightning-input class="input" type="checkbox" label={label.Presciption} name="Voorschrift"></lightning-input>
                     </div>
                     <div class="slds-col slds-large-size_1-of-1 slds-medium-size_1-of-1 slds-small-size_1-of-1 slds-align_absolute-center slds-m-vertical_medium">
-                        <lightning-textarea class="input" label="Geef hier aan waarom je een afspraak met één van onze verstrekkers wenst te maken" name="comment" ></lightning-textarea>
+                        <lightning-textarea class="input" label={label.TaskReason} name="comment" ></lightning-textarea>
                     </div>
-                    <div class="slds-col slds-large-size_1-of-1 slds-medium-size_1-of-1 slds-small-size_1-of-1 slds-align_absolute-center slds-m-vertical_medium" style="width: 100%;">
-                        <lightning-button variant="brand" label="Aanvraag afspraak indienen" onclick={handleSubmit} ></lightning-button>
+                    <div class="slds-col slds-grid slds-grid_align-end slds-large-size_1-of-1 slds-medium-size_1-of-1 slds-small-size_1-of-1 slds-m-vertical_medium">
+                        <div class="slds-grid_align-end">
+                            <lightning-button variant="brand" class="slds-m-right_small" label={label.SubmitTask} onclick={handleSubmit} ></lightning-button>
+                        </div>
                     </div>
                 </div>
 

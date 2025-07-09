@@ -4,7 +4,7 @@
     <div class="slds-p-around_large">
 
         <div class="slds-col slds-large-size_1-of-4 slds-medium-size_2-of-4">
-            <h2 class="slds-m-vertical_medium header slds-align_absolute-center">Selecteer een werktype</h2>
+            <h2 class="slds-m-vertical_medium header slds-align_absolute-center">{label.ScreenFiveTitle}</h2>
         </div>
 
         <div class="slds-grid slds-wrap">
@@ -22,11 +22,11 @@
                 class="input"
                 onuploadfinished={handleFileChange}
                 multiple
-                label="Indien u een afspraak maakt op voorschrift, gelieve hier uw voorschrift op te laden"></lightning-file-upload>
+                label={label.Prescription}></lightning-file-upload>
                 <p>{fileName}</p>
             </div>
             <div class="slds-col slds-size_1-of-1 slds-align_absolute-center slds-p-around_medium">
-                <lightning-textarea class="input"  label="Heeft u nog andere opmerkingen?" onchange={handleCommentChange}></lightning-textarea>
+                <lightning-textarea class="input"  label={label.AdditionalInfoText} onchange={handleCommentChange}></lightning-textarea>
             </div>
         </div>
     </div>

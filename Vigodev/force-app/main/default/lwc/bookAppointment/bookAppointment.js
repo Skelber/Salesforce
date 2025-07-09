@@ -8,18 +8,21 @@ export default class BookAppointment extends LightningElement {
 
     currentStep;
     showDefaultProgress = false;
+    showNextButton = false;
     showScreenOne;
     showScreenTwo;
     showScreenThree;
     showScreenFour;
     showScreenFive;
     showScreenSix;
+    showModal = false;
     screenOneComplete;
     screenTwoComplete;
     screenThreeComplete;
     screenFourComplete;
     screenFiveComplete;
     disableNextButton;
+    disableButtons = false;
     userLocale = locale;
     @track receivedContact;
     @track receivedWorktype;
@@ -44,6 +47,7 @@ export default class BookAppointment extends LightningElement {
         this.currentStep = "1"
         this.showScreenOne = true;
         this.showDefaultProgress = true;
+        this.showNextButton = true;
     }
 
     receiveScreenChange(event) {
@@ -73,7 +77,12 @@ export default class BookAppointment extends LightningElement {
         } else {
             this.disableNextButton = true;
         }
-        console.log('buttonstate: ' + this.disableNextButton)
+
+        if(this.currentStep =="4"){
+            this.showNextButton = this.receivedWorktype.Bookable ? true : false;
+        } else {
+            this.showNextButton = true
+        }
 
     }
 
@@ -90,6 +99,11 @@ export default class BookAppointment extends LightningElement {
         appointmentProgress.previous();
         this.currentStep = appointmentProgress.currentstep;
         this.handleScreenChange()
+    }
+
+    handleSubmit() {
+        this.showModal = true;
+        this.disableButtons = true;
     }
 
     receiveContact(event) {
@@ -113,21 +127,11 @@ export default class BookAppointment extends LightningElement {
         } = event.detail;
     
         this.receivedWorktype = workType;
-    
-        // Store the business unit and other IDs for later use or rehydration
+        this.showDefaultProgress = this.receivedWorktype.Bookable ? true : false;
         this.selectedBusinessUnitId = businessUnitId;
         this.selectedProductGroupId = productGroupId;
         this.selectedProductSubGroupId = productSubGroupId;
         this.selectedAppointmentTypeId = appointmentTypeId;
-    
-        console.log('Received worktype:', JSON.stringify(workType));
-        console.log('Selected BU ID:', businessUnitId);
-    
-        if (workType?.Bookable === false) {
-            this.showDefaultProgress = false;
-        } else {
-            this.showDefaultProgress = true;
-        }
     
         this.enableNextButton();
     
@@ -137,11 +141,8 @@ export default class BookAppointment extends LightningElement {
     }
 
     receiveLocation(event){
-        console.log('receiving location')
         this.receivedLocation = event.detail
-        console.log('received location: ' + JSON.stringify(this.receivedLocation))
         this.enableNextButton();
-        // this.currentStep = "4";
         setTimeout(() => {
             this.handleNext();
         }, 500);
@@ -149,15 +150,18 @@ export default class BookAppointment extends LightningElement {
 
     receiveSlotDetails(event){
         this.receivedSlot = event.detail
-        console.log('selected slot: ' + JSON.stringify(this.receivedSlot))
         this.enableNextButton()
     }
     
 
     receiveAdditionalInfo(event) {
         this.receivedAdditionalInfo.comment = event.detail.comment;
-        this.receivedAdditionalInfo.files = event.detail.files; // array of file metadata
+        this.receivedAdditionalInfo.files = event.detail.files;
         console.log('Received files:', this.receivedAdditionalInfo.files.map(f => f.name).join(', '));
+    }
+
+    handleModalClose() {
+        this.showModal = false;
     }
     
 }

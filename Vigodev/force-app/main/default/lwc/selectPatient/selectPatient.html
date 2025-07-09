@@ -40,7 +40,7 @@
         <template if:false={checked}>
             
             <div class="slds-align_absolute-center">
-                <lightning-input class="input"  type="email" label="Email" value={contact.email} onchange={handleEmailChange} required="true"></lightning-input>
+                <lightning-input class="input"  type="email" label={label.PatientEmail} value={contact.email} onchange={handleEmailChange} required="true"></lightning-input>
             </div>
             <div class="slds-align_absolute-center">
                 <lightning-input class="input"  type="text" label={label.Phone} value={contact.phone} onchange={handlePhoneChange} required="true"></lightning-input>

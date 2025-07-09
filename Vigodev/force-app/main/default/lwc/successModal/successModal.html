@@ -5,13 +5,10 @@
         <div class="slds-modal__container slds-p-around_medium">
             <header class="slds-modal__header">
                 <h2 class="slds-m-bottom_small">{label.ModalTitle}</h2>
-                <p>{label.ModalDisclaimer}</p>
                 <button class="slds-button slds-button_icon slds-modal__close" onclick={close}>×</button>
             </header>
             <div class="slds-modal__content slds-p-around_medium">
-                <p>Gewenste dagen: {selectedDays}</p>
-                <p>Gewenst dagdeel: {timeValue}</p>
-                <p>Reden van aanvraag:</p>
+                <p>{label.RedirectToSite}</p>
 
             </div>
             <footer class="slds-modal__footer">
@@ -22,7 +19,6 @@
                     target="_self"
                     >{label.BackToWebsite}</a>
                 </div>
-                <!-- <button class="slds-button slds-button_neutral" onclick={close}>Sluiten</button> -->
             </footer>
         </div>
     </section>

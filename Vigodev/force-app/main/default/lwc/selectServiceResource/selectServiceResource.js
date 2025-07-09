@@ -7,6 +7,23 @@ import calendar from "@salesforce/resourceUrl/calendar";
 import getTimeSlots from '@salesforce/apex/WorktypeSelection.getPossibleTimeslot';
 import TaskModal from 'c/taskModal';
 import getTimeSlotsByHour from '@salesforce/apex/WorktypeSelection.getPossibleTimeslotByHour';
+import ScreenFourTitle from "@salesforce/label/c.pbzScreenFourTitle"
+import ScreenFourBTitle from "@salesforce/label/c.pbzScreenFourBTitle"
+import DayOptionMonday from "@salesforce/label/c.pbzDayOptionMonday"
+import DayOptionTuesday from "@salesforce/label/c.pbzDayOptionTuesday"
+import DayOptionWednesday from "@salesforce/label/c.pbzDayOptionWednesday"
+import DayOptionThursday from "@salesforce/label/c.pbzDayOptionThursday"
+import DayOptionFriday from "@salesforce/label/c.pbzDayOptionFriday"
+import TimeOptionAM from "@salesforce/label/c.pbzTimeOptionAM"
+import TimeOptionPM from "@salesforce/label/c.pbzTimeOptionPM"
+import TimeOptionAllDay from "@salesforce/label/c.pbzTimeOptionAllDay"
+import Presciption from "@salesforce/label/c.pbzPrescription"
+import TaskReason from "@salesforce/label/c.pbzTaskReason"
+import SubmitTask from "@salesforce/label/c.pbzSubmitTask"
+import YourAppointment from "@salesforce/label/c.pbzTextYourAppointment"
+import Minutes from "@salesforce/label/c.pbzTextMinutes"
+import Location from "@salesforce/label/c.pbzProgressStepLocation"
+
 
 
 export default class SelectServiceResource extends LightningElement {
@@ -24,7 +41,7 @@ export default class SelectServiceResource extends LightningElement {
     @track showSlots = false;
     @track showSpinner = false;
     @track selectedSlotRaw = '';
-    @track showModal = false;
+    @track showModal = false; 
 
     selectedDate;
     showTimeSlots = false;
@@ -37,6 +54,25 @@ export default class SelectServiceResource extends LightningElement {
     @track selectedSlot = {};
 
     paginationState = {};
+
+    label = {
+        ScreenFourTitle,
+        ScreenFourBTitle,
+        DayOptionMonday,
+        DayOptionTuesday,
+        DayOptionWednesday,
+        DayOptionThursday,
+        DayOptionFriday,
+        TimeOptionAM,
+        TimeOptionPM,
+        TimeOptionAllDay,
+        Presciption,
+        TaskReason,
+        SubmitTask,
+        YourAppointment,
+        Minutes,
+        Location,
+    }
 
 
     connectedCallback() {
@@ -71,19 +107,19 @@ export default class SelectServiceResource extends LightningElement {
     
     get timeOptions() {
         return [
-            { label: "VM", value: 'AM' },
-            { label: "NM", value: 'PM' },
-            { label: "Hele Dag", value: 'All Day' },
+            { label: TimeOptionAM, value: 'AM' },
+            { label: TimeOptionPM, value: 'PM' },
+            { label: TimeOptionAllDay, value: 'All Day' },
         ];
     }
 
     get dayOptions() {
         return [
-            { label: "Ma", value: 'Monday' },
-            { label: "Di", value: 'Tuesday' },
-            { label: "Woe", value: 'Wednesday' },
-            { label: "Do", value: 'Thursday' },
-            { label: "Vrij", value: 'Friday' },
+            { label: DayOptionMonday, value: 'Monday' },
+            { label: DayOptionTuesday, value: 'Tuesday' },
+            { label: DayOptionWednesday, value: 'Wednesday' },
+            { label: DayOptionThursday, value: 'Thursday' },
+            { label: DayOptionFriday, value: 'Friday' },
         ];
     }
 
@@ -287,30 +323,5 @@ export default class SelectServiceResource extends LightningElement {
     handleModalClose() {
         this.showModal = false;
     }
-
-    // async handleSubmit() {
-    //     try {
-    //         console.log('Loading modal...');
-    //         const modal = await loadCustomElement('c__taskModal');
-    //         console.log('Modal loaded:', modal);
-
-    //         modal.addEventListener('close', () => {
-    //             console.log('Modal closed');
-    //         });
-
-    //         document.body.appendChild(modal);
-
-    //         requestAnimationFrame(() => {
-    //             console.log('Opening modal...');
-    //             if (typeof modal.open === 'function') {
-    //                 modal.open();
-    //             } else {
-    //                 console.error('modal.open is not a function');
-    //             }
-    //         });
-    //     } catch (error) {
-    //         console.error('Error loading modal:', error);
-    //     }
-    // }
 
 }

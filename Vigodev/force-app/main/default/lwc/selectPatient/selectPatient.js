@@ -17,6 +17,7 @@ import Street from "@salesforce/label/c.pbzInputStreet"
 import Province from "@salesforce/label/c.pbzInputProvince"
 import PostalCode from "@salesforce/label/c.pbzInputPostalCode"
 import Country from "@salesforce/label/c.pbzInputCountry"
+import PatientEmail from "@salesforce/label/c.pbzInputEmailPatient"
 
 export default class SelectPatient extends LightningElement {
     @track checked;
@@ -86,7 +87,8 @@ export default class SelectPatient extends LightningElement {
         City: City,
         PostalCode: PostalCode,
         Country: Country,
-        Province: Province
+        Province: Province,
+        PatientEmail: PatientEmail
     }
 
     disconnectedCallback() {

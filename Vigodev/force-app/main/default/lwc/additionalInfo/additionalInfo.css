@@ -3,8 +3,8 @@
     padding: 10px;
     border-radius: 15px;
 }
-lightning-textarea {
-    width: 40%;
+lightning-textarea, lightning-file-upload {
+    width: 50%;
 }
 
 .input, textarea {
@@ -13,7 +13,7 @@ lightning-textarea {
 }
 
 @media only screen and (max-width: 600px) {
-    lightning-textarea {
+    lightning-textarea, lightning-file-upload {
         width: 100%;
     }
   }

@@ -6,6 +6,11 @@ import prostheticIcon from "@salesforce/resourceUrl/prosthetic";
 import orthoticIcon from "@salesforce/resourceUrl/orthotics";
 import LANG from '@salesforce/i18n/lang';
 import basePath from '@salesforce/community/basePath';
+import AccordionHeaderOne from "@salesforce/label/c.pbzAccordionheaderOne"
+import AccordionHeaderTwo from "@salesforce/label/c.pbzAccordionheaderTwo"
+import AccordionHeaderThree from "@salesforce/label/c.pbzAccordionheaderThree"
+import AccordionHeaderFour from "@salesforce/label/c.pbzAccordionheaderFour"
+import ScreenTwoTitle from "@salesforce/label/c.pbzScreenTwoTitle"
 
 export default class SelectWorktype extends LightningElement {
 
@@ -38,8 +43,15 @@ export default class SelectWorktype extends LightningElement {
     EstimatedDuration: null,
     Bookable: null,
     buImage: null,
-    
    };
+
+   label = {
+     AccordionHeaderOne,
+     AccordionHeaderTwo,
+     AccordionHeaderThree,
+     AccordionHeaderFour,
+     ScreenTwoTitle,
+   }
    
 
     connectedCallback(){
