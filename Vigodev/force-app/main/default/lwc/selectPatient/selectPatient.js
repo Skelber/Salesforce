@@ -39,6 +39,8 @@ export default class SelectPatient extends LightningElement {
         bookedForSelf: null,
         bookedForFirstName : null,
         bookedForLastName: null,
+        bookedForEmail:null,
+        bookedForPhone:null,
         relationToPatient: null,
     }
     rszRequired = false
@@ -53,6 +55,8 @@ export default class SelectPatient extends LightningElement {
         this.checked = this.contact.bookedForSelf;
         this.contact.bookedForFirstName = localStorage.getItem('bookedForFirstName') || '';
         this.contact.bookedForLastName = localStorage.getItem('bookedForLastName') || '';
+        this.contact.bookedForEmail = localStorage.getItem('bookedForEmail') || '';
+        this.contact.bookedForPhone = localStorage.getItem('bookedForPhone') || '';
         this.contact.relationToPatient = localStorage.getItem('relationToPatient') || '';
         this.contact.firstName = localStorage.getItem('firstName') || '';
         this.contact.lastName = localStorage.getItem('lastName') || '';
@@ -62,7 +66,7 @@ export default class SelectPatient extends LightningElement {
         this.contact.street = localStorage.getItem('contactStreet') || '';
         this.contact.city = localStorage.getItem('contactCity') || '';
         this.contact.country = localStorage.getItem('contactCountry') || '';
-        this.contact.birthdate = localStorage.getItem('birthdate') || ''; 
+        // this.contact.birthdate = localStorage.getItem('birthdate') || ''; 
         this.contact.postalCode = localStorage.getItem('contactPostalCode') || '';
         this.contact.province = localStorage.getItem('contactProvince') || '';
         const storedHasRSZ = localStorage.getItem('hasRSZ');
@@ -92,6 +96,9 @@ export default class SelectPatient extends LightningElement {
     }
 
     disconnectedCallback() {
+        if(!this.contact.birthdate){
+            this.setBirthDate(this.contact.RSZ)
+        }
         this.passToParent();
     }
 
@@ -122,19 +129,35 @@ export default class SelectPatient extends LightningElement {
         const value = this.contact.bookedForSelf;   
         this.checked = this.contact.bookedForSelf;
         localStorage.setItem('checked', value);
-        console.log(this.contact.bookedForSelf)
+        this.checkCompletion();
     }
 
     handleForContactFirstNameChange(event){
         const value = event.target.value;
         this.contact.bookedForFirstName = value;
         localStorage.setItem('bookedForFirstName', value);
+        this.checkCompletion()
     }
 
     handleForContactLastNameChange(event){
         const value = event.target.value;
         this.contact.bookedForLastName = value;
         localStorage.setItem('bookedForLastName', value);
+        this.checkCompletion()
+    }
+
+    handleForContactEmailChange(event){
+        const value = event.target.value;
+        this.contact.bookedForEmail = value;
+        localStorage.setItem('bookedForEmail', value);
+        this.checkCompletion()
+    }
+
+    handleForContactPhoneChange(event){
+        const value = event.target.value;
+        this.contact.bookedForPhone = value; 
+        localStorage.setItem('bookedForPhone', value);
+        this.checkCompletion()
     }
 
     handleRelationToPatient(event) {
@@ -170,7 +193,15 @@ export default class SelectPatient extends LightningElement {
 
     handlehasRSZChange(event) {
         this.hasNoRSZ = event.target.checked;
+        this.contact.hasNoRSZ = this.hasNoRSZ;
         localStorage.setItem('hasRSZ', this.hasNoRSZ);
+        this.checkCompletion();
+    }
+
+    handleBirthdateChange(event){
+        const value = event.target.value;
+        this.contact.birthdate = value;
+        localStorage.setItem('birthdate', value);
         this.checkCompletion();
     }
     
@@ -178,19 +209,19 @@ export default class SelectPatient extends LightningElement {
     handleRSZChange(event) {
         var inputCmp = this.template.querySelector('.inputCmp')
         const value = event.target.value;
+        localStorage.setItem('contactRSZ', value);
         if (this.isValidRijksregisternummer(value)) {
             this.contact.RSZ = value;
-            localStorage.setItem('contactRSZ', value);
             inputCmp.setCustomValidity('');
             inputCmp.reportValidity();
             this.setBirthDate(value);
-            this.checkCompletion()
-
+            
         } else {
             inputCmp.setCustomValidity('Incorrecte rijksregister nummer');
             inputCmp.reportValidity();
-
+            
         }
+        this.checkCompletion()
     }
     
     isValidRijksregisternummer(value) {
@@ -218,7 +249,24 @@ export default class SelectPatient extends LightningElement {
     }
 
     checkCompletion(){
-        if(this.contact.firstName && this.contact.lastName && this.contact.email && this.contact.phone && this.contact.RSZ || (this.hasNoRSZ && this.contact.birthdate)) {
+        if (
+            this.contact.firstName &&
+            this.contact.lastName &&
+            (
+                (this.contact.bookedForSelf && this.contact.bookedForEmail) ||
+                (!this.contact.bookedForSelf && this.contact.email)
+            ) &&
+            // this.contact.email &&
+            // this.contact.phone &&
+            (
+                (this.contact.bookedForSelf && this.contact.bookedForPhone) ||
+                (!this.contact.bookedForSelf && this.contact.phone)
+            ) &&
+            (
+              (this.contact.RSZ && !this.hasNoRSZ) ||
+              (this.hasNoRSZ && this.contact.birthdate)
+            )
+          ) {
             this.contactInfoComplete = true;
         } else {
             this.contactInfoComplete = false;

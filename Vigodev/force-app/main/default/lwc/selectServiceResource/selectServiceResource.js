@@ -1,13 +1,14 @@
 import { LightningElement, api, track } from 'lwc';
 import avatar from "@salesforce/resourceUrl/avatar";
+import LANG from '@salesforce/i18n/lang';
 import loationIcon from "@salesforce/resourceUrl/locationIcon";
 import notFoundIcon from "@salesforce/resourceUrl/notFound2";
 import clock from "@salesforce/resourceUrl/clock";
 import calendar from "@salesforce/resourceUrl/calendar";
 import getTimeSlots from '@salesforce/apex/WorktypeSelection.getPossibleTimeslot';
 import saveLead from '@salesforce/apex/WorktypeSelection.saveLead';
+import saveTask from '@salesforce/apex/WorktypeSelection.saveTask';
 import TaskModal from 'c/taskModal';
-import getTimeSlotsByHour from '@salesforce/apex/WorktypeSelection.getPossibleTimeslotByHour';
 import ScreenFourTitle from "@salesforce/label/c.pbzScreenFourTitle"
 import ScreenFourBTitle from "@salesforce/label/c.pbzScreenFourBTitle"
 import DayOptionMonday from "@salesforce/label/c.pbzDayOptionMonday"
@@ -28,6 +29,10 @@ import Location from "@salesforce/label/c.pbzProgressStepLocation"
 
 
 export default class SelectServiceResource extends LightningElement {
+    LANG = LANG
+    displayEnglish = false;
+    displayFrench = false;
+    displayDutch = false;
     @api notBookableViaWebsite = false;
     @api contact = {}
     @api worktype = {};
@@ -35,6 +40,8 @@ export default class SelectServiceResource extends LightningElement {
     @track timeValue;
     @track dayValue;
     @track selectedDays = new Set();
+    prescription = false;
+    @track taskComment;
     avatar = avatar;
     clock = clock;
     calendar = calendar;
@@ -44,6 +51,11 @@ export default class SelectServiceResource extends LightningElement {
     @track showSpinner = false;
     @track selectedSlotRaw = '';
     @track showModal = false; 
+    @track response = {
+        type: '',
+        message: ''
+    }
+    disableButton = false;
 
     selectedDate;
     showTimeSlots = false;
@@ -88,8 +100,19 @@ export default class SelectServiceResource extends LightningElement {
             this.showSlots = true
         } 
         this.timeValue = 'All Day';
-        console.log('received contact: ' + JSON.stringify(this.contact))
+        this.timeslotMap = 'All Day';
+        this.setLang();
     }
+
+    setLang() {
+        if (this.LANG == 'en-US') {
+          this.displayEnglish = true
+        } else if (this.LANG == 'fr') {
+          this.displayFrench = true
+        } else {
+          this.displayDutch = true
+        }
+      }
 
     get timeOptionsWithClass() {
         return this.timeOptions.map(option => {
@@ -129,6 +152,7 @@ export default class SelectServiceResource extends LightningElement {
     handleTimechange(event) {
         this.timeValue = event.currentTarget.dataset.value;
         let filteredMap = JSON.parse(JSON.stringify(this.notFilteredTimeslotMap));
+        console.log('time value =  ' + this.timeValue + '   ' + JSON.stringify(filteredMap))
     
         filteredMap.forEach(resource => {
             resource.slots = resource.slots.filter(slotTime => {
@@ -319,8 +343,22 @@ export default class SelectServiceResource extends LightningElement {
         return base;
     }
 
+    handlePrescription(event){
+        if(this.prescription){
+            this.prescription = false
+        } else {
+            this.prescription = true
+        }
+        console.log(this.prescription)
+    }
+
+    handleTaskComment(event) {
+        this.taskComment = event.target.value;
+    }
+
     handleSubmit() {
-        this.showModal = true;
+        this.disableButton = true;
+        this.showSpinner = true;
         saveLead({
             firstName: this.contact.firstName,
             lastName: this.contact.lastName,
@@ -332,18 +370,44 @@ export default class SelectServiceResource extends LightningElement {
             street: this.contact.street,
             postalcode: this.contact.postalCode,
             city: this.contact.city,
-            country: this.contact.country,
+            // country: this.contact.country,
+            country: 'Belgium',
             onBehalveOf: this.contact.bookedForSelf,
             relationship: this.contactrelationToPatient,
             yourFirstName:this.contact.bookedForFirstName,
             yourLastName:this.contact.bookedForLastName,
-            yourEmail: 'test123@test.be',
-            yourPhone:'041234567'
+            yourEmail: this.contact.bookedForEmail,
+            yourPhone:this.contact.bookedForPhone
         }).then(result => {
             console.log('savelead response' + result)
             console.log(JSON.stringify(result))
+            saveTask({
+                leadid: result,
+                worktypeName: this.worktype.WorkTypeName,
+                dagdeel: this.timeslotMap.toString(),
+                dagen: Array.from(this.selectedDays).join(', '),
+                voorschrift: this.prescription,
+                opmerkingen: this.taskComment,
+                serviceTerritoryName: this.location.recordName,
+                rrNr: this.contact.RSZ
+            }).then(taskResult => {
+                this.showSpinner = false;
+                console.log('savetask response ' + taskResult)
+                this.response.type = 'success';
+                this.response.message = 'Request succesfully created';
+                this.showModal = true;
+            }).catch(error => {
+                this.showSpinner = false;
+                console.log('Taskerror' + JSON.stringify(error))
+                this.response.type = 'error';
+                this.response.message = 'Something went wrong, please try again';
+                this.showModal = true;
+            })
         }).catch(error => {
             console.log('error' + JSON.stringify(error))
+            this.response.type = 'error';
+            this.response.message = 'Something went wrong, please try again';
+            this.showModal = true;
         })
  }
 

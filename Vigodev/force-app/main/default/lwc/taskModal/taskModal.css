@@ -36,3 +36,8 @@ h2 {
     color: #00167a;
     font-size: 20px;
 }
+
+img {
+    height: 100px;
+    width: auto;
+}

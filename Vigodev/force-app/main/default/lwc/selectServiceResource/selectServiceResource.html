@@ -14,12 +14,22 @@
                     <div class="overview slds-m-vertical_medium slds-p-around_small">
 
                         <div class="slds-m-vertical_medium">
-                            <h3>{label.Location}</h3>
+                            <h3><strong>{label.Location}</strong></h3>
                             <p>{location.recordName}</p>
                         </div>
+                    </div>
+                    
+                    <div class="overview slds-m-vertical_medium slds-p-around_small">
                         <div class="slds-m-vertical_medium">
-                            <h3>{label.YourAppointment}</h3>
-                            <p>{worktype.WorkTypeName}</p>
+                            <h3><strong>{label.YourAppointment}</strong></h3>
+                            <template if:false={displayFrench}>
+                                <p>{worktype.ProdSubGroupTranslation}</p>
+                                <p>{worktype.AppTypeTranslation}</p>
+                            </template>
+                            <template if:true={displayFrench}>
+                                <p>{worktype.ProdSubGroupTranslationFR}</p>
+                                <p>{worktype.AppTypeTranslationFR}</p>
+                            </template>
                         </div>
                     </div>
 
@@ -223,14 +233,14 @@
 
                 
                     <div class="slds-col slds-large-size_1-of-3 slds-medium-size_2-of-2 slds-small-size_1-of-1 slds-align_absolute-center slds-m-vertical_medium">
-                        <lightning-input class="input" type="checkbox" label={label.Presciption} name="Voorschrift"></lightning-input>
+                        <lightning-input class="input" type="checkbox" value={prescription} onchange={handlePrescription} label={label.Presciption} name="Voorschrift"></lightning-input>
                     </div>
                     <div class="slds-col slds-large-size_1-of-1 slds-medium-size_1-of-1 slds-small-size_1-of-1 slds-align_absolute-center slds-m-vertical_medium">
-                        <lightning-textarea class="input" label={label.TaskReason} name="comment" ></lightning-textarea>
+                        <lightning-textarea class="input" value={taskComment} onchange={handleTaskComment} label={label.TaskReason} name="comment" ></lightning-textarea>
                     </div>
                     <div class="slds-col slds-grid slds-grid_align-end slds-large-size_1-of-1 slds-medium-size_1-of-1 slds-small-size_1-of-1 slds-m-vertical_medium">
                         <div class="slds-grid_align-end">
-                            <lightning-button variant="brand" class="slds-m-right_small" label={label.SubmitTask} onclick={handleSubmit} ></lightning-button>
+                            <lightning-button variant="brand" class="slds-m-right_small" label={label.SubmitTask} disabled={disableButton} onclick={handleSubmit} ></lightning-button>
                         </div>
                     </div>
                 </div>
@@ -243,6 +253,13 @@
             <c-task-modal
             selected-days={selectedDays}
             time-value={timeValue} 
+            response={response}
             onclose={handleModalClose}></c-task-modal>
           </template>
+
+          <template if:true={showSpinner}>
+            <div class="modal-backdrop">
+                <lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+               </div>
+           </template> 
 </template>

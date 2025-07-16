@@ -8,12 +8,15 @@
 
         <div class="slds-grid slds-wrap">
             <div class="slds-col slds-grid_vertical slds-size_1-of-1 slds-align_absolute-center slds-p-around_medium">
-                <lightning-file-upload
+                <p>{label.Prescription}</p>
+                <div class="card slds-p-around_medium">
+                <!-- <lightning-file-upload
                     class="input"
                     onuploadfinished={handleFileChange}
                     multiple
                     label={label.Prescription}>
-                </lightning-file-upload>
+                </lightning-file-upload> -->
+                <input type="file" class="input"  multiple onchange={handleFileChange} />
 
                 <template if:true={_files}>
                     <div class="slds-col slds-size_1-of-1 fileContainer">
@@ -35,7 +38,7 @@
                     </ul>
                 </div>
                 </template>
-
+            </div>
             </div>
 
             <div class="slds-col slds-size_1-of-1 slds-align_absolute-center slds-p-around_medium">

@@ -11,6 +11,7 @@ import AccordionHeaderTwo from "@salesforce/label/c.pbzAccordionheaderTwo"
 import AccordionHeaderThree from "@salesforce/label/c.pbzAccordionheaderThree"
 import AccordionHeaderFour from "@salesforce/label/c.pbzAccordionheaderFour"
 import ScreenTwoTitle from "@salesforce/label/c.pbzScreenTwoTitle"
+import sittingOrthotics from '@salesforce/resourceUrl/WebsiteImage_Sittingorthotics';
 
 export default class SelectWorktype extends LightningElement {
 
@@ -32,9 +33,6 @@ export default class SelectWorktype extends LightningElement {
    displayDutch = false;
    displayEnglish = false;
    displayFrench = false;
-   bandageIcon = bandageIcon;
-   prostheticIcon = prostheticIcon;
-   orthoticIcon = orthoticIcon;
    @track activeSection = "A"
    @track workType = {
     WorkTypeNameFR: null, 
@@ -60,7 +58,7 @@ export default class SelectWorktype extends LightningElement {
         this.showProductSubGroups = true;
         this.showAppointmentTypes = true;
         this.setLang();
-        let baseUrl = window.location.origin;
+        // this.baseUrl = window.location.origin;
         if (!this.businessUnitId) return;
 
     if (this.lastStyledBUId === this.businessUnitId) return;
@@ -213,10 +211,11 @@ export default class SelectWorktype extends LightningElement {
       if (selected) {
         this.productGroups = selected.productGroups || [];
         this.productGroups = (selected.productGroups || []).map(pg => {
+          let pgImage = ''
           const pgCopy = { ...pg };
         
-          if (pgCopy.Image_Dev_Name) {
-            pgCopy.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${pgCopy.Image_Dev_Name}`;
+          if (pgCopy.productGroup.Image_Dev_Name != null) {
+            pgCopy.productGroup.pgImage = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${pgCopy.productGroup.Image_Dev_Name}`;
             pgCopy.Has_Image_Link = true;
           } else {
             pgCopy.Has_Image_Link = false;
@@ -291,6 +290,7 @@ export default class SelectWorktype extends LightningElement {
         
           if (psgCopy.Image_Dev_Name) {
             psgCopy.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${psgCopy.Image_Dev_Name}`;
+            // console.log('product image link: ' + psgCopy.Image_Link)
             psgCopy.Has_Image_Link = true;
           } else {
             psgCopy.Has_Image_Link = false;

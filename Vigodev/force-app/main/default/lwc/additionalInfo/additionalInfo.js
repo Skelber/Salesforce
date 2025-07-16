@@ -36,11 +36,48 @@ export default class AdditionalInfo extends LightningElement {
         this.passToParent();
     }
 
+    // handleFileChange(event) {
+    //     const newFiles = event.detail.files || [];
+    //     this._files = [...this._files, ...newFiles];
+    //     this.fileName = this._files.map(file => file.name).join(', ');
+    //     this.passToParent();
+    // }
+
     handleFileChange(event) {
-        this._files = event.detail.files || [];
-        this.fileName = this._files.map(file => file.name).join(', ');
-        this.passToParent();
-    }
+        const newFiles = Array.from(event.target.files);
+        const newProcessedFiles = [];
+        let completed = 0;
+      
+        newFiles.forEach(file => {
+          const reader = new FileReader();
+      
+          reader.onload = () => {
+            const base64WithPrefix = reader.result;
+            const base64 = base64WithPrefix.split(',')[1];
+      
+            newProcessedFiles.push({
+              name: file.name,
+              base64: base64
+            });
+      
+            completed++;
+      
+            if (completed === newFiles.length) {
+              const combined = [...this._files, ...newProcessedFiles];      
+              const deduped = combined.filter(
+                (f, index, self) =>
+                  index === self.findIndex(t => t.name === f.name)
+              );
+      
+              this._files = deduped;
+              this.fileName = this._files.map(f => f.name).join(', ');
+              this.passToParent();
+            }
+          };
+      
+          reader.readAsDataURL(file);
+        });
+      }
 
     handleRemoveFile(event) {
         const fileNameToDelete = event.currentTarget.dataset.filename;

@@ -167,6 +167,9 @@ public class WorktypeSelection {
         List<ResponseWrapper> wrapperResult = (List<ResponseWrapper>)JSON.deserialize(response, List<ResponseWrapper>.class);
         System.debug(wrapperResult);
         
+        SkillRequirement skillreq = [SELECT SkillId FROM SkillRequirement WHERE RelatedRecordId = :workTypeId LIMIT 1];
+        Id skillId = skillreq <> null ? skillreq.SkillId : null;
+        
         Map<Id, List<DateTime>> resultMap = new Map<Id, List<DateTime>>();
         Set<Id> resourceList = new Set<Id>();
         for (ResponseWrapper wrapper : wrapperResult) {
@@ -191,11 +194,22 @@ public class WorktypeSelection {
         }
 
         List<AvailableSlot> fullSlots = new List<AvailableSlot>();
-        Map<Id, ServiceResource> resourceMap = new Map<Id, ServiceResource>([SELECT Id, Name, RelatedRecord.FirstName, RelatedRecord.LastName FROM ServiceResource WHERE Id IN :resourceList]);
-        for(Id resourceId : resultMap.keySet()) {
+       // Map<Id, ServiceResource> resourceMap = new Map<Id, ServiceResource>([SELECT Id, Name, RelatedRecord.FirstName, RelatedRecord.LastName FROM ServiceResource WHERE Id IN :resourceList]);
+        List<ServiceResourceSkill> resourceSkillList = [SELECT ServiceResourceId, ServiceResource.Name, ServiceResource.RelatedRecord.FirstName, ServiceResource.RelatedRecord.LastName, Service_Resource_Sort_Order__c 
+                                                                                              FROM ServiceResourceSkill 
+                                                                                             WHERE ServiceResourceId IN :resourceList AND Service_Resource_Sort_Order__c > 50 AND SkillId = :skillId
+                                                       									  ORDER BY Service_Resource_Sort_Order__c DESC, ServiceResource.Name ASC];
+        Map<Id, ServiceResourceSkill> resourceSkillMap = new Map<Id, ServiceResourceSkill>();
+        for(ServiceResourceSkill srs : resourceSkillList) {
+            resourceSkillMap.put(srs.ServiceResourceId, srs);
+        }
+        
+        for(Id resourceId : resourceSkillMap.keySet()) {
+            System.debug(resourceSkillMap.get(resourceId).ServiceResource.RelatedRecord.FirstName + ' - ' + resourceSkillMap.get(resourceId).Service_Resource_Sort_Order__c);
             List<DateTime> slots = resultMap.get(resourceId);
             if(slots <> null && slots.size() > 0) {
-                ServiceResource2 sr = new ServiceResource2(resourceId, resourceMap.get(resourceId).RelatedRecord.FirstName + ' ' + resourceMap.get(resourceId).RelatedRecord.LastName.left(1) );
+                ServiceResource2 sr = new ServiceResource2(resourceId, resourceSkillMap.get(resourceId).ServiceResource.RelatedRecord.FirstName 
+                                                           + ' ' + resourceSkillMap.get(resourceId).ServiceResource.RelatedRecord.LastName.left(1) );
                 AvailableSlot av = new AvailableSlot(sr, slots);
                 fullSlots.add(av);
             }
@@ -235,107 +249,44 @@ public class WorktypeSelection {
         return response;
     }
     
-    @AuraEnabled(cacheable=true)
-    public static Response saveServiceAppointment(String firstName, String lastName, String email, string phone, string rrnumber, string street, String city, String Postalcode, String country,
-                                                  String Location, Datetime startTime, Datetime endTime, String user, String workType, String description) {
-           Id accountId;                                           
-/*           List<Account> paccs = new List<Account>([SELECT Id FROM Account WHERE Patient_Insurance_ID__pc = :rrnumber]);
-           if (paccs.size() > 0) {
-                accountId = paccs[0].Id;                        
-           } else {
-               if(rrnumber <> null) {
-                   Account a = new Account();
-                   a.firstName = firstName;
-                   a.LastName = lastname;
-                   a.PersonEmail = email;
-                   a.Phone = phone;
-                   a.Patient_Insurance_ID__pc = rrnumber;
-                   a.PersonMailingStreet = street;   
-                   a.PersonMailingcity = city;
-                   a.PersonMailingPostalCode = postalcode;
-                   a.PersonMailingcountry = country;
-                   a.Type = 'Patient';
-                   a.RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('PersonAccount').getRecordTypeId();
-                   insert a;
-                   accountId = a.Id;
-               } else {
-                   Lead l = new Lead();
-                   l.firstName = firstName;
-                   l.LastName = lastname;
-                   l.email = email;
-                   l.Phone = phone;
-                   //l.rrnumber
-                   l.Street = street;   
-                   l.city = city;
-                   l.PostalCode = postalcode;
-                   l.country = country;
-                   insert l;
-                   accountId = l.Id;
-               }
-           }*/
-
-/*        List<AssignedResource> overlappingAppointment = [SELECT id 
-                                                           FROM AssignedResource 
-                                                          WHERE ServiceResourceId = :user 
-                                                                AND ServiceAppointment.Status != 'Canceled' 
-                                                                AND (
-                                                                    (ServiceAppointment.SchedStartTime >= :startTime AND ServiceAppointment.SchedStartTime < :endTime)
-                                                                    OR (ServiceAppointment.SchedEndTime > :startTime AND ServiceAppointment.SchedEndTime <= :endTime)   
-                                                                    OR (ServiceAppointment.SchedStartTime <= :startTime AND ServiceAppointment.SchedEndTime >= :endTime) 
-                                                                    OR (ServiceAppointment.SchedStartTime >= :startTime AND ServiceAppointment.SchedEndTime <= :endTime) 
-                                                                    )
-                                                        ];
+/*    @AuraEnabled(cacheable=false)
+    public static String saveServiceAppointment(Id leadid, Id locationId, Datetime startTime, Integer duration, Id resourceId, Id workTypeId, String description, String rrNr) {
         
-        List<ResourceAbsence> overlappingResourceAbsence = [SELECT Id FROM ResourceAbsence
-                                                            WHERE ResourceId = :user
-                                                            AND (
-                                                                (Start >= :startTime AND Start < :endTime)
-                                                                OR (End > :startTime AND End <= :endTime) 
-                                                                OR (Start <= :startTime AND End >= :endTime)
-                                                                OR (Start >= :startTime AND End <= :endTime) 
-                                                                )                                                                                                          
-                                                            ];*/
-
-        Response response = new Response();
-//        if(overlappingAppointment.size() == 0 && overlappingResourceAbsence.size() == 0) {
-       
-            // Create a ServiceAppointment
-            ServiceAppointment sa = new ServiceAppointment();
-            sa.ServiceTerritoryId = location;
-            sa.Status = 'Scheduled';
-            sa.DurationType = 'Minutes';
-            sa.SchedStartTime = startTime;
-            sa.EarliestStartTime = startTime;
-            sa.SchedEndTime = endtime;
-            sa.DueDate = endtime;
-            sa.ParentRecordId = accountId;
-            sa.workTypeId = workType;
-            sa.Description = description;
-            insert sa;
-            
-            AssignedResource asrec = new AssignedResource();
-            asrec.ServiceAppointmentId = sa.Id;
-            asrec.ServiceResourceId = user;
-            asrec.IsPrimaryResource = true;
-            asrec.IsRequiredResource = true;
-            insert asrec;
-            
-            response.title = System.label.AppointmentSchedulerSASuccessTitle;
-            response.message = System.label.AppointmentSchedulerSuccessBody;
-            response.type = 'success';
-            
-/*        } else {
-            
-            response.title = System.label.AppointmentSchedulerSAErrorTitle;
-            response.message = System.label.AppointmentSchedulerSAErroBody;
-            response.type = 'error';
-            
-        }*/
+        TimeZone tz = Timezone.getTimeZone('Europe/Brussels');
+        Integer milliSeconds = tz.getOffset(startTime);
+        Integer minutes = milliSeconds / 60000;
+        Integer offSetHours = minutes / 60;
+        startTime = startTime.addHours(-1*offSetHours);
+                    
+        ServiceAppointment sa = new ServiceAppointment();
+        List<Account> accounts =  [SELECT Id FROM Account WHERE Patient_Insurance_ID__pc = :rrNr LIMIT 1];
+		if(accounts <> null && accounts.size() > 0) {
+            sa.ParentRecordId = accounts[0].Id;
+        } else {
+            sa.ParentRecordId = leadid;
+        }
+        sa.ServiceTerritoryId = locationId;
+        sa.Status = 'Scheduled';
+        sa.DurationType = 'Minutes';
+        sa.SchedStartTime = startTime;
+        sa.EarliestStartTime = startTime;
+        sa.SchedEndTime = starttime.addMinutes(duration);
+        sa.DueDate = starttime.addMinutes(duration);
+        sa.workTypeId = workTypeId;
+        sa.Description = description;
+        Database.insert(sa, true);
         
-        return response;
-    }
+        AssignedResource asrec = new AssignedResource();
+        asrec.ServiceAppointmentId = sa.Id;
+        asrec.ServiceResourceId = resourceId;
+        asrec.IsPrimaryResource = true;
+        asrec.IsRequiredResource = true;
+        Database.insert(asrec, true);
+            
+        return sa.Id;
+    }*/
     
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled(cacheable=false)
     public static String saveLead(String firstName, String lastName, String email, string phone, 
                                   string rrNr, Boolean noRrNr, Date endUserBirthdate,
                                   String street, String postalcode, String city, String country,
@@ -370,29 +321,29 @@ public class WorktypeSelection {
         l.RecordTypeId = Schema.SObjectType.Lead.getRecordTypeInfosByName().get('Vigo Lead').getRecordTypeId();
 		l.OBA__c = '90463';
 
-        insert l;
+        Database.insert(l, true);
         return l.id;
     }
     
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled(cacheable=false)
     public static String saveTask(Id leadid, String worktypeName, String dagdeel, String dagen, Boolean voorschrift, String opmerkingen, String serviceTerritoryName, String rrNr) {
         Task t = new Task();
         
         t.Description = 'Gekozen werktype: ' + worktypeName
-            				+'<br/><br/><br/>'
+            				+'\r\n \r\n'
             				+ 'Voorkeur dag: ' + dagen
-            				+'<br/><br/><br/>'
-            				+ 'Voorkeur dagdeel: ' + dagen
-            				+'<br/><br/><br/>'
+            				+'\r\n \r\n'
+            				+ 'Voorkeur dagdeel: ' + dagdeel
+            				+'\r\n \r\n'
             				+ 'Ik heb een voorschrift: ' + voorschrift
-            				+'<br/><br/><br/>'
+            				+'\r\n \r\n'
             				+ 'Opmerkingen: ' + opmerkingen;
         
-        t.OwnerId = [SELECT Id, DeveloperName FROM Group WHERE Type = 'Queue' AND Name = 'VIGO Wetteren' LIMIT 1].Id;
+        t.OwnerId = [SELECT Id, DeveloperName FROM Group WHERE Type = 'Queue' AND Name = :serviceTerritoryName LIMIT 1].Id;
         
-        List<Account> accounts =  [SELECT Id FROM Account WHERE HealthCloudGA__MedicalRecordNumber__pc = :rrNr LIMIT 1];
-        if(accounts <> null && accounts.size() > 0) {
-            t.WhoId = accounts[0].Id;
+        List<Contact> contacts =  [SELECT Id FROM Contact WHERE Patient_Insurance_ID__c = :rrNr LIMIT 1];
+        if(contacts <> null && contacts.size() > 0) {
+            t.WhoId = contacts[0].Id;
         } else {
             t.WhoId = leadid;
         }
@@ -404,7 +355,7 @@ public class WorktypeSelection {
         t.Status = 'Not Started';
         t.Priority = 'Normal';
         
-        insert t;
+        Database.insert(t, true);
         return t.Id;
     }
     
@@ -545,15 +496,6 @@ public class WorktypeSelection {
         public List<Id> resources;
         public Id territoryId;
         
-    }
-    
-    public class Response {
-        @auraEnabled
-        public String title;
-        @auraEnabled
-        public String message;
-        @auraEnabled
-        public String type;
     }
     
 }

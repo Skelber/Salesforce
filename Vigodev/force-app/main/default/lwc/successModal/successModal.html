@@ -8,14 +8,33 @@
                 <button class="slds-button slds-button_icon slds-modal__close" onclick={close}>×</button>
             </header>
             <div class="slds-modal__content slds-p-around_medium">
-                <p>{label.RedirectToSite}</p>
+                <p>{label.RedirectToSite} {counter}</p>
 
+
+                <div class="slds-align_absolute-center">
+                    <p>{response.message}</p>
+                </div>
+                <div class="slds-p-around_medium">
+                    <template if:true={isSuccess}>
+                        <div class="slds-align_absolute-center slds-p-around_medium">
+                            <img src={successIcon} alt="successImage">
+                        </div>
+                        <div class="slds-align_absolute-center">
+                            <p>{label.ModalDisclaimer}</p>
+                        </div>
+                    </template>
+                    <template if:false={isSuccess}>
+                        <div class="slds-align_absolute-center slds-p-around_medium">
+                            <img src={errorIcon} alt="errorImage">
+                        </div>
+                    </template>
+                </div>
             </div>
             <footer class="slds-modal__footer">
                 <div class="slds-grid_align-end">
                     <a 
                     href="https://www.vigogroup.eu/"
-                    class="slds-button"
+                    class="slds-button slds-button_brand"
                     target="_self"
                     >{label.BackToWebsite}</a>
                 </div>

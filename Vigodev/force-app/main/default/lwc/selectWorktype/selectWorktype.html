@@ -67,8 +67,8 @@
                         </div>
                         <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical">
                           <!-- <img src={bandageIcon} alt="bandage icon"> -->
-                           <template if:true={pg.Has_Image_Link}>
-                             <img src={pg.Image_Link} alt="worktype icon">
+                           <template if:true={pg.productGroup.Has_Image_Link}>
+                             <img src={pg.productGroup.pgImage} alt="worktype icon">
                            </template>
                             <template if:true={displayEnglish}>
                               <p>{pg.productGroup.Guiding_Text_EN}</p>
@@ -107,8 +107,8 @@
                           </div>
                           <div class="slds-p-around_small slds-align_absolute-center slds-grid_vertical">
                             <!-- <img src={bandageIcon} alt="bandage icon"> -->
-                             <template if:true={psg.Has_Image_Link}>
-                               <img src={psg.Image_Link} alt="worktype icon">
+                             <template if:true={psg.productSubGroup.Has_Image_Link}>
+                               <img src={psg.productSubGroup.Image_Link} alt="worktype icon">
                              </template>
                              <template if:true={displayDutch}>
                                <p>{psg.productSubGroup.Guiding_Text_NL}</p>
