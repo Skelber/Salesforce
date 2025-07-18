@@ -56,6 +56,7 @@ export default class SelectServiceResource extends LightningElement {
         message: ''
     }
     disableButton = false;
+    disablePrevButton = false;
 
     selectedDate;
     showTimeSlots = false;
@@ -102,6 +103,7 @@ export default class SelectServiceResource extends LightningElement {
         this.timeValue = 'All Day';
         this.timeslotMap = 'All Day';
         this.setLang();
+        this.setPrevButtonState()
     }
 
     setLang() {
@@ -149,18 +151,34 @@ export default class SelectServiceResource extends LightningElement {
         ];
     }
 
+    setPrevButtonState() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+    
+        const selected = new Date(this.selectedDate);
+        selected.setHours(0, 0, 0, 0);
+    
+        this.disablePrevButton = selected <= tomorrow;
+    }
+
     handleTimechange(event) {
         this.timeValue = event.currentTarget.dataset.value;
+        this.filterSlotsByTime(this.timeValue);
+    }
+
+    filterSlotsByTime(timeValue) {
         let filteredMap = JSON.parse(JSON.stringify(this.notFilteredTimeslotMap));
-        console.log('time value =  ' + this.timeValue + '   ' + JSON.stringify(filteredMap))
     
         filteredMap.forEach(resource => {
             resource.slots = resource.slots.filter(slotTime => {
-                let dateObj = new Date(slotTime);
-                let hour = dateObj.getUTCHours(); // Use getHours() if you want local time
-                if (this.timeValue === 'AM') {
+                const dateObj = new Date(slotTime);
+                const hour = dateObj.getUTCHours(); // Use getHours() for local time
+    
+                if (timeValue === 'AM') {
                     return hour >= 0 && hour < 12;
-                } else if (this.timeValue === 'PM') {
+                } else if (timeValue === 'PM') {
                     return hour >= 12 && hour < 24;
                 } else {
                     return true; // All Day
@@ -169,6 +187,7 @@ export default class SelectServiceResource extends LightningElement {
         });
     
         filteredMap = filteredMap.filter(resource => resource.slots.length > 0);
+    
         this.timeslotMap = filteredMap;
         this.processTimeslotMapWithPagination();
     }
@@ -193,23 +212,27 @@ export default class SelectServiceResource extends LightningElement {
         } else {
             this.showSlots = false;
         }
-
+        this.setPrevButtonState()
         this.callForData();
     }
 
-    callForData(){
+    callForData() {
+        this.showSpinner = true;
+    
         getTimeSlots({
             selectedDate: this.selectedDate,
             locatonId: this.location.recordId,
             workTypeId: this.worktype.RecordId
         })
         .then(result => {
-            console.log(JSON.stringify(result))
-            if(result.length == 3) {
+            console.log('📦 Raw Apex result:', JSON.stringify(result));
+    
+            if (result.length == 3) {
                 this.showNoSlotsAvailable = true;
             } else {
                 this.showNoSlotsAvailable = false;
             }
+    
             if (typeof result === 'string') {
                 try {
                     result = JSON.parse(result);
@@ -217,16 +240,18 @@ export default class SelectServiceResource extends LightningElement {
                     result = [];
                 }
             }
-
+    
             if (Array.isArray(result)) {
-                this.timeslotMap = result;
                 this.notFilteredTimeslotMap = result;
+                this.filterSlotsByTime(this.timeValue);
                 this.initializePagination();
             }
+    
             this.showSpinner = false;
         })
         .catch(error => {
-            console.error('Error in getTimeSlots:', error);
+            console.error('❌ Error in getTimeSlots:', error);
+            this.showSpinner = false;
         });
     }
 
@@ -373,7 +398,7 @@ export default class SelectServiceResource extends LightningElement {
             // country: this.contact.country,
             country: 'Belgium',
             onBehalveOf: this.contact.bookedForSelf,
-            relationship: this.contactrelationToPatient,
+            relationship: this.contact.relationToPatient,
             yourFirstName:this.contact.bookedForFirstName,
             yourLastName:this.contact.bookedForLastName,
             yourEmail: this.contact.bookedForEmail,

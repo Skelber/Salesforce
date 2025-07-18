@@ -9,22 +9,23 @@
             </div>
             <template if:true={checked}>
                 <div class="slds-align_absolute-center">
-                    <lightning-input class="input" type="Text" label={label.FirstName} value={contact.bookedForFirstName} onchange={handleForContactFirstNameChange}></lightning-input>
+                    <lightning-input class="input" type="Text" required="true" label={label.FirstName} value={contact.bookedForFirstName} onchange={handleForContactFirstNameChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
-                    <lightning-input class="input" type="Text" label={label.LastName} value={contact.bookedForLastName} onchange={handleForContactLastNameChange}></lightning-input>
+                    <lightning-input class="input" type="Text" required="true" label={label.LastName} value={contact.bookedForLastName} onchange={handleForContactLastNameChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
-                    <lightning-input class="input"  type="email" label={label.YourEmail} value={contact.bookedForEmail} onchange={handleForContactEmailChange}></lightning-input>
+                    <lightning-input class="input"  type="email" required="true" label={label.YourEmail} value={contact.bookedForEmail} onchange={handleForContactEmailChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
-                    <lightning-input class="input"  type="text" label={label.YourPhone} value={contact.bookedForEmailphone} onchange={handleForContactPhoneChange}></lightning-input>
+                    <lightning-input class="input"  type="text" required="true" label={label.YourPhone} value={contact.bookedForEmailphone} onchange={handleForContactPhoneChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
                     <lightning-combobox name="relation to user"
                     label={label.RelationToUser}
                     class="slds-align_absolute-center input"
                     options={options}
+                    required="true"
                     value={contact.relationToPatient}
                     onchange={handleRelationToPatient}>
                 </lightning-combobox>
@@ -55,8 +56,8 @@
                 label={label.RSZ} 
                 value={contact.RSZ} 
                 onchange={handleRSZChange} 
-                required={rszRequired}
-                field-level-help="help text national security number"></lightning-input>
+                required="true"
+                field-level-help={label.RSZHelpText}></lightning-input>
             </div>
         </template>
         <template if:true={hasNoRSZ}>

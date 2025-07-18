@@ -16,7 +16,8 @@ public class WorktypeSelection {
                                                                    Guiding_Text_EN__c, Guiding_Text_NL__c, Guiding_Text_FR__c, 
                                                                    Image_Link__c, Typology_Name_NL__c, Typology_Name_FR__c            
                                                               FROM Work_Type_Typology__c]));
-      
+      System.debug(typologies);
+        System.debug(typologyMap);
         //Map BUSINESS UNIT + all worktypes
         Map<Id, List<WorkTypeGroup>> buMap = new Map<Id, List<WorkTypeGroup>>();
         List<BusinessUnit> buList = new List<BusinessUnit>();
@@ -164,128 +165,65 @@ public class WorktypeSelection {
         String response = lxscheduler.SchedulerResources.getAppointmentCandidates(input);
         System.debug(response);
         
-        List<ResponseWrapper> wrapperResult = (List<ResponseWrapper>)JSON.deserialize(response, List<ResponseWrapper>.class);
-        System.debug(wrapperResult);
-        
-        SkillRequirement skillreq = [SELECT SkillId FROM SkillRequirement WHERE RelatedRecordId = :workTypeId LIMIT 1];
-        Id skillId = skillreq <> null ? skillreq.SkillId : null;
-        
-        Map<Id, List<DateTime>> resultMap = new Map<Id, List<DateTime>>();
-        Set<Id> resourceList = new Set<Id>();
-        for (ResponseWrapper wrapper : wrapperResult) {
-                        
-            List<String> dateList = wrapper.startTime.split('T');
-            DateTime slot = Datetime.newInstanceGMT(Integer.valueOf(dateList[0].split('-')[0]), Integer.valueOf(dateList[0].split('-')[1]), Integer.valueOf(dateList[0].split('-')[2]), Integer.valueOf(dateList[1].split(':')[0]), Integer.valueOf(dateList[1].split(':')[1]), 0);
-            TimeZone tz = Timezone.getTimeZone('Europe/Brussels');
-            Integer milliSeconds = tz.getOffset(slot);
-            Integer minutes = milliSeconds / 60000;
-            Integer offSetHours = minutes / 60;
-            slot = slot.addHours(offSetHours);
+        if(response <> null) {
+            List<ResponseWrapper> wrapperResult = (List<ResponseWrapper>)JSON.deserialize(response, List<ResponseWrapper>.class);
+            System.debug(wrapperResult);
             
-            for (Id resourceId : wrapper.resources) {         
-                String keyname = string.valueOf(resourceId);
-                if(!resultMap.containsKey(keyname)){
-                    resultMap.put(keyname, new List<DateTime>());
+            SkillRequirement skillreq = [SELECT SkillId FROM SkillRequirement WHERE RelatedRecordId = :workTypeId LIMIT 1];
+            Id skillId = skillreq <> null ? skillreq.SkillId : null;
+            
+            Map<Id, List<DateTime>> resultMap = new Map<Id, List<DateTime>>();
+            Set<Id> resourceList = new Set<Id>();
+            for (ResponseWrapper wrapper : wrapperResult) {
+                            
+                List<String> dateList = wrapper.startTime.split('T');
+                DateTime slot = Datetime.newInstanceGMT(Integer.valueOf(dateList[0].split('-')[0]), Integer.valueOf(dateList[0].split('-')[1]), Integer.valueOf(dateList[0].split('-')[2]), Integer.valueOf(dateList[1].split(':')[0]), Integer.valueOf(dateList[1].split(':')[1]), 0);
+                TimeZone tz = Timezone.getTimeZone('Europe/Brussels');
+                Integer milliSeconds = tz.getOffset(slot);
+                Integer minutes = milliSeconds / 60000;
+                Integer offSetHours = minutes / 60;
+                slot = slot.addHours(offSetHours);
+                
+                for (Id resourceId : wrapper.resources) {         
+                    String keyname = string.valueOf(resourceId);
+                    if(!resultMap.containsKey(keyname)){
+                        resultMap.put(keyname, new List<DateTime>());
+                    }
+                    resultMap.get(keyname).add(slot);
+                    resourceList.add(resourceId);
                 }
-                resultMap.get(keyname).add(slot);
-                resourceList.add(resourceId);
+                
             }
-            
-        }
 
-        List<AvailableSlot> fullSlots = new List<AvailableSlot>();
-       // Map<Id, ServiceResource> resourceMap = new Map<Id, ServiceResource>([SELECT Id, Name, RelatedRecord.FirstName, RelatedRecord.LastName FROM ServiceResource WHERE Id IN :resourceList]);
-        List<ServiceResourceSkill> resourceSkillList = [SELECT ServiceResourceId, ServiceResource.Name, ServiceResource.RelatedRecord.FirstName, ServiceResource.RelatedRecord.LastName, Service_Resource_Sort_Order__c 
-                                                                                              FROM ServiceResourceSkill 
-                                                                                             WHERE ServiceResourceId IN :resourceList AND Service_Resource_Sort_Order__c > 50 AND SkillId = :skillId
-                                                       									  ORDER BY Service_Resource_Sort_Order__c DESC, ServiceResource.Name ASC];
-        Map<Id, ServiceResourceSkill> resourceSkillMap = new Map<Id, ServiceResourceSkill>();
-        for(ServiceResourceSkill srs : resourceSkillList) {
-            resourceSkillMap.put(srs.ServiceResourceId, srs);
-        }
-        
-        for(Id resourceId : resourceSkillMap.keySet()) {
-            System.debug(resourceSkillMap.get(resourceId).ServiceResource.RelatedRecord.FirstName + ' - ' + resourceSkillMap.get(resourceId).Service_Resource_Sort_Order__c);
-            List<DateTime> slots = resultMap.get(resourceId);
-            if(slots <> null && slots.size() > 0) {
-                ServiceResource2 sr = new ServiceResource2(resourceId, resourceSkillMap.get(resourceId).ServiceResource.RelatedRecord.FirstName 
-                                                           + ' ' + resourceSkillMap.get(resourceId).ServiceResource.RelatedRecord.LastName.left(1) );
-                AvailableSlot av = new AvailableSlot(sr, slots);
-                fullSlots.add(av);
+            List<AvailableSlot> fullSlots = new List<AvailableSlot>();
+            // Map<Id, ServiceResource> resourceMap = new Map<Id, ServiceResource>([SELECT Id, Name, RelatedRecord.FirstName, RelatedRecord.LastName FROM ServiceResource WHERE Id IN :resourceList]);
+            List<ServiceResourceSkill> resourceSkillList = [SELECT ServiceResourceId, ServiceResource.Name, ServiceResource.RelatedRecord.FirstName, ServiceResource.RelatedRecord.LastName, Service_Resource_Sort_Order__c 
+                                                            FROM ServiceResourceSkill 
+                                                            WHERE ServiceResourceId IN :resourceList AND Service_Resource_Sort_Order__c > 50 AND SkillId = :skillId
+                                                            ORDER BY Service_Resource_Sort_Order__c DESC, ServiceResource.Name ASC];
+            Map<Id, ServiceResourceSkill> resourceSkillMap = new Map<Id, ServiceResourceSkill>();
+            for(ServiceResourceSkill srs : resourceSkillList) {
+                resourceSkillMap.put(srs.ServiceResourceId, srs);
             }
-        }
-        
-        String JSONstring = JSON.serializePretty(fullSlots);
-        System.debug(JSONstring);
-        return JSONString;
-    }
-    
-    @AuraEnabled(cacheable=true)
-    public static String getPossibleTimeslotByHour(Date selectedDate, Id locatonId, Id workTypeId ) {
-        
-        //Get policy
-        List <AppointmentSchedulingPolicy> policyId = [SELECT Id FROM AppointmentSchedulingPolicy WHERE MasterLabel ='VIGO Scheduling Policy' LIMIT 1];
-        
-        //Build WorkType
-        lxscheduler.WorkType workType = new lxscheduler.WorkTypeBuilder()
-            .setId(workTypeId)
-            .build();
-        
-        //getAppointmentCandidates        
-        Datetime startdatetime = DateTime.newInstance(selectedDate, Time.newInstance(0, 0, 0, 0));
-        lxscheduler.GetAppointmentCandidatesInput input = new lxscheduler.GetAppointmentCandidatesInputBuilder()
-            .setWorkType(workType)
-            .setTerritoryIds(new List<String>{locatonId})
-            .setStartTime(startdatetime.format('yyyy-MM-dd\'T\'HH:mm:ssZ'))
-            .setEndTime(startdatetime.addDays(1).format('yyyy-MM-dd\'T\'HH:mm:ssZ'))
-            //  .setAccountId('001RM0000053iQgYAI')
-            .setSchedulingPolicyId(policyId[0].Id)
-            .setApiVersion(Double.valueOf('59.0'))
-            .build();
-        
-        String response = lxscheduler.SchedulerResources.getAppointmentCandidates(input);
-        System.debug(response);
-        
-        return response;
-    }
-    
-/*    @AuraEnabled(cacheable=false)
-    public static String saveServiceAppointment(Id leadid, Id locationId, Datetime startTime, Integer duration, Id resourceId, Id workTypeId, String description, String rrNr) {
-        
-        TimeZone tz = Timezone.getTimeZone('Europe/Brussels');
-        Integer milliSeconds = tz.getOffset(startTime);
-        Integer minutes = milliSeconds / 60000;
-        Integer offSetHours = minutes / 60;
-        startTime = startTime.addHours(-1*offSetHours);
-                    
-        ServiceAppointment sa = new ServiceAppointment();
-        List<Account> accounts =  [SELECT Id FROM Account WHERE Patient_Insurance_ID__pc = :rrNr LIMIT 1];
-		if(accounts <> null && accounts.size() > 0) {
-            sa.ParentRecordId = accounts[0].Id;
-        } else {
-            sa.ParentRecordId = leadid;
-        }
-        sa.ServiceTerritoryId = locationId;
-        sa.Status = 'Scheduled';
-        sa.DurationType = 'Minutes';
-        sa.SchedStartTime = startTime;
-        sa.EarliestStartTime = startTime;
-        sa.SchedEndTime = starttime.addMinutes(duration);
-        sa.DueDate = starttime.addMinutes(duration);
-        sa.workTypeId = workTypeId;
-        sa.Description = description;
-        Database.insert(sa, true);
-        
-        AssignedResource asrec = new AssignedResource();
-        asrec.ServiceAppointmentId = sa.Id;
-        asrec.ServiceResourceId = resourceId;
-        asrec.IsPrimaryResource = true;
-        asrec.IsRequiredResource = true;
-        Database.insert(asrec, true);
             
-        return sa.Id;
-    }*/
-    
+            for(Id resourceId : resourceSkillMap.keySet()) {
+                System.debug(resourceSkillMap.get(resourceId).ServiceResource.RelatedRecord.FirstName + ' - ' + resourceSkillMap.get(resourceId).Service_Resource_Sort_Order__c);
+                List<DateTime> slots = resultMap.get(resourceId);
+                if(slots <> null && slots.size() > 0) {
+                    ServiceResource2 sr = new ServiceResource2(resourceId, resourceSkillMap.get(resourceId).ServiceResource.RelatedRecord.FirstName 
+                                                               + ' ' + resourceSkillMap.get(resourceId).ServiceResource.RelatedRecord.LastName.left(1) );
+                    AvailableSlot av = new AvailableSlot(sr, slots);
+                    fullSlots.add(av);
+                }
+            }
+            
+            String JSONstring = JSON.serializePretty(fullSlots);
+            System.debug(JSONstring);
+            return JSONString;
+        }
+        return null;
+    }
+        
     @AuraEnabled(cacheable=false)
     public static String saveLead(String firstName, String lastName, String email, string phone, 
                                   string rrNr, Boolean noRrNr, Date endUserBirthdate,
@@ -298,9 +236,8 @@ public class WorktypeSelection {
         l.Phone = phone;
                                       
         l.No_Medical_Record_Number__c = noRrNr;
-        if(noRrNr) {
-        	l.HealthCloudGA__BirthDate__c = endUserBirthdate;
-        } else {
+        l.HealthCloudGA__BirthDate__c = endUserBirthdate;
+        if(!noRrNr) {
             l.HealthCloudGA__MedicalRecordNumber__c = rrNr;
         }
             
@@ -339,10 +276,13 @@ public class WorktypeSelection {
             				+'\r\n \r\n'
             				+ 'Opmerkingen: ' + opmerkingen;
         
-        t.OwnerId = [SELECT Id, DeveloperName FROM Group WHERE Type = 'Queue' AND Name = :serviceTerritoryName LIMIT 1].Id;
+        List<Group> g = [SELECT Id, DeveloperName FROM Group WHERE Type = 'Queue' AND Name = :serviceTerritoryName LIMIT 1];
+        if(g.size() > 0) {
+        	t.OwnerId = g[0].Id;
+        } 
         
         List<Contact> contacts =  [SELECT Id FROM Contact WHERE Patient_Insurance_ID__c = :rrNr LIMIT 1];
-        if(contacts <> null && contacts.size() > 0) {
+        if(contacts <> null && contacts.size() > 0 && rrNr <> '') {
             t.WhoId = contacts[0].Id;
         } else {
             t.WhoId = leadid;
@@ -411,9 +351,9 @@ public class WorktypeSelection {
         private String recordId			{get; set;}
         
         private WorkType2 (String gtEN, String gtFR, String gtNL, String image, String dev_name, String tnEN, String tnFR, String tnNL, String id) {
-            Guiding_Text_EN = gtEN;
-            Guiding_Text_FR = gtFR;
-            Guiding_Text_NL = gtNL;
+            Guiding_Text_EN = (gtEN != null) ? gtEN.unescapeHtml4() : null;
+            Guiding_Text_FR = (gtFR != null) ? gtFR.unescapeHtml4() : null;
+            Guiding_Text_NL = (gtNL != null) ? gtNL.unescapeHtml4() : null;
             Has_Image_Link = !(String.isEmpty(image) || String.isBlank(image));
             Image_Link = image;       
             Image_Dev_Name = image != null? image.substringAfterLast('/') : null;

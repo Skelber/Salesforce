@@ -24,7 +24,6 @@ export default class AppointmentProgress extends LightningElement {
 
     connectedCallback(){
         let width = window.innerWidth;
-        console.log('width is ' +width)
         this.setPathVariant(width);
         this.showDefaultProgress = true
     }

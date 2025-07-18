@@ -13,6 +13,19 @@ lightning-textarea, lightning-file-upload, .card {
     margin: 10px 0px;
 }
 
+.fileInput {
+    color: transparent;
+}
+
+.fileInput::file-selector-button {
+    background-color: #00167a;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+
 .input, textarea {
     --slds-c-input-color-border: #fff;
     --slds-c-input-shadow: 0px 1px 4px grey;

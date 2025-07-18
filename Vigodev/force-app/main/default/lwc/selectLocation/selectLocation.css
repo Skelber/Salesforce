@@ -8,6 +8,7 @@
     box-shadow: 0px 2px 5px grey;
     border-radius: 15px;
     transition: 400ms;
+    cursor: pointer;
 }
 
 .locationSelection:hover{

@@ -73,7 +73,9 @@
                             <div class="slds-grid">
                                 <div class="slds-col slds-size_1-of-5 slds-m-top_medium">
                                     <!-- <lightning-button variant="brand-outline" label="<" onclick={handlePrevDate}></lightning-button> -->
-                                    <button onclick={handlePrevDate}> &#60; </button>
+                                     <template if:false={disablePrevButton}>
+                                         <button disabled={disablePrevButton} onclick={handlePrevDate}> &#60; </button>
+                                        </template>
                                 </div>
                                 <div class="slds-col slds-size_3-of-5">
                                     <lightning-input class="slds-m-top_medium input date" variant="label-hidden" type="Date" value={selectedDate} name="Datum" onchange={handleDateChange} style="margin-left: -15px;"></lightning-input>

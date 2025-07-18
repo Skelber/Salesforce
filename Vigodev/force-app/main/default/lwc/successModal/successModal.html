@@ -11,9 +11,7 @@
                 <p>{label.RedirectToSite} {counter}</p>
 
 
-                <div class="slds-align_absolute-center">
-                    <p>{response.message}</p>
-                </div>
+            
                 <div class="slds-p-around_medium">
                     <template if:true={isSuccess}>
                         <div class="slds-align_absolute-center slds-p-around_medium">
@@ -24,6 +22,9 @@
                         </div>
                     </template>
                     <template if:false={isSuccess}>
+                        <div class="slds-align_absolute-center">
+                            <p>{response.message}</p>
+                        </div>
                         <div class="slds-align_absolute-center slds-p-around_medium">
                             <img src={errorIcon} alt="errorImage">
                         </div>

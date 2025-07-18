@@ -84,6 +84,12 @@ export default class SelectWorktype extends LightningElement {
         
     }
 
+    htmlDecode(input) {
+      const txt = document.createElement('textarea');
+      txt.innerHTML = input;
+      return txt.value;
+  }
+
     styleSelectedRecords() {
       window.requestAnimationFrame(() => {
         // ----- BUSINESS UNIT -----
@@ -211,6 +217,7 @@ export default class SelectWorktype extends LightningElement {
       if (selected) {
         this.productGroups = selected.productGroups || [];
         this.productGroups = (selected.productGroups || []).map(pg => {
+          pg.Guiding_Text_FR = this.htmlDecode(pg.Guiding_Text_FR);
           let pgImage = ''
           const pgCopy = { ...pg };
         

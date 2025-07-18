@@ -123,7 +123,6 @@ export default class BookAppointment extends LightningElement {
 
     validateScreenOne(event) {
         this.screenOneComplete = event.detail.contactInfoComplete;
-        console.log('screen one complete: ' + JSON.stringify(this.screenOneComplete))
         this.enableNextButton()
     }
 
@@ -137,7 +136,6 @@ export default class BookAppointment extends LightningElement {
         } = event.detail;
     
         this.receivedWorktype = workType;
-        console.log('received worktype ' + JSON.stringify(this.receivedWorktype))
         this.showDefaultProgress = this.receivedWorktype.Bookable ? true : false;
         this.selectedBusinessUnitId = businessUnitId;
         this.selectedProductGroupId = productGroupId;
@@ -161,16 +159,8 @@ export default class BookAppointment extends LightningElement {
 
     receiveSlotDetails(event){
         this.receivedSlot = event.detail
-        console.log('received slot : ' + JSON.stringify(this.receivedSlot))
         this.enableNextButton()
     }
-    
-
-    // receiveAdditionalInfo(event) {
-    //     this.receivedAdditionalInfo.comment = event.detail.comment;
-    //     this.receivedAdditionalInfo.files = event.detail.files;
-    //     console.log('Received files:', this.receivedAdditionalInfo.files.map(f => f.name).join(', '));
-    // }
 
     receiveAdditionalInfo(event) {
         if (!this.receivedAdditionalInfo) {
@@ -183,7 +173,7 @@ export default class BookAppointment extends LightningElement {
         this.receivedAdditionalInfo.comment = event.detail.comment;
         this.receivedAdditionalInfo.files = event.detail.files;
       
-        console.log('Received files:', this.receivedAdditionalInfo.files.map(f => f.name).join(', '));
+        // console.log('Received files:', this.receivedAdditionalInfo.files.map(f => f.name).join(', '));
       }
 
      handleSubmit() {
@@ -203,14 +193,13 @@ export default class BookAppointment extends LightningElement {
                 // country: this.receivedContact.country,
                 country: 'Belgium',
                 onBehalveOf: this.receivedContact.bookedForSelf,
-                relationship: this.receivedContactrelationToPatient,
+                relationship: this.receivedContact.relationToPatient,
                 yourFirstName:this.receivedContact.bookedForFirstName,
                 yourLastName:this.receivedContact.bookedForLastName,
                 yourEmail: 'test123@test.be',
                 yourPhone:'041234567'
             }).then(result => {
-                console.log('savelead response' + result)
-                console.log(JSON.stringify(result))
+                console.log('savelead response ' + result)
                 saveServiceAppointment({
                     leadid: result,
                     locationId: this.receivedLocation.recordId,

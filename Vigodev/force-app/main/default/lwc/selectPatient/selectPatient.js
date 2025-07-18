@@ -18,6 +18,7 @@ import Province from "@salesforce/label/c.pbzInputProvince"
 import PostalCode from "@salesforce/label/c.pbzInputPostalCode"
 import Country from "@salesforce/label/c.pbzInputCountry"
 import PatientEmail from "@salesforce/label/c.pbzInputEmailPatient"
+import RSZHelpText from "@salesforce/label/c.pbzHelpTextNationalRegisterNumber"
 
 export default class SelectPatient extends LightningElement {
     @track checked;
@@ -51,7 +52,7 @@ export default class SelectPatient extends LightningElement {
 
     connectedCallback() {
         const storedValue = localStorage.getItem('checked');
-        this.contact.bookedForSelf = storedValue !== null ? storedValue === 'false' : false;
+        this.contact.bookedForSelf = storedValue === 'true'  ? true : false;
         this.checked = this.contact.bookedForSelf;
         this.contact.bookedForFirstName = localStorage.getItem('bookedForFirstName') || '';
         this.contact.bookedForLastName = localStorage.getItem('bookedForLastName') || '';
@@ -66,7 +67,7 @@ export default class SelectPatient extends LightningElement {
         this.contact.street = localStorage.getItem('contactStreet') || '';
         this.contact.city = localStorage.getItem('contactCity') || '';
         this.contact.country = localStorage.getItem('contactCountry') || '';
-        // this.contact.birthdate = localStorage.getItem('birthdate') || ''; 
+        this.contact.birthdate = localStorage.getItem('birthdate') || ''; 
         this.contact.postalCode = localStorage.getItem('contactPostalCode') || '';
         this.contact.province = localStorage.getItem('contactProvince') || '';
         const storedHasRSZ = localStorage.getItem('hasRSZ');
@@ -92,7 +93,8 @@ export default class SelectPatient extends LightningElement {
         PostalCode: PostalCode,
         Country: Country,
         Province: Province,
-        PatientEmail: PatientEmail
+        PatientEmail: PatientEmail,
+        RSZHelpText: RSZHelpText,
     }
 
     disconnectedCallback() {
@@ -113,10 +115,10 @@ export default class SelectPatient extends LightningElement {
 
     get options() {
         return [
-            { label: 'Ouder', value: 'Ouder' },
-            { label: 'Familielid', value: 'Familielid' },
-            { label: 'Voogd', value: 'Voogd' },
-            { label: 'Andere', value: 'Andere' },
+            { label: 'Ouder', value: 'Parent' },
+            { label: 'Familielid', value: 'Family member' },
+            { label: 'Voogd', value: 'Guardian' },
+            { label: 'Andere', value: 'Other' },
         ];
     }
     
