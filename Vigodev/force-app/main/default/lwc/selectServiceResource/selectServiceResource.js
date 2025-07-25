@@ -7,7 +7,9 @@ import clock from "@salesforce/resourceUrl/clock";
 import calendar from "@salesforce/resourceUrl/calendar";
 import getTimeSlots from '@salesforce/apex/WorktypeSelection.getPossibleTimeslot';
 import saveLead from '@salesforce/apex/WorktypeSelection.saveLead';
+import saveLeadObject from '@salesforce/apex/WorktypeSelection.saveLeadObject';
 import saveTask from '@salesforce/apex/WorktypeSelection.saveTask';
+import saveTaskObject from '@salesforce/apex/WorktypeSelection.saveTaskObject';
 import TaskModal from 'c/taskModal';
 import ScreenFourTitle from "@salesforce/label/c.pbzScreenFourTitle"
 import ScreenFourBTitle from "@salesforce/label/c.pbzScreenFourBTitle"
@@ -70,6 +72,17 @@ export default class SelectServiceResource extends LightningElement {
 
     paginationState = {};
 
+    task = {
+        leadid: '',
+        worktypeName: '',
+        dagdeel: 'All Day',
+        dagen: '',
+        voorschrift: false,
+        opmerkingen: '',
+        serviceTerritoryName: '',
+        rrNr: ''
+    }
+
     label = {
         ScreenFourTitle,
         ScreenFourBTitle,
@@ -104,6 +117,9 @@ export default class SelectServiceResource extends LightningElement {
         this.timeslotMap = 'All Day';
         this.setLang();
         this.setPrevButtonState()
+        this.task.worktypeName = this.worktype.WorkTypeName;
+        this.task.serviceTerritoryName = this.location.recordName;
+        this.task.rrNr = this.contact.RSZ
     }
 
     setLang() {
@@ -166,6 +182,7 @@ export default class SelectServiceResource extends LightningElement {
     handleTimechange(event) {
         this.timeValue = event.currentTarget.dataset.value;
         this.filterSlotsByTime(this.timeValue);
+        this.task.dagdeel = this.timeslotMap.toString()
     }
 
     filterSlotsByTime(timeValue) {
@@ -174,14 +191,14 @@ export default class SelectServiceResource extends LightningElement {
         filteredMap.forEach(resource => {
             resource.slots = resource.slots.filter(slotTime => {
                 const dateObj = new Date(slotTime);
-                const hour = dateObj.getUTCHours(); // Use getHours() for local time
+                const hour = dateObj.getUTCHours();
     
                 if (timeValue === 'AM') {
                     return hour >= 0 && hour < 12;
                 } else if (timeValue === 'PM') {
                     return hour >= 12 && hour < 24;
                 } else {
-                    return true; // All Day
+                    return true;
                 }
             });
         });
@@ -200,7 +217,7 @@ export default class SelectServiceResource extends LightningElement {
             this.selectedDays.add(value);
         }
         this.selectedDays = new Set(this.selectedDays);
-        console.log('selected days:', JSON.stringify([...this.selectedDays]));
+        this.task.dagen = Array.from(this.selectedDays).join(', ')
     }
 
 
@@ -225,8 +242,6 @@ export default class SelectServiceResource extends LightningElement {
             workTypeId: this.worktype.RecordId
         })
         .then(result => {
-            console.log('📦 Raw Apex result:', JSON.stringify(result));
-    
             if (result.length == 3) {
                 this.showNoSlotsAvailable = true;
             } else {
@@ -250,7 +265,6 @@ export default class SelectServiceResource extends LightningElement {
             this.showSpinner = false;
         })
         .catch(error => {
-            console.error('❌ Error in getTimeSlots:', error);
             this.showSpinner = false;
         });
     }
@@ -374,47 +388,52 @@ export default class SelectServiceResource extends LightningElement {
         } else {
             this.prescription = true
         }
-        console.log(this.prescription)
+        this.task.voorschrift = this.prescription
     }
 
     handleTaskComment(event) {
         this.taskComment = event.target.value;
+        this.task.opmerkingen = this.taskComment;
     }
 
     handleSubmit() {
         this.disableButton = true;
         this.showSpinner = true;
-        saveLead({
-            firstName: this.contact.firstName,
-            lastName: this.contact.lastName,
-            email: this.contact.email,
-            phone: this.contact.phone,
-            rrNr: this.contact.RSZ,
-            noRrNr : this.contact.hasNoRSZ,
-            endUserBirthdate: this.contact.birthdate,
-            street: this.contact.street,
-            postalcode: this.contact.postalCode,
-            city: this.contact.city,
-            // country: this.contact.country,
-            country: 'Belgium',
-            onBehalveOf: this.contact.bookedForSelf,
-            relationship: this.contact.relationToPatient,
-            yourFirstName:this.contact.bookedForFirstName,
-            yourLastName:this.contact.bookedForLastName,
-            yourEmail: this.contact.bookedForEmail,
-            yourPhone:this.contact.bookedForPhone
+        // saveLead({
+        //     firstName: this.contact.firstName,
+        //     lastName: this.contact.lastName,
+        //     email: this.contact.email,
+        //     phone: this.contact.phone,
+        //     rrNr: this.contact.RSZ,
+        //     noRrNr : this.contact.hasNoRSZ,
+        //     endUserBirthdate: this.contact.birthdate,
+        //     street: this.contact.street,
+        //     postalcode: this.contact.postalCode,
+        //     city: this.contact.city,
+        //     // country: this.contact.country,
+        //     country: 'Belgium',
+        //     onBehalveOf: this.contact.bookedForSelf,
+        //     relationship: this.contact.relationToPatient,
+        //     yourFirstName:this.contact.bookedForFirstName,
+        //     yourLastName:this.contact.bookedForLastName,
+        //     yourEmail: this.contact.bookedForEmail,
+        //     yourPhone:this.contact.bookedForPhone
+        saveLeadObject({
+            lead: JSON.stringify(this.contact)
         }).then(result => {
-            console.log('savelead response' + result)
-            console.log(JSON.stringify(result))
-            saveTask({
-                leadid: result,
-                worktypeName: this.worktype.WorkTypeName,
-                dagdeel: this.timeslotMap.toString(),
-                dagen: Array.from(this.selectedDays).join(', '),
-                voorschrift: this.prescription,
-                opmerkingen: this.taskComment,
-                serviceTerritoryName: this.location.recordName,
-                rrNr: this.contact.RSZ
+            console.log('savelead response ' + result)
+            this.task.leadid = result
+            // saveTask({
+            //     leadid: result,
+            //     worktypeName: this.worktype.WorkTypeName,
+            //     dagdeel: this.timeslotMap.toString(),
+            //     dagen: Array.from(this.selectedDays).join(', '),
+            //     voorschrift: this.prescription,
+            //     opmerkingen: this.taskComment,
+            //     serviceTerritoryName: this.location.recordName,
+            //     rrNr: this.contact.RSZ
+            saveTaskObject({
+                task: JSON.stringify(this.task)
             }).then(taskResult => {
                 this.showSpinner = false;
                 console.log('savetask response ' + taskResult)

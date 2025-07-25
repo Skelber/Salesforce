@@ -4,7 +4,9 @@ import Next from "@salesforce/label/c.pbzButtonNext"
 import Previous from "@salesforce/label/c.pbzButtonPrevious"
 import BookAnAppointment from "@salesforce/label/c.pbzButtonBookAppointment"
 import saveLead from '@salesforce/apex/WorktypeSelection.saveLead';
+import saveLeadObject from '@salesforce/apex/WorktypeSelection.saveLeadObject';
 import saveServiceAppointment from '@salesforce/apex/AppointmentCreation.saveServiceAppointment';
+import saveServiceAppointmentObject from '@salesforce/apex/AppointmentCreation.saveServiceAppointmentObject';
 import uploadFile from '@salesforce/apex/FileUpload.uploadFile';
 import { CurrentPageReference } from 'lightning/navigation';
 
@@ -41,6 +43,17 @@ export default class BookAppointment extends LightningElement {
         comment: '',
         files: []
     };
+    serviceAppointment = {
+        leadId: '',
+        locationId: '',
+        startTime: '',
+        duration: '',
+        resourceId: '',
+        workTypeId: '',
+        description: '',
+        rrNr: ''
+
+    }
 
     label = {
         Next: Next,
@@ -118,7 +131,7 @@ export default class BookAppointment extends LightningElement {
 
     receiveContact(event) {
         this.receivedContact = event.detail;
-        console.log(JSON.stringify(this.receivedContact))
+        this.serviceAppointment.RSZ = event.detail.RSZ
     }
 
     validateScreenOne(event) {
@@ -141,6 +154,8 @@ export default class BookAppointment extends LightningElement {
         this.selectedProductGroupId = productGroupId;
         this.selectedProductSubGroupId = productSubGroupId;
         this.selectedAppointmentTypeId = appointmentTypeId;
+        this.serviceAppointment.workTypeId = event.detail.workTypeId;
+        this.serviceAppointment.duration = this.receivedWorktype.EstimatedDuration;
     
         this.enableNextButton();
     
@@ -151,6 +166,7 @@ export default class BookAppointment extends LightningElement {
 
     receiveLocation(event){
         this.receivedLocation = event.detail
+        this.serviceAppointment.locationId = this.receivedLocation.recordId,
         this.enableNextButton();
         setTimeout(() => {
             this.handleNext();
@@ -159,6 +175,8 @@ export default class BookAppointment extends LightningElement {
 
     receiveSlotDetails(event){
         this.receivedSlot = event.detail
+        this.serviceAppointment.startTime = new Date(event.detail.slot);
+        this.serviceAppointment.resourceId = event.detail.resourceId;
         this.enableNextButton()
     }
 
@@ -172,6 +190,7 @@ export default class BookAppointment extends LightningElement {
       
         this.receivedAdditionalInfo.comment = event.detail.comment;
         this.receivedAdditionalInfo.files = event.detail.files;
+        this.serviceAppointment.description = event.detail.comment;
       
         // console.log('Received files:', this.receivedAdditionalInfo.files.map(f => f.name).join(', '));
       }
@@ -179,62 +198,43 @@ export default class BookAppointment extends LightningElement {
      handleSubmit() {
             this.showSpinner = true;
             this.disableButtons = true;
-            saveLead({
-                firstName: this.receivedContact.firstName,
-                lastName: this.receivedContact.lastName,
-                email: this.receivedContact.email,
-                phone: this.receivedContact.phone,
-                rrNr: this.receivedContact.RSZ,
-                noRrNr : this.receivedContact.hasNoRSZ,
-                endUserBirthdate: this.receivedContact.birthdate,
-                street: this.receivedContact.street,
-                postalcode: this.receivedContact.postalCode,
-                city: this.receivedContact.city,
-                // country: this.receivedContact.country,
-                country: 'Belgium',
-                onBehalveOf: this.receivedContact.bookedForSelf,
-                relationship: this.receivedContact.relationToPatient,
-                yourFirstName:this.receivedContact.bookedForFirstName,
-                yourLastName:this.receivedContact.bookedForLastName,
-                yourEmail: 'test123@test.be',
-                yourPhone:'041234567'
+            // saveLead({
+            //     firstName: this.receivedContact.firstName,
+            //     lastName: this.receivedContact.lastName,
+            //     email: this.receivedContact.email,
+            //     phone: this.receivedContact.phone,
+            //     rrNr: this.receivedContact.RSZ,
+            //     noRrNr : this.receivedContact.hasNoRSZ,
+            //     endUserBirthdate: this.receivedContact.birthdate,
+            //     street: this.receivedContact.street,
+            //     postalcode: this.receivedContact.postalCode,
+            //     city: this.receivedContact.city,
+            //     // country: this.receivedContact.country,
+            //     country: 'Belgium',
+            //     onBehalveOf: this.receivedContact.bookedForSelf,
+            //     relationship: this.receivedContact.relationToPatient,
+            //     yourFirstName:this.receivedContact.bookedForFirstName,
+            //     yourLastName:this.receivedContact.bookedForLastName,
+            //     yourEmail: 'test123@test.be',
+            //     yourPhone:'041234567'
+
+            saveLeadObject({
+                lead: JSON.stringify(this.receivedContact)
             }).then(result => {
                 console.log('savelead response ' + result)
-                saveServiceAppointment({
-                    leadid: result,
-                    locationId: this.receivedLocation.recordId,
-                    startTime: new Date(this.receivedSlot.slot),
-                    duration: this.receivedWorktype.EstimatedDuration,
-                    resourceId: this.receivedSlot.resourceId,
-                    workTypeId: this.receivedWorktype.RecordId,
-                    description: this.receivedAdditionalInfo.comment,
-                    rrNr: this.receivedContact.RSZ
+                this.serviceAppointment.leadId = result
+                // saveServiceAppointment({
+                //     leadid: result,
+                //     locationId: this.receivedLocation.recordId,
+                //     startTime: new Date(this.receivedSlot.slot),
+                //     duration: this.receivedWorktype.EstimatedDuration,
+                //     resourceId: this.receivedSlot.resourceId,
+                //     workTypeId: this.receivedWorktype.RecordId,
+                //     description: this.receivedAdditionalInfo.comment,
+                //     rrNr: this.receivedContact.RSZ
+                saveServiceAppointmentObject({
+                    serviceappointment: JSON.stringify(this.serviceAppointment)
                 }).then(SAResult => {
-
-                    // const files = this.receivedAdditionalInfo.files || [];
-                    // files.forEach(file => {
-                    //   const reader = new FileReader();
-                  
-                    //   reader.onload = () => {
-                    //     const base64 = reader.result; // includes the data:...base64, prefix
-                    //     const filename = file.name;
-                  
-                    //     uploadFile({
-                    //         base64: base64,
-                    //         filename: filename,
-                    //         recordId: SAResult
-                    //     })
-                    //     .then(() => {
-                    //       console.log(`Uploaded file: ${filename}`);
-                    //     })
-                    //     .catch(error => {
-                    //       console.error(`Failed to upload ${filename}`, error);
-                    //     });
-                    //   };
-                  
-                    //   reader.readAsDataURL(file);
-                    // });
-
                     this.receivedAdditionalInfo.files.forEach(file => {
                         uploadFile({
                           base64: file.base64,
@@ -244,9 +244,6 @@ export default class BookAppointment extends LightningElement {
                         .then(() => console.log(`Uploaded ${file.name}`))
                         .catch(error => console.error('file error' + JSON.stringify(error)));
                       });
-
-
-
                     this.showSpinner = false;
                     console.log('savSA response ' + SAResult)
                     this.response.type = 'success';

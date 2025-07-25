@@ -134,97 +134,157 @@ export default class SelectPatient extends LightningElement {
         this.checkCompletion();
     }
 
-    handleForContactFirstNameChange(event){
-        const value = event.target.value;
-        this.contact.bookedForFirstName = value;
-        localStorage.setItem('bookedForFirstName', value);
-        this.checkCompletion()
-    }
 
-    handleForContactLastNameChange(event){
+    handleFieldChange(event){
         const value = event.target.value;
-        this.contact.bookedForLastName = value;
-        localStorage.setItem('bookedForLastName', value);
-        this.checkCompletion()
-    }
-
-    handleForContactEmailChange(event){
-        const value = event.target.value;
-        this.contact.bookedForEmail = value;
-        localStorage.setItem('bookedForEmail', value);
-        this.checkCompletion()
-    }
-
-    handleForContactPhoneChange(event){
-        const value = event.target.value;
-        this.contact.bookedForPhone = value; 
-        localStorage.setItem('bookedForPhone', value);
-        this.checkCompletion()
-    }
-
-    handleRelationToPatient(event) {
-        const value = event.target.value;
-        this.contact.relationToPatient = value;
-        localStorage.setItem('relationToPatient', value);
-    }
-
-    handleFirstNameChange(event) {
-        const value = event.target.value;
-        this.contact.firstName = value;
-        localStorage.setItem('firstName', value);
-        this.checkCompletion()
-    }
-    handleLastNameChange(event) {
-        const value = event.target.value;
-        this.contact.lastName = event.target.value;
-        localStorage.setItem('lastName', value);
-        this.checkCompletion()
-    }
-    handleEmailChange(event) {
-        const value = event.target.value;
-        this.contact.email = event.target.value;
-        localStorage.setItem('email', value);
-        this.checkCompletion()
-    }
-    handlePhoneChange(event) {
-        const value = event.target.value;
-        this.contact.phone = event.target.value;
-        localStorage.setItem('phone', value);
-        this.checkCompletion()
-    }
-
-    handlehasRSZChange(event) {
-        this.hasNoRSZ = event.target.checked;
-        this.contact.hasNoRSZ = this.hasNoRSZ;
-        localStorage.setItem('hasRSZ', this.hasNoRSZ);
+        if(event.target.name == 'bookedForFirstName'){
+            this.contact.bookedForFirstName = value;
+            localStorage.setItem('bookedForFirstName', value);
+            console.log('handlechangefunction working')
+        } else if( event.target.name == 'bookedForLastName') {
+            this.contact.bookedForLastName = value;
+            localStorage.setItem('bookedForLastName', value);
+        } else if(event.target.name == 'bookedForEmail'){
+            this.contact.bookedForEmail = value;
+            localStorage.setItem('bookedForEmail', value);
+        } else if(event.target.name == 'bookedForPhone'){
+            this.contact.bookedForPhone = value;
+            localStorage.setItem('bookedForPhone', value);
+        } else if(event.target.name == 'bookedForEmail') {
+            this.contact.bookedForEmail = value;
+            localStorage.setItem('bookedForEmail', value);
+        } else if(event.target.name =='relationToPatient'){
+            this.contact.relationToPatient = value;
+            localStorage.setItem('relationToPatient', value);
+        } else if(event.target.name == 'firstName'){
+            this.contact.firstName = value;
+            localStorage.setItem('firstName', value);
+        } else if(event.target.name == 'lastName'){
+            this.contact.lastName = value;
+            localStorage.setItem('lastName', value);
+        } else if(event.target.name == 'email'){
+            this.contact.email = value;
+            localStorage.setItem('email', value);
+        } else if(event.target.name == 'phone'){
+            this.contact.phone = value;
+            localStorage.setItem('phone', value);
+        } else if(event.target.name == 'NoRSZ'){
+            this.hasNoRSZ = event.target.checked;
+            this.contact.hasNoRSZ = this.hasNoRSZ;
+            localStorage.setItem('hasRSZ', this.hasNoRSZ);
+        } else if(event.target.name == 'birthdate'){
+            this.contact.birthdate = value;
+            localStorage.setItem('birthdate', value);
+        } else if(event.target.name == 'RSZ'){
+            var inputCmp = this.template.querySelector('.inputCmp')
+            const value = event.target.value;
+            localStorage.setItem('contactRSZ', value);
+            if (this.isValidRijksregisternummer(value)) {
+                this.contact.RSZ = value;
+                inputCmp.setCustomValidity('');
+                inputCmp.reportValidity();
+                this.setBirthDate(value);
+                
+            } else {
+                inputCmp.setCustomValidity('Incorrecte rijksregister nummer');
+                inputCmp.reportValidity();
+                
+            }
+        }
         this.checkCompletion();
     }
 
-    handleBirthdateChange(event){
-        const value = event.target.value;
-        this.contact.birthdate = value;
-        localStorage.setItem('birthdate', value);
-        this.checkCompletion();
-    }
+    // handleForContactFirstNameChange(event){
+    //     const value = event.target.value;
+    //     this.contact.bookedForFirstName = value;
+    //     localStorage.setItem('bookedForFirstName', value);
+    //     this.checkCompletion()
+    // }
+
+    // handleForContactLastNameChange(event){
+    //     const value = event.target.value;
+    //     this.contact.bookedForLastName = value;
+    //     localStorage.setItem('bookedForLastName', value);
+    //     this.checkCompletion()
+    // }
+
+    // handleForContactEmailChange(event){
+    //     const value = event.target.value;
+    //     this.contact.bookedForEmail = value;
+    //     localStorage.setItem('bookedForEmail', value);
+    //     this.checkCompletion()
+    // }
+
+    // handleForContactPhoneChange(event){
+    //     const value = event.target.value;
+    //     this.contact.bookedForPhone = value; 
+    //     localStorage.setItem('bookedForPhone', value);
+    //     this.checkCompletion()
+    // }
+
+    // handleRelationToPatient(event) {
+    //     const value = event.target.value;
+    //     this.contact.relationToPatient = value;
+    //     localStorage.setItem('relationToPatient', value);
+    // }
+
+    // handleFirstNameChange(event) {
+    //     const value = event.target.value;
+    //     this.contact.firstName = value;
+    //     localStorage.setItem('firstName', value);
+    //     this.checkCompletion()
+    // }
+    // handleLastNameChange(event) {
+    //     const value = event.target.value;
+    //     this.contact.lastName = event.target.value;
+    //     localStorage.setItem('lastName', value);
+    //     this.checkCompletion()
+    // }
+    // handleEmailChange(event) {
+    //     const value = event.target.value;
+    //     this.contact.email = event.target.value;
+    //     localStorage.setItem('email', value);
+    //     this.checkCompletion()
+    // }
+    // handlePhoneChange(event) {
+    //     const value = event.target.value;
+    //     this.contact.phone = event.target.value;
+    //     localStorage.setItem('phone', value);
+    //     this.checkCompletion()
+    // }
+
+    // handlehasRSZChange(event) {
+    //     this.hasNoRSZ = event.target.checked;
+    //     this.contact.hasNoRSZ = this.hasNoRSZ;
+    //     localStorage.setItem('hasRSZ', this.hasNoRSZ);
+    //     this.checkCompletion();
+    // }
+
+    // handleBirthdateChange(event){
+    //     const value = event.target.value;
+    //     this.contact.birthdate = value;
+    //     localStorage.setItem('birthdate', value);
+    //     this.checkCompletion();
+    // }
     
 
-    handleRSZChange(event) {
-        var inputCmp = this.template.querySelector('.inputCmp')
-        const value = event.target.value;
-        localStorage.setItem('contactRSZ', value);
-        if (this.isValidRijksregisternummer(value)) {
-            this.contact.RSZ = value;
-            inputCmp.setCustomValidity('');
-            inputCmp.reportValidity();
-            this.setBirthDate(value);
+    // handleRSZChange(event) {
+    //     var inputCmp = this.template.querySelector('.inputCmp')
+    //     const value = event.target.value;
+    //     localStorage.setItem('contactRSZ', value);
+    //     if (this.isValidRijksregisternummer(value)) {
+    //         this.contact.RSZ = value;
+    //         inputCmp.setCustomValidity('');
+    //         inputCmp.reportValidity();
+    //         this.setBirthDate(value);
             
-        } else {
-            inputCmp.setCustomValidity('Incorrecte rijksregister nummer');
-            inputCmp.reportValidity();
+    //     } else {
+    //         inputCmp.setCustomValidity('Incorrecte rijksregister nummer');
+    //         inputCmp.reportValidity();
             
-        }
-        this.checkCompletion()
-    }
+    //     }
+    //     this.checkCompletion()
+    // }
     
     isValidRijksregisternummer(value) {
         const numericValue = value.replace(/\D/g, '');
@@ -299,7 +359,7 @@ export default class SelectPatient extends LightningElement {
     async handleAddressChange(event) {
         this.contact.street = event.target.street;
         this.contact.city = event.target.city;
-        this.contact.country = event.target.country;
+        this.contact.country = 'Belgium';
         this.contact.province= event.target.province;
         this.contact.postalCode = event.target.postalCode;
 
@@ -307,7 +367,7 @@ export default class SelectPatient extends LightningElement {
 
         localStorage.setItem('contactStreet', this.contact.street);
         localStorage.setItem('contactCity', this.contact.city);
-        localStorage.setItem('contactCountry', this.contact.country);
+        localStorage.setItem('contactCountry', 'Belgium');
         localStorage.setItem('contactProvince', this.contact.province);
         localStorage.setItem('contactPostalCode', this.contact.postalCode);
     }

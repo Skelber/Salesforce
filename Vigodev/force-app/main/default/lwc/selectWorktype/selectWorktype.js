@@ -1,9 +1,7 @@
 import { LightningElement, track, wire, api } from 'lwc';
 import getWorkTypologies from '@salesforce/apex/WorktypeSelection.getJSON';
 import getWorkType from '@salesforce/apex/WorktypeSelection.getWorkType';
-import bandageIcon from "@salesforce/resourceUrl/bandage";
-import prostheticIcon from "@salesforce/resourceUrl/prosthetic";
-import orthoticIcon from "@salesforce/resourceUrl/orthotics";
+import getBusinessUnit from '@salesforce/apex/WorktypeSelection.getBusinessUnit';
 import LANG from '@salesforce/i18n/lang';
 import basePath from '@salesforce/community/basePath';
 import AccordionHeaderOne from "@salesforce/label/c.pbzAccordionheaderOne"
@@ -11,7 +9,7 @@ import AccordionHeaderTwo from "@salesforce/label/c.pbzAccordionheaderTwo"
 import AccordionHeaderThree from "@salesforce/label/c.pbzAccordionheaderThree"
 import AccordionHeaderFour from "@salesforce/label/c.pbzAccordionheaderFour"
 import ScreenTwoTitle from "@salesforce/label/c.pbzScreenTwoTitle"
-import sittingOrthotics from '@salesforce/resourceUrl/WebsiteImage_Sittingorthotics';
+
 
 export default class SelectWorktype extends LightningElement {
 
@@ -50,16 +48,19 @@ export default class SelectWorktype extends LightningElement {
      AccordionHeaderFour,
      ScreenTwoTitle,
    }
+   fullWorktypeList = []
+   buRecordId = null;
    
 
     connectedCallback(){
-        this.getWorkTypology();
+        // this.getWorkTypology();
+        this.callForBusinessUnit()
         this.showProductGroups = true;
         this.showProductSubGroups = true;
         this.showAppointmentTypes = true;
         this.setLang();
-        // this.baseUrl = window.location.origin;
         if (!this.businessUnitId) return;
+        console.log('appointment id ' + this.appointmentTypeId)
 
     if (this.lastStyledBUId === this.businessUnitId) return;
 
@@ -68,7 +69,6 @@ export default class SelectWorktype extends LightningElement {
       if (wrapper) {
         const innerDiv = wrapper.querySelector('.buSelection');
         if (innerDiv) {
-          // Clear previous selections
           const all = this.template.querySelectorAll('.buSelection.selected');
           all.forEach(el => el.classList.remove('selected'));
 
@@ -84,15 +84,9 @@ export default class SelectWorktype extends LightningElement {
         
     }
 
-    htmlDecode(input) {
-      const txt = document.createElement('textarea');
-      txt.innerHTML = input;
-      return txt.value;
-  }
 
     styleSelectedRecords() {
       window.requestAnimationFrame(() => {
-        // ----- BUSINESS UNIT -----
         if (this.businessUnitId) {
           this.template.querySelectorAll('.buSelection.selected')
             .forEach(el => el.classList.remove('selected'));
@@ -106,7 +100,6 @@ export default class SelectWorktype extends LightningElement {
           }
         }
     
-        // ----- PRODUCT GROUP -----
         if (this.productGroupId) {
           this.template.querySelectorAll('.pgSelection.selected')
             .forEach(el => el.classList.remove('selected'));
@@ -120,7 +113,6 @@ export default class SelectWorktype extends LightningElement {
           }
         }
     
-        // ----- PRODUCT SUBGROUP -----
         if (this.productSubGroupId) {
           this.template.querySelectorAll('.psgSelection.selected')
             .forEach(el => el.classList.remove('selected'));
@@ -133,12 +125,10 @@ export default class SelectWorktype extends LightningElement {
             }
           }
         }
-    
-        // ----- APPOINTMENT TYPE -----
         if (this.appointmentTypeId) {
           this.template.querySelectorAll('.atSelection.selected')
             .forEach(el => el.classList.remove('selected'));
-    
+        
           const atWrapper = this.template.querySelector(`[data-id="${this.appointmentTypeId}"]`);
           if (atWrapper) {
             const innerDiv = atWrapper.querySelector('.atSelection');
@@ -159,89 +149,111 @@ export default class SelectWorktype extends LightningElement {
         this.displayDutch = true
       }
     }
-    getWorkTypology() {
-      getWorkTypologies()
+    // getWorkTypology() {
+    //   getWorkTypologies()
+    //     .then(result => {
+    //       if (typeof result === 'string') {
+    //         try {
+    //           result = JSON.parse(result);
+    //         } catch (e) {
+    //           result = [];
+    //         }
+    //       }
+    
+    //       if (Array.isArray(result)) {
+    //         this.workTypes = result;
+    //         this.businessUnits = result.map(item => {
+    //           const bu = { ...item.businessUnit };
+    
+    //           if (bu?.Image_Dev_Name) {
+    //             bu.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${bu.Image_Dev_Name}`;
+    //           }
+    
+    //           return bu;
+    //         });
+    
+    //       } else if (result.workTypeSelector) {
+    //         this.workTypes = Array.from(result.workTypeSelector);
+    //         this.businessUnits = this.workTypes.map(item => {
+    //           const bu = { ...item.businessUnit };
+    
+    //           if (bu?.Image_Dev_Name) {
+    //             bu.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${bu.Image_Dev_Name}`;
+    //           }
+    
+    //           return bu;
+    //         });
+    
+    //       } else {
+    //         this.workTypes = [];
+    //         this.businessUnits = [];
+    //       }
+    //     })
+    //     .catch(error => {
+    //       console.error('Error in getWorkTypology:', error);
+    //     });
+    // }
+
+    callForBusinessUnit() {
+      getBusinessUnit()
         .then(result => {
-          if (typeof result === 'string') {
-            try {
-              result = JSON.parse(result);
-            } catch (e) {
-              result = [];
+          this.businessUnits = result.map(bu => {
+            const buCopy = { ...bu };
+            let hasImage = false;
+            let buImageUrl = '';
+    
+            if (buCopy.businessUnit?.Image_Dev_Name) {
+              buImageUrl = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${buCopy.businessUnit.Image_Dev_Name}`;
+              hasImage = true;
             }
-          }
     
-          if (Array.isArray(result)) {
-            this.workTypes = result;
-            this.businessUnits = result.map(item => {
-              const bu = { ...item.businessUnit };
+            return {
+              ...buCopy,
+              Image_Link: buImageUrl,
+              Has_Image_Link: hasImage
+            };
+          });
     
-              if (bu?.Image_Dev_Name) {
-                bu.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${bu.Image_Dev_Name}`;
-                console.log(bu.Image_Link)
-              }
-    
-              return bu;
-            });
-    
-          } else if (result.workTypeSelector) {
-            this.workTypes = Array.from(result.workTypeSelector);
-            this.businessUnits = this.workTypes.map(item => {
-              const bu = { ...item.businessUnit };
-    
-              if (bu?.Image_Dev_Name) {
-                bu.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${bu.Image_Dev_Name}`;
-                console.log(bu.Image_Link)
-              }
-    
-              return bu;
-            });
-    
-          } else {
-            this.workTypes = [];
-            this.businessUnits = [];
-          }
+          console.log('businessunits: ' + JSON.stringify(this.businessUnits));
+          this.fullWorktypeList = result;
         })
         .catch(error => {
-          console.error('Error in getWorkTypology:', error);
+          console.error('Error loading business units:', error);
         });
     }
 
-
-    handleBUClick(event) {
+    handleBUclick(event) {
       this.businessUnitId = event.currentTarget.dataset.id;
       const recordId = event.currentTarget.dataset.id
-      const selected = this.workTypes.find(
-        wt => wt.businessUnit?.recordId === recordId
+      const matchedBU = this.fullWorktypeList.find(
+        item => item.businessUnit.recordId == this.businessUnitId,
       );
-      console.log('selected BU: ' + JSON.stringify(selected))
-      if (selected) {
-        this.productGroups = selected.productGroups || [];
-        this.productGroups = (selected.productGroups || []).map(pg => {
-          pg.Guiding_Text_FR = this.htmlDecode(pg.Guiding_Text_FR);
-          let pgImage = ''
-          const pgCopy = { ...pg };
+    
+      if (matchedBU && matchedBU.productGroups) { 
+        this.productGroups = matchedBU.productGroups.map(group => {
+          const pgCopy = { ...group };
+          let hasImage = false;
+          let pgImageUrl = '';
         
-          if (pgCopy.productGroup.Image_Dev_Name != null) {
-            pgCopy.productGroup.pgImage = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${pgCopy.productGroup.Image_Dev_Name}`;
-            pgCopy.Has_Image_Link = true;
-          } else {
-            pgCopy.Has_Image_Link = false;
+          if (pgCopy.productGroup?.Image_Dev_Name) {
+            pgImageUrl = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${pgCopy.productGroup.Image_Dev_Name}`;
+            hasImage = true;
           }
+        
+          pgCopy.productGroup = {
+            ...pgCopy.productGroup,
+            pgImage: pgImageUrl,
+            Has_Image_Link: hasImage
+          };
         
           return pgCopy;
         });
         this.productSubGroups = [];
         this.appointmentTypeId = [];
-        // this.setSectionVisibillity()
 
         if (this.productGroups.length === 1) {
           const singlePG = this.productGroups[0];
           const pgId = singlePG.productGroup?.recordId;
-      
-          if (!pgId) {
-              console.warn('Product Group recordId is missing!', singlePG);
-              return;
-          }
       
           const fakeClickEvent = {
               currentTarget: {
@@ -254,7 +266,6 @@ export default class SelectWorktype extends LightningElement {
           setTimeout(() => {
           requestAnimationFrame(() => {
               requestAnimationFrame(() => {
-                  // this.applyProductGroupStyling(pgId);
                   this.applySelectionStyling(pgId, 'pgSelection', 'Product Group');
               });
           });
@@ -282,14 +293,20 @@ export default class SelectWorktype extends LightningElement {
           }
         });
       }, 300)
-    }
+    }  
 
-    handlePGClick(event) {
+    handlePGClick(event){
       this.productGroupId = event.currentTarget.dataset.id;
       const index = event.currentTarget.dataset.index;
       const selectedPG = this.productGroups?.[index];
-      console.log('selected product group ' + JSON.stringify(selectedPG))
-      
+      const matchedPG = this.productGroups.find(
+        item => item.productGroup.recordId === this.productGroupId
+      );
+
+      matchedPG.productSubGroups.forEach(subGroup => {
+        this.productSubGroups.push(subGroup)
+      });
+
       if (selectedPG?.productSubGroups?.length) {
         this.productSubGroups = selectedPG.productSubGroups;
         this.productSubGroups = (selectedPG.productSubGroups || []).map(psg => {
@@ -297,12 +314,10 @@ export default class SelectWorktype extends LightningElement {
         
           if (psgCopy.Image_Dev_Name) {
             psgCopy.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${psgCopy.Image_Dev_Name}`;
-            // console.log('product image link: ' + psgCopy.Image_Link)
             psgCopy.Has_Image_Link = true;
           } else {
             psgCopy.Has_Image_Link = false;
           }
-        
           return psgCopy;
         });
        
@@ -312,11 +327,6 @@ export default class SelectWorktype extends LightningElement {
         if (this.productSubGroups.length === 1) {
           const singlePSG = this.productSubGroups[0];
           const psgId = singlePSG.productSubGroup?.recordId;
-      
-          if (!psgId) {
-              console.warn('Product Sub Group recordId is missing!', singlePSG);
-              return;
-          }
       
           const fakeClickEvent = {
               currentTarget: {
@@ -329,7 +339,6 @@ export default class SelectWorktype extends LightningElement {
           setTimeout(() => {
           requestAnimationFrame(() => {
               requestAnimationFrame(() => {
-                  // this.applyProductSubGroupStyling(psgId);
                   this.applySelectionStyling(psgId, 'psgSelection', 'Product Subgroup');
               });
           });
@@ -343,8 +352,6 @@ export default class SelectWorktype extends LightningElement {
       } else {
         this.productSubGroups = [];
       }
-
-      // this.applyProductGroupStyling(this.productGroupId);
       this.applySelectionStyling(this.productGroupId, 'pgSelection', 'Product Group');
 
 
@@ -358,34 +365,211 @@ export default class SelectWorktype extends LightningElement {
           }
       });
     }, 300)
+      
+    }
+
+
+    handlePSGClick(event){
+      this.productSubGroupId = event.currentTarget.dataset.id;
+      const index = event.currentTarget.dataset.index;
+      const selectedPSG = this.productSubGroups?.[index];
+      const matchedPSG = this.productSubGroups.find(
+        item => item.productSubGroup.recordId === this.productSubGroupId
+      );
+
+      matchedPSG.appointmentTypes.forEach(appt => {
+        this.appointmentTypes.push(appt)
+      });
+
+
+      setTimeout(() => {
+        this.activeSection = "D"
+        this.styleSelectedRecords();
+        requestAnimationFrame(() => {
+          const anchor = this.template.querySelector('[data-scroll-anchor="section-d"]');
+          if (anchor) {
+              anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+    }, 300)
   }
-
-
-  handlePSGClick(event) {
-    this.productSubGroupId = event.currentTarget.dataset.id;
-    const index = event.currentTarget.dataset.index;
-    const selectedPSG = this.productSubGroups?.[index];
+  
+  
+    setSectionVisibillity(){
+      if(this.productGroups.length > 0){
+        this.showProductGroups = true
+      }
+      if(this.productSubGroups.length > 0){
+        this.showProductSubGroups = true
+      }
+      if(this.appointmentTypes.length > 0){
+        this.showAppointmentTypes = true
+      }
+    }
     
-    if (selectedPSG?.appointmentTypes?.length) {
-      selectedPSG.appointmentTypes.forEach(appt => {
-        this.appointmentTypes = selectedPSG.appointmentTypes;
-      });
-      // this.setSectionVisibillity()
-    } 
+
+    // handleBUClick(event) {
+    //   this.businessUnitId = event.currentTarget.dataset.id;
+    //   const recordId = event.currentTarget.dataset.id
+    //   const selected = this.workTypes.find(
+    //     wt => wt.businessUnit?.recordId === recordId
+    //   );
+    //   console.log('selected BU: ' + JSON.stringify(selected))
+    //   if (selected) {
+    //     this.productGroups = selected.productGroups || [];
+    //     this.productGroups = (selected.productGroups || []).map(pg => {
+    //       let pgImage = ''
+    //       const pgCopy = { ...pg };
+        
+    //       if (pgCopy.productGroup.Image_Dev_Name != null) {
+    //         pgCopy.productGroup.pgImage = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${pgCopy.productGroup.Image_Dev_Name}`;
+    //         pgCopy.Has_Image_Link = true;
+    //       } else {
+    //         pgCopy.Has_Image_Link = false;
+    //       }
+        
+    //       return pgCopy;
+    //     });
+    //     this.productSubGroups = [];
+    //     this.appointmentTypeId = [];
+
+    //     if (this.productGroups.length === 1) {
+    //       const singlePG = this.productGroups[0];
+    //       const pgId = singlePG.productGroup?.recordId;
+      
+    //       const fakeClickEvent = {
+    //           currentTarget: {
+    //               dataset: {
+    //                   id: pgId,
+    //                   index: 0
+    //               }
+    //           }
+    //       };
+    //       setTimeout(() => {
+    //       requestAnimationFrame(() => {
+    //           requestAnimationFrame(() => {
+    //               this.applySelectionStyling(pgId, 'pgSelection', 'Product Group');
+    //           });
+    //       });
+    //     }, 400)
+    //       setTimeout(() => {
+    //           this.handlePGClick(fakeClickEvent);
+      
+    //       }, 800);
+    //   }
+        
+    //   } else {
+    //     this.productGroups = [];
+    //   }
+    //   this.productSubGroups = [];
+
+    //   this.applySelectionStyling(recordId, 'buSelection', 'Business Unit');
+
+    //    setTimeout(() => {
+    //     this.activeSection = "B"
+    //     this.styleSelectedRecords()
+    //     requestAnimationFrame(() => {
+    //       const anchor = this.template.querySelector('[data-scroll-anchor="section-b"]');
+    //       if (anchor) {
+    //         anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    //       }
+    //     });
+    //   }, 300)
+
+    //   this.handleBUclickCopy()
+    // }
+
+  //   handlePGClick(event) {
+  //     this.productGroupId = event.currentTarget.dataset.id;
+  //     const index = event.currentTarget.dataset.index;
+  //     const selectedPG = this.productGroups?.[index];
+      
+  //     if (selectedPG?.productSubGroups?.length) {
+  //       this.productSubGroups = selectedPG.productSubGroups;
+  //       this.productSubGroups = (selectedPG.productSubGroups || []).map(psg => {
+  //         const psgCopy = { ...psg };
+        
+  //         if (psgCopy.Image_Dev_Name) {
+  //           psgCopy.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${psgCopy.Image_Dev_Name}`;
+  //           psgCopy.Has_Image_Link = true;
+  //         } else {
+  //           psgCopy.Has_Image_Link = false;
+  //         }
+  //         return psgCopy;
+  //       });
+       
+  //       this.appointmentTypes = [];
 
 
-    setTimeout(() => {
-      this.activeSection = "D"
-      this.styleSelectedRecords();
-      requestAnimationFrame(() => {
-        const anchor = this.template.querySelector('[data-scroll-anchor="section-d"]');
-        if (anchor) {
-          console.log('anchor found')
-            anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
-  }, 300)
-}
+  //       if (this.productSubGroups.length === 1) {
+  //         const singlePSG = this.productSubGroups[0];
+  //         const psgId = singlePSG.productSubGroup?.recordId;
+      
+  //         const fakeClickEvent = {
+  //             currentTarget: {
+  //                 dataset: {
+  //                     id: psgId,
+  //                     index: 0
+  //                 }
+  //             }
+  //         };
+  //         setTimeout(() => {
+  //         requestAnimationFrame(() => {
+  //             requestAnimationFrame(() => {
+  //                 this.applySelectionStyling(psgId, 'psgSelection', 'Product Subgroup');
+  //             });
+  //         });
+  //       }, 400)
+  //         setTimeout(() => {
+  //             this.handlePSGClick(fakeClickEvent);
+      
+  //         }, 800);
+  //     }
+        
+  //     } else {
+  //       this.productSubGroups = [];
+  //     }
+  //     this.applySelectionStyling(this.productGroupId, 'pgSelection', 'Product Group');
+
+
+  //     setTimeout(() => {
+  //       this.activeSection = "C"
+  //       this.styleSelectedRecords();
+  //       requestAnimationFrame(() => {
+  //         const anchor = this.template.querySelector('[data-scroll-anchor="section-c"]');
+  //         if (anchor) {
+  //             anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  //         }
+  //     });
+  //   }, 300)
+  //   this.handlePGClickCopy();
+  // }
+
+
+//   handlePSGClick(event) {
+//     this.productSubGroupId = event.currentTarget.dataset.id;
+//     const index = event.currentTarget.dataset.index;
+//     const selectedPSG = this.productSubGroups?.[index];
+    
+//     if (selectedPSG?.appointmentTypes?.length) {
+//       selectedPSG.appointmentTypes.forEach(appt => {
+//         this.appointmentTypes = selectedPSG.appointmentTypes;
+//       });
+//     } 
+
+
+//     setTimeout(() => {
+//       this.activeSection = "D"
+//       this.styleSelectedRecords();
+//       requestAnimationFrame(() => {
+//         const anchor = this.template.querySelector('[data-scroll-anchor="section-d"]');
+//         if (anchor) {
+//             anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+//         }
+//       });
+//   }, 300)
+//   this.handlePSGClickCopy();
+// }
 
 
   setSectionVisibillity(){
@@ -403,11 +587,7 @@ export default class SelectWorktype extends LightningElement {
 
 handleATClick = (event) => {
     const target = event.currentTarget.closest('[data-id]');
-    if (!target) {
-        return;
-    }
-
-    const recordId = target.dataset.id;
+    const recordId = event.currentTarget.dataset.id;
     this.appointmentTypeId = recordId;
 
     this.applySelectionStyling(recordId, 'atSelection', 'Appointment Type');
@@ -436,24 +616,29 @@ handleATClick = (event) => {
 
 
 applySelectionStyling(recordId, cardClass, label = 'Record') {
-  // Remove previous selection
-  const allCards = this.template.querySelectorAll(`.${cardClass}`);
+  // Remove 'selected' class from all matching cards
+  const allCards = this.template.querySelectorAll(`.${cardClass}.selected`);
   allCards.forEach(card => card.classList.remove('selected'));
 
-  // Find all wrappers that match the ID
-  const allWrappers = this.template.querySelectorAll(`[data-id="${recordId}"]`);
-  if (allWrappers.length === 0) {
-    console.warn(`No ${label} wrapper found for ID:`, recordId);
+  // Find the wrapper with data-id equal to recordId
+  const wrappers = this.template.querySelectorAll(`[data-id="${recordId}"]`);
+  if (wrappers.length === 0) {
+    console.warn(`[${label}] No wrapper found with data-id="${recordId}"`);
+    return;
   }
 
-  // Add styling to the matching card
-  for (const wrapper of allWrappers) {
-    const targetCard = wrapper.querySelector(`.${cardClass}`);
-    if (targetCard) {
-      targetCard.classList.add('selected');
-      console.log(`Applied styling to ${label}:`, recordId);
+  let found = false;
+  for (const wrapper of wrappers) {
+    const card = wrapper.querySelector(`.${cardClass}`);
+    if (card) {
+      card.classList.add('selected');
+      found = true;
       break;
     }
+  }
+
+  if (!found) {
+    console.warn(`[${label}] Wrapper found, but no .${cardClass} inside it.`);
   }
 }
 

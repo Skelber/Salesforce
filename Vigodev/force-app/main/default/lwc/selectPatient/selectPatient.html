@@ -9,42 +9,43 @@
             </div>
             <template if:true={checked}>
                 <div class="slds-align_absolute-center">
-                    <lightning-input class="input" type="Text" required="true" label={label.FirstName} value={contact.bookedForFirstName} onchange={handleForContactFirstNameChange}></lightning-input>
+                    <lightning-input class="input" type="Text" name="bookedForFirstName" required="true" label={label.FirstName} value={contact.bookedForFirstName} onchange={handleFieldChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
-                    <lightning-input class="input" type="Text" required="true" label={label.LastName} value={contact.bookedForLastName} onchange={handleForContactLastNameChange}></lightning-input>
+                    <lightning-input class="input" type="Text" name="bookedForLastName" required="true" label={label.LastName} value={contact.bookedForLastName} onchange={handleFieldChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
-                    <lightning-input class="input"  type="email" required="true" label={label.YourEmail} value={contact.bookedForEmail} onchange={handleForContactEmailChange}></lightning-input>
+                    <lightning-input class="input"  type="email" name="bookedForEmail" required="true" label={label.YourEmail} value={contact.bookedForEmail} onchange={handleFieldChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
-                    <lightning-input class="input"  type="text" required="true" label={label.YourPhone} value={contact.bookedForEmailphone} onchange={handleForContactPhoneChange}></lightning-input>
+                    <lightning-input class="input"  type="text" name="bookedForPhone" required="true" label={label.YourPhone} value={contact.bookedForPhone} onchange={handleFieldChange}></lightning-input>
                 </div>
                 <div class="slds-align_absolute-center">
-                    <lightning-combobox name="relation to user"
+                    <lightning-combobox 
                     label={label.RelationToUser}
                     class="slds-align_absolute-center input"
                     options={options}
+                    name="relationToPatient"
                     required="true"
                     value={contact.relationToPatient}
-                    onchange={handleRelationToPatient}>
+                    onchange={handleFieldChange}>
                 </lightning-combobox>
             </div>
             
         </template>
         <div class="slds-align_absolute-center">
-            <lightning-input class="input"  type="text" label={label.FirstNamePatient} value={contact.firstName} onchange={handleFirstNameChange} required="true"></lightning-input>
+            <lightning-input class="input" name="firstName"  type="text" label={label.FirstNamePatient} value={contact.firstName} onchange={handleFieldChange} required="true"></lightning-input>
         </div>
         <div class="slds-align_absolute-center">
-            <lightning-input class="input"  type="text" label={label.LastNamePatient} value={contact.lastName} onchange={handleLastNameChange} required="true"></lightning-input>
+            <lightning-input class="input" name="lastName"  type="text" label={label.LastNamePatient} value={contact.lastName} onchange={handleFieldChange} required="true"></lightning-input>
         </div>
         <template if:false={checked}>
             
             <div class="slds-align_absolute-center">
-                <lightning-input class="input"  type="email" label={label.PatientEmail} value={contact.email} onchange={handleEmailChange} required="true"></lightning-input>
+                <lightning-input class="input" name="email"  type="email" label={label.PatientEmail} value={contact.email} onchange={handleFieldChange} required="true"></lightning-input>
             </div>
             <div class="slds-align_absolute-center">
-                <lightning-input class="input"  type="text" label={label.Phone} value={contact.phone} onchange={handlePhoneChange} required="true"></lightning-input>
+                <lightning-input class="input" name="phone"  type="text" label={label.Phone} value={contact.phone} onchange={handleFieldChange} required="true"></lightning-input>
             </div>
         </template>
     
@@ -52,17 +53,18 @@
             <div class="slds-align_absolute-center">
                 <lightning-input 
                 class="inputCmp input" 
+                name="RSZ"
                 type="text" 
                 label={label.RSZ} 
                 value={contact.RSZ} 
-                onchange={handleRSZChange} 
+                onchange={handleFieldChange} 
                 required="true"
                 field-level-help={label.RSZHelpText}></lightning-input>
             </div>
         </template>
         <template if:true={hasNoRSZ}>
             <div class="slds-align_absolute-center">
-                <lightning-input class="input" type="date" label="Geboortedatum" required="true" date-style="medium" onchange={handleBirthdateChange} value={contact.birthdate}></lightning-input>
+                <lightning-input class="input" name="birthdate" type="date" label="Geboortedatum" required="true" date-style="medium" onchange={handleFieldChange} value={contact.birthdate}></lightning-input>
                 <!-- <lightning-formatted-date-time value={contact.birthdate} year="numeric" month="short" day="2-digit"></lightning-formatted-date-time> -->
             </div>
         </template>
@@ -70,7 +72,7 @@
         <div class="slds-align_absolute-center">
             <lightning-input type="checkbox"
                 label={label.NoRSZ}
-                onchange={handlehasRSZChange}
+                onchange={handleFieldChange}
                 checked={hasNoRSZ}
                 name="NoRSZ">
             </lightning-input>

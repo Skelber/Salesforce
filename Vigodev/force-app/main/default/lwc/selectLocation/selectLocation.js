@@ -27,14 +27,11 @@ export default class SelectLocation extends LightningElement {
                  result = [];
                }
              }
-     
-             // Store full selector data
+
              if (Array.isArray(result)) {
                this.locations = result;
-     
-               // this.locations = result.map(item => item.location);
+    
              }
-             console.log(JSON.stringify(this.locations))
           })
           .catch(error => {
               console.error('Error in getLocations:', error);
