@@ -19,6 +19,10 @@ import PostalCode from "@salesforce/label/c.pbzInputPostalCode"
 import Country from "@salesforce/label/c.pbzInputCountry"
 import PatientEmail from "@salesforce/label/c.pbzInputEmailPatient"
 import RSZHelpText from "@salesforce/label/c.pbzHelpTextNationalRegisterNumber"
+import Other from "@salesforce/label/c.pbzOtherPicklistLabel"
+import Parent from "@salesforce/label/c.pbzParentPicklistLabel"
+import Guardian from "@salesforce/label/c.pbzGuardianPicklistLabel"
+import FamilyMember from "@salesforce/label/c.pbzFamilyMemberPicklistlabel"
 
 export default class SelectPatient extends LightningElement {
     @track checked;
@@ -37,12 +41,13 @@ export default class SelectPatient extends LightningElement {
         postalCode: null,
         address: null,
         birthdate: null,
-        bookedForSelf: null,
+        bookedForSomeoneElse: null,
         bookedForFirstName : null,
         bookedForLastName: null,
         bookedForEmail:null,
         bookedForPhone:null,
         relationToPatient: null,
+        relationToPatientLabel: null
     }
     rszRequired = false
     contactInfoComplete = false
@@ -52,8 +57,8 @@ export default class SelectPatient extends LightningElement {
 
     connectedCallback() {
         const storedValue = localStorage.getItem('checked');
-        this.contact.bookedForSelf = storedValue === 'true'  ? true : false;
-        this.checked = this.contact.bookedForSelf;
+        this.contact.bookedForSomeoneElse = storedValue === 'true'  ? true : false;
+        this.checked = storedValue === 'true'  ? true : false;
         this.contact.bookedForFirstName = localStorage.getItem('bookedForFirstName') || '';
         this.contact.bookedForLastName = localStorage.getItem('bookedForLastName') || '';
         this.contact.bookedForEmail = localStorage.getItem('bookedForEmail') || '';
@@ -95,6 +100,10 @@ export default class SelectPatient extends LightningElement {
         Province: Province,
         PatientEmail: PatientEmail,
         RSZHelpText: RSZHelpText,
+        Other: Other,
+        Parent: Parent,
+        Guardian: Guardian,
+        FamilyMember: FamilyMember,
     }
 
     disconnectedCallback() {
@@ -115,21 +124,21 @@ export default class SelectPatient extends LightningElement {
 
     get options() {
         return [
-            { label: 'Ouder', value: 'Parent' },
-            { label: 'Familielid', value: 'Family member' },
-            { label: 'Voogd', value: 'Guardian' },
-            { label: 'Andere', value: 'Other' },
+            { label: this.label.Parent, value: 'Parent' },
+            { label: this.label.FamilyMember, value: 'Family member' },
+            { label: this.label.Guardian, value: 'Guardian' },
+            { label: this.label.Other, value: 'Other' },
         ];
     }
     
     handleToggle() {
-        if(this.contact.bookedForSelf) {
-            this.contact.bookedForSelf = false
+        if(this.contact.bookedForSomeoneElse) {
+            this.contact.bookedForSomeoneElse = false
         } else {
-            this.contact.bookedForSelf = true
+            this.contact.bookedForSomeoneElse = true
         }
-        const value = this.contact.bookedForSelf;   
-        this.checked = this.contact.bookedForSelf;
+        const value = this.contact.bookedForSomeoneElse;   
+        this.checked = this.contact.bookedForSomeoneElse;
         localStorage.setItem('checked', value);
         this.checkCompletion();
     }
@@ -140,7 +149,6 @@ export default class SelectPatient extends LightningElement {
         if(event.target.name == 'bookedForFirstName'){
             this.contact.bookedForFirstName = value;
             localStorage.setItem('bookedForFirstName', value);
-            console.log('handlechangefunction working')
         } else if( event.target.name == 'bookedForLastName') {
             this.contact.bookedForLastName = value;
             localStorage.setItem('bookedForLastName', value);
@@ -155,6 +163,8 @@ export default class SelectPatient extends LightningElement {
             localStorage.setItem('bookedForEmail', value);
         } else if(event.target.name =='relationToPatient'){
             this.contact.relationToPatient = value;
+            const selectedOption = this.options.find(opt => opt.value === value);
+            this.contact.relationToPatientLabel = selectedOption?.label || null;
             localStorage.setItem('relationToPatient', value);
         } else if(event.target.name == 'firstName'){
             this.contact.firstName = value;
@@ -193,98 +203,6 @@ export default class SelectPatient extends LightningElement {
         }
         this.checkCompletion();
     }
-
-    // handleForContactFirstNameChange(event){
-    //     const value = event.target.value;
-    //     this.contact.bookedForFirstName = value;
-    //     localStorage.setItem('bookedForFirstName', value);
-    //     this.checkCompletion()
-    // }
-
-    // handleForContactLastNameChange(event){
-    //     const value = event.target.value;
-    //     this.contact.bookedForLastName = value;
-    //     localStorage.setItem('bookedForLastName', value);
-    //     this.checkCompletion()
-    // }
-
-    // handleForContactEmailChange(event){
-    //     const value = event.target.value;
-    //     this.contact.bookedForEmail = value;
-    //     localStorage.setItem('bookedForEmail', value);
-    //     this.checkCompletion()
-    // }
-
-    // handleForContactPhoneChange(event){
-    //     const value = event.target.value;
-    //     this.contact.bookedForPhone = value; 
-    //     localStorage.setItem('bookedForPhone', value);
-    //     this.checkCompletion()
-    // }
-
-    // handleRelationToPatient(event) {
-    //     const value = event.target.value;
-    //     this.contact.relationToPatient = value;
-    //     localStorage.setItem('relationToPatient', value);
-    // }
-
-    // handleFirstNameChange(event) {
-    //     const value = event.target.value;
-    //     this.contact.firstName = value;
-    //     localStorage.setItem('firstName', value);
-    //     this.checkCompletion()
-    // }
-    // handleLastNameChange(event) {
-    //     const value = event.target.value;
-    //     this.contact.lastName = event.target.value;
-    //     localStorage.setItem('lastName', value);
-    //     this.checkCompletion()
-    // }
-    // handleEmailChange(event) {
-    //     const value = event.target.value;
-    //     this.contact.email = event.target.value;
-    //     localStorage.setItem('email', value);
-    //     this.checkCompletion()
-    // }
-    // handlePhoneChange(event) {
-    //     const value = event.target.value;
-    //     this.contact.phone = event.target.value;
-    //     localStorage.setItem('phone', value);
-    //     this.checkCompletion()
-    // }
-
-    // handlehasRSZChange(event) {
-    //     this.hasNoRSZ = event.target.checked;
-    //     this.contact.hasNoRSZ = this.hasNoRSZ;
-    //     localStorage.setItem('hasRSZ', this.hasNoRSZ);
-    //     this.checkCompletion();
-    // }
-
-    // handleBirthdateChange(event){
-    //     const value = event.target.value;
-    //     this.contact.birthdate = value;
-    //     localStorage.setItem('birthdate', value);
-    //     this.checkCompletion();
-    // }
-    
-
-    // handleRSZChange(event) {
-    //     var inputCmp = this.template.querySelector('.inputCmp')
-    //     const value = event.target.value;
-    //     localStorage.setItem('contactRSZ', value);
-    //     if (this.isValidRijksregisternummer(value)) {
-    //         this.contact.RSZ = value;
-    //         inputCmp.setCustomValidity('');
-    //         inputCmp.reportValidity();
-    //         this.setBirthDate(value);
-            
-    //     } else {
-    //         inputCmp.setCustomValidity('Incorrecte rijksregister nummer');
-    //         inputCmp.reportValidity();
-            
-    //     }
-    //     this.checkCompletion()
-    // }
     
     isValidRijksregisternummer(value) {
         const numericValue = value.replace(/\D/g, '');
@@ -315,14 +233,14 @@ export default class SelectPatient extends LightningElement {
             this.contact.firstName &&
             this.contact.lastName &&
             (
-                (this.contact.bookedForSelf && this.contact.bookedForEmail) ||
-                (!this.contact.bookedForSelf && this.contact.email)
+                (this.contact.bookedForSomeoneElse && this.contact.bookedForEmail) ||
+                (!this.contact.bookedForSomeoneElse && this.contact.email)
             ) &&
             // this.contact.email &&
             // this.contact.phone &&
             (
-                (this.contact.bookedForSelf && this.contact.bookedForPhone) ||
-                (!this.contact.bookedForSelf && this.contact.phone)
+                (this.contact.bookedForSomeoneElse && this.contact.bookedForPhone) ||
+                (!this.contact.bookedForSomeoneElse && this.contact.phone)
             ) &&
             (
               (this.contact.RSZ && !this.hasNoRSZ) ||

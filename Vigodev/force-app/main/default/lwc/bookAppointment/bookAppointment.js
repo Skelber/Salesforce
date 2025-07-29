@@ -13,6 +13,8 @@ import { CurrentPageReference } from 'lightning/navigation';
 export default class BookAppointment extends LightningElement {
 
     @api currentStep;
+    accountId;
+    serviceAppointmentId;
     showDefaultProgress = false;
     showNextButton = false;
     showScreenOne;
@@ -51,8 +53,8 @@ export default class BookAppointment extends LightningElement {
         resourceId: '',
         workTypeId: '',
         description: '',
-        rrNr: ''
-
+        rrNr: '',
+        email: '',
     }
 
     label = {
@@ -66,14 +68,31 @@ export default class BookAppointment extends LightningElement {
         message: ''
     }
 
-    @wire(CurrentPageReference)
-    currentPageReference;
-
     connectedCallback() {
-        this.currentStep = "1"
-        this.showScreenOne = true;
+        // this.currentStep = "1"
         this.showDefaultProgress = true;
         this.showNextButton = true;
+        
+        if (!this.currentStep) {
+            this.currentStep = "1";
+            this.showScreenOne = true;
+            this.handleScreenChange();
+        }
+    }
+
+
+    @wire(CurrentPageReference)
+    getPageRef(pageRef) {
+        if (pageRef?.state?.c__accountId && pageRef?.state?.c__serviceAppointmentId) {
+            this.accountId = pageRef.state.c__accountId;
+            this.serviceAppointmentId = pageRef.state.c__serviceAppointmentId;
+
+            setTimeout(() => {
+                this.currentStep = "4";
+                this.showScreenFour = true;
+                this.handleScreenChange(); 
+            }, 500);
+        }
     }
 
     receiveScreenChange(event) {
@@ -132,6 +151,7 @@ export default class BookAppointment extends LightningElement {
     receiveContact(event) {
         this.receivedContact = event.detail;
         this.serviceAppointment.RSZ = event.detail.RSZ
+        this.serviceAppointment.email = event.detail.bookedForSomeoneElse ? event.detail.bookedForEmail : event.detail.email;
     }
 
     validateScreenOne(event) {
@@ -148,15 +168,15 @@ export default class BookAppointment extends LightningElement {
             appointmentTypeId
         } = event.detail;
     
+
         this.receivedWorktype = workType;
         this.showDefaultProgress = this.receivedWorktype.Bookable ? true : false;
         this.selectedBusinessUnitId = businessUnitId;
         this.selectedProductGroupId = productGroupId;
         this.selectedProductSubGroupId = productSubGroupId;
         this.selectedAppointmentTypeId = appointmentTypeId;
-        this.serviceAppointment.workTypeId = event.detail.workTypeId;
-        this.serviceAppointment.duration = this.receivedWorktype.EstimatedDuration;
-    
+        this.serviceAppointment.workTypeId = this.receivedWorktype.RecordId;
+        this.serviceAppointment.duration = this.receivedWorktype.EstimatedDuration;    
         this.enableNextButton();
     
         setTimeout(() => {
@@ -191,47 +211,16 @@ export default class BookAppointment extends LightningElement {
         this.receivedAdditionalInfo.comment = event.detail.comment;
         this.receivedAdditionalInfo.files = event.detail.files;
         this.serviceAppointment.description = event.detail.comment;
-      
-        // console.log('Received files:', this.receivedAdditionalInfo.files.map(f => f.name).join(', '));
       }
 
      handleSubmit() {
             this.showSpinner = true;
             this.disableButtons = true;
-            // saveLead({
-            //     firstName: this.receivedContact.firstName,
-            //     lastName: this.receivedContact.lastName,
-            //     email: this.receivedContact.email,
-            //     phone: this.receivedContact.phone,
-            //     rrNr: this.receivedContact.RSZ,
-            //     noRrNr : this.receivedContact.hasNoRSZ,
-            //     endUserBirthdate: this.receivedContact.birthdate,
-            //     street: this.receivedContact.street,
-            //     postalcode: this.receivedContact.postalCode,
-            //     city: this.receivedContact.city,
-            //     // country: this.receivedContact.country,
-            //     country: 'Belgium',
-            //     onBehalveOf: this.receivedContact.bookedForSelf,
-            //     relationship: this.receivedContact.relationToPatient,
-            //     yourFirstName:this.receivedContact.bookedForFirstName,
-            //     yourLastName:this.receivedContact.bookedForLastName,
-            //     yourEmail: 'test123@test.be',
-            //     yourPhone:'041234567'
 
             saveLeadObject({
                 lead: JSON.stringify(this.receivedContact)
             }).then(result => {
-                console.log('savelead response ' + result)
                 this.serviceAppointment.leadId = result
-                // saveServiceAppointment({
-                //     leadid: result,
-                //     locationId: this.receivedLocation.recordId,
-                //     startTime: new Date(this.receivedSlot.slot),
-                //     duration: this.receivedWorktype.EstimatedDuration,
-                //     resourceId: this.receivedSlot.resourceId,
-                //     workTypeId: this.receivedWorktype.RecordId,
-                //     description: this.receivedAdditionalInfo.comment,
-                //     rrNr: this.receivedContact.RSZ
                 saveServiceAppointmentObject({
                     serviceappointment: JSON.stringify(this.serviceAppointment)
                 }).then(SAResult => {
@@ -241,23 +230,19 @@ export default class BookAppointment extends LightningElement {
                           filename: file.name,
                           recordId: SAResult
                         })
-                        .then(() => console.log(`Uploaded ${file.name}`))
-                        .catch(error => console.error('file error' + JSON.stringify(error)));
+                        .then((result) => {})
                       });
                     this.showSpinner = false;
-                    console.log('savSA response ' + SAResult)
                     this.response.type = 'success';
                     this.response.message = 'Request succesfully created';
                     this.showModal = true;
                 }).catch(error => {
                     this.showSpinner = false;
-                    console.log('SAerror' + JSON.stringify(error))
                     this.response.type = 'error';
                     this.response.message = 'Something went wrong, please try again';
                     this.showModal = true;
                 })
             }).catch(error => {
-                console.log('error' + JSON.stringify(error))
                 this.response.type = 'error';
                 this.response.message = 'Something went wrong, please try again';
                 this.showModal = true;

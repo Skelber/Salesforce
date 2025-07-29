@@ -29,19 +29,19 @@ export default class AdditionalInfo extends LightningElement {
         };
     }
 
+    connectedCallback() {
+      const textarea = this.template.querySelector('.additionalInfoTextarea');
+      if (textarea) {
+        textarea.innerHTML = this.comment
+      }
+    }
+
    @track _files = [];
 
     handleCommentChange(event) {
         this.comment = event.target.value;
         this.passToParent();
     }
-
-    // handleFileChange(event) {
-    //     const newFiles = event.detail.files || [];
-    //     this._files = [...this._files, ...newFiles];
-    //     this.fileName = this._files.map(file => file.name).join(', ');
-    //     this.passToParent();
-    // }
 
     handleFileChange(event) {
         const newFiles = Array.from(event.target.files);

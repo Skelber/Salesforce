@@ -68,7 +68,7 @@ export default class SelectServiceResource extends LightningElement {
     @track notFilteredTimeslotMap = [];
     @track paginatedTimeslotMap = [];
     slotsPerPage = 4;
-    @track selectedSlot = {};
+    @api selectedSlot = {};
 
     paginationState = {};
 
@@ -120,6 +120,20 @@ export default class SelectServiceResource extends LightningElement {
         this.task.worktypeName = this.worktype.WorkTypeName;
         this.task.serviceTerritoryName = this.location.recordName;
         this.task.rrNr = this.contact.RSZ
+        window.requestAnimationFrame(() => {
+            this.restoreSelectedSlotStyling();
+        });
+    }
+
+    restoreSelectedSlotStyling() {
+        if (this.selectedSlot?.slot && this.selectedSlot?.resourceId) {
+            const selector = `[data-slot="${this.selectedSlot.slot}"][data-resourceid="${this.selectedSlot.resourceId}"]`;
+            const slotDiv = this.template.querySelector(selector);
+    
+            if (slotDiv) {
+                slotDiv.classList.add('selected');
+            } 
+        } 
     }
 
     setLang() {
@@ -182,7 +196,7 @@ export default class SelectServiceResource extends LightningElement {
     handleTimechange(event) {
         this.timeValue = event.currentTarget.dataset.value;
         this.filterSlotsByTime(this.timeValue);
-        this.task.dagdeel = this.timeslotMap.toString()
+        this.task.dagdeel = event.currentTarget.dataset.value;
     }
 
     filterSlotsByTime(timeValue) {
@@ -313,7 +327,6 @@ export default class SelectServiceResource extends LightningElement {
                 };
             });
     
-
             const slotFillers = Array.from(
                 { length: Math.max(0, this.slotsPerPage - paginatedSlots.length) },
                 (_, index) => ({ key: `filler-${index}` })
@@ -399,56 +412,24 @@ export default class SelectServiceResource extends LightningElement {
     handleSubmit() {
         this.disableButton = true;
         this.showSpinner = true;
-        // saveLead({
-        //     firstName: this.contact.firstName,
-        //     lastName: this.contact.lastName,
-        //     email: this.contact.email,
-        //     phone: this.contact.phone,
-        //     rrNr: this.contact.RSZ,
-        //     noRrNr : this.contact.hasNoRSZ,
-        //     endUserBirthdate: this.contact.birthdate,
-        //     street: this.contact.street,
-        //     postalcode: this.contact.postalCode,
-        //     city: this.contact.city,
-        //     // country: this.contact.country,
-        //     country: 'Belgium',
-        //     onBehalveOf: this.contact.bookedForSelf,
-        //     relationship: this.contact.relationToPatient,
-        //     yourFirstName:this.contact.bookedForFirstName,
-        //     yourLastName:this.contact.bookedForLastName,
-        //     yourEmail: this.contact.bookedForEmail,
-        //     yourPhone:this.contact.bookedForPhone
         saveLeadObject({
             lead: JSON.stringify(this.contact)
         }).then(result => {
-            console.log('savelead response ' + result)
             this.task.leadid = result
-            // saveTask({
-            //     leadid: result,
-            //     worktypeName: this.worktype.WorkTypeName,
-            //     dagdeel: this.timeslotMap.toString(),
-            //     dagen: Array.from(this.selectedDays).join(', '),
-            //     voorschrift: this.prescription,
-            //     opmerkingen: this.taskComment,
-            //     serviceTerritoryName: this.location.recordName,
-            //     rrNr: this.contact.RSZ
             saveTaskObject({
                 task: JSON.stringify(this.task)
             }).then(taskResult => {
                 this.showSpinner = false;
-                console.log('savetask response ' + taskResult)
                 this.response.type = 'success';
                 this.response.message = 'Request succesfully created';
                 this.showModal = true;
             }).catch(error => {
                 this.showSpinner = false;
-                console.log('Taskerror' + JSON.stringify(error))
                 this.response.type = 'error';
                 this.response.message = 'Something went wrong, please try again';
                 this.showModal = true;
             })
         }).catch(error => {
-            console.log('error' + JSON.stringify(error))
             this.response.type = 'error';
             this.response.message = 'Something went wrong, please try again';
             this.showModal = true;

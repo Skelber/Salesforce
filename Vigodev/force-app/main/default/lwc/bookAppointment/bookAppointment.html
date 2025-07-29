@@ -22,6 +22,7 @@
             <template if:true={showScreenThree}>
                 <c-select-location
                 worktype={receivedWorktype}
+                selected-location={receivedLocation}
                 onlocationdetails={receiveLocation}></c-select-location>
             </template>
             <template if:true={showScreenFour}>
@@ -29,6 +30,7 @@
                 contact={receivedContact}
                 worktype={receivedWorktype}
                 location={receivedLocation}
+                selected-slot={receivedSlot}
                 onslotdetails={receiveSlotDetails}
                 ></c-select-service-resource>  
             </template>

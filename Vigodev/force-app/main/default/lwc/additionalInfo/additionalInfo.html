@@ -6,9 +6,10 @@
             <h2 class="slds-m-vertical_medium header slds-align_absolute-center">{label.ScreenFiveTitle}</h2>
         </div>
 
-        <div class="slds-grid slds-wrap">
-            <div class="slds-col slds-grid_vertical slds-size_1-of-1 slds-align_absolute-center slds-p-around_medium">
-                <p>{label.Prescription}</p>
+        <div class="slds-grid slds-wrap slds-align_absolute-center">
+            <div class="slds-col slds-grid_vertical slds-size_1-of-1 container slds-p-around_medium">
+                    <p>{label.Prescription}</p>
+            
                 <div class="card slds-p-around_medium">
                 <input type="file" class="fileInput"  multiple onchange={handleFileChange} />
 
@@ -33,16 +34,17 @@
                 </div>
                 </template>
             </div>
+            <div class="slds-col slds-size_1-of-1 slds-m-top_medium">
+                <p>
+                    {label.AdditionalInfoText}
+                </p>
+                <textarea
+                    class="input additionalInfoTextarea"
+                    onchange={handleCommentChange}>
+                </textarea>
+            </div>
             </div>
 
-            <div class="slds-col slds-size_1-of-1 slds-align_absolute-center slds-p-around_medium">
-                <lightning-textarea
-                    class="input"
-                    value={comment}
-                    label={label.AdditionalInfoText}
-                    onchange={handleCommentChange}>
-                </lightning-textarea>
-            </div>
         </div>
     </div>
 </template>

@@ -10,7 +10,7 @@ export default class SelectLocation extends LightningElement {
    @api worktype = {}
    @track locations = [];
    locationId;
-   selectedLocation = {}
+   @api selectedLocation = {}
 
    label = {
     ScreenThreeTitle,
@@ -30,13 +30,27 @@ export default class SelectLocation extends LightningElement {
 
              if (Array.isArray(result)) {
                this.locations = result;
-    
+               window.requestAnimationFrame(() => {
+                this.restoreSelectedStyling();
+            });
              }
           })
           .catch(error => {
-              console.error('Error in getLocations:', error);
           });
    }
+
+   restoreSelectedStyling() {
+    if (this.selectedLocation?.recordId) {
+        const wrapper = this.template.querySelector(`[data-id="${this.selectedLocation.recordId}"]`);
+        if (wrapper) {
+            const innerDiv = wrapper.querySelector('.locationSelection');
+            if (innerDiv) {
+                innerDiv.classList.add('selected');
+                this.selectedLocationRestored = true;
+            } 
+        } 
+    } 
+}
 
    handleLocationClick(event) {
       this.locationId = event.currentTarget.dataset.id;
@@ -44,7 +58,6 @@ export default class SelectLocation extends LightningElement {
          location => location.recordId === this.locationId
       );
       this.selectedLocation = selectedLocation
-      console.log(JSON.stringify(selectedLocation))
       this.passToParent();
 
       const previouslySelected = this.template.querySelector('.locationSelection.selected');

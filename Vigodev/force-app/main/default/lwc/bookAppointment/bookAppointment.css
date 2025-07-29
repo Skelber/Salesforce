@@ -7,6 +7,11 @@ lightning-card {
     border-radius: 15px;
 }
 
+/* .container {
+    background-color: hsl(0, 0, 80);
+    background-color: rgba(255, 255, 255, 0.8);
+} */
+
 lightning-button {
     box-shadow: 0px 2px 5px grey;
     border-radius: 15px;
@@ -28,10 +33,11 @@ lightning-button {
         bottom:0;
         z-index: 1;
         padding: 10px;
+        height: 4em;
         right: 0;
         border-top: 1px solid lightgray;
         /* background-color: #fff; */
-        background-color: rgba(255, 255, 255, 0.6);
+        background-color: rgba(255, 255, 255, 0.4);
         backdrop-filter: blur(5px);
         width: 100%;
     };

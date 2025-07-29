@@ -112,11 +112,11 @@
                                                 <div class="slds-align_absolute-center navButton">
 
                                                     <template if:false={item.disablePrev}>
-                                                        <lightning-button variant="base" label=" < "  disabled={item.disablePrev}></lightning-button>
+                                                        <lightning-button variant="base" label="&nbsp;<&nbsp;"  disabled={item.disablePrev}></lightning-button>
                                                         <!-- <button> &#60; </button> -->
                                                     </template>
                                                     <template if:true={item.disablePrev}>
-                                                        <lightning-button variant="base" label=" < "  disabled={item.disablePrev}></lightning-button>
+                                                        <lightning-button variant="base" label="&nbsp;<&nbsp;"  disabled={item.disablePrev}></lightning-button>
                                                     </template>
                                                 </div>
                                             </div>
@@ -147,11 +147,11 @@
                                             <div class="slds-align_absolute-center navButton">
 
                                                 <template if:false={item.disableNext}>
-                                                    <lightning-button variant="base" label=" > "  disabled={item.disableNext}></lightning-button>
+                                                    <lightning-button variant="base" label="&nbsp;>&nbsp;"  disabled={item.disableNext}></lightning-button>
                                                     <!-- <button> &gt; </button> -->
                                                 </template>
                                                 <template if:true={item.disableNext}>
-                                                    <lightning-button variant="base" label=" > "  disabled={item.disableNext}></lightning-button>
+                                                    <lightning-button variant="base" label="&nbsp;>&nbsp;"  disabled={item.disableNext}></lightning-button>
                                                 </template>
                                             </div>
                                         </div>
@@ -163,11 +163,11 @@
                         
                     </template>
 
-                    <template if:true={showSpinner}>
+                    <!-- <template if:true={showSpinner}>
                         <div>
                             <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
                            </div>
-                       </template> 
+                       </template>  -->
 
                     </div>
                 </template>

@@ -60,7 +60,6 @@ export default class SelectWorktype extends LightningElement {
         this.showAppointmentTypes = true;
         this.setLang();
         if (!this.businessUnitId) return;
-        console.log('appointment id ' + this.appointmentTypeId)
 
     if (this.lastStyledBUId === this.businessUnitId) return;
 
@@ -75,10 +74,8 @@ export default class SelectWorktype extends LightningElement {
           innerDiv.classList.add('selected');
           this.lastStyledBUId = this.businessUnitId;
         } else {
-          console.warn('Could not find .buSelection inside wrapper for BU ID:', this.businessUnitId);
         }
       } else {
-        console.warn('No wrapper found for BU ID:', this.businessUnitId);
       }
     });
         
@@ -125,6 +122,7 @@ export default class SelectWorktype extends LightningElement {
             }
           }
         }
+        
         if (this.appointmentTypeId) {
           this.template.querySelectorAll('.atSelection.selected')
             .forEach(el => el.classList.remove('selected'));
@@ -149,50 +147,6 @@ export default class SelectWorktype extends LightningElement {
         this.displayDutch = true
       }
     }
-    // getWorkTypology() {
-    //   getWorkTypologies()
-    //     .then(result => {
-    //       if (typeof result === 'string') {
-    //         try {
-    //           result = JSON.parse(result);
-    //         } catch (e) {
-    //           result = [];
-    //         }
-    //       }
-    
-    //       if (Array.isArray(result)) {
-    //         this.workTypes = result;
-    //         this.businessUnits = result.map(item => {
-    //           const bu = { ...item.businessUnit };
-    
-    //           if (bu?.Image_Dev_Name) {
-    //             bu.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${bu.Image_Dev_Name}`;
-    //           }
-    
-    //           return bu;
-    //         });
-    
-    //       } else if (result.workTypeSelector) {
-    //         this.workTypes = Array.from(result.workTypeSelector);
-    //         this.businessUnits = this.workTypes.map(item => {
-    //           const bu = { ...item.businessUnit };
-    
-    //           if (bu?.Image_Dev_Name) {
-    //             bu.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${bu.Image_Dev_Name}`;
-    //           }
-    
-    //           return bu;
-    //         });
-    
-    //       } else {
-    //         this.workTypes = [];
-    //         this.businessUnits = [];
-    //       }
-    //     })
-    //     .catch(error => {
-    //       console.error('Error in getWorkTypology:', error);
-    //     });
-    // }
 
     callForBusinessUnit() {
       getBusinessUnit()
@@ -213,12 +167,9 @@ export default class SelectWorktype extends LightningElement {
               Has_Image_Link: hasImage
             };
           });
-    
-          console.log('businessunits: ' + JSON.stringify(this.businessUnits));
           this.fullWorktypeList = result;
         })
         .catch(error => {
-          console.error('Error loading business units:', error);
         });
     }
 
@@ -406,170 +357,6 @@ export default class SelectWorktype extends LightningElement {
         this.showAppointmentTypes = true
       }
     }
-    
-
-    // handleBUClick(event) {
-    //   this.businessUnitId = event.currentTarget.dataset.id;
-    //   const recordId = event.currentTarget.dataset.id
-    //   const selected = this.workTypes.find(
-    //     wt => wt.businessUnit?.recordId === recordId
-    //   );
-    //   console.log('selected BU: ' + JSON.stringify(selected))
-    //   if (selected) {
-    //     this.productGroups = selected.productGroups || [];
-    //     this.productGroups = (selected.productGroups || []).map(pg => {
-    //       let pgImage = ''
-    //       const pgCopy = { ...pg };
-        
-    //       if (pgCopy.productGroup.Image_Dev_Name != null) {
-    //         pgCopy.productGroup.pgImage = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${pgCopy.productGroup.Image_Dev_Name}`;
-    //         pgCopy.Has_Image_Link = true;
-    //       } else {
-    //         pgCopy.Has_Image_Link = false;
-    //       }
-        
-    //       return pgCopy;
-    //     });
-    //     this.productSubGroups = [];
-    //     this.appointmentTypeId = [];
-
-    //     if (this.productGroups.length === 1) {
-    //       const singlePG = this.productGroups[0];
-    //       const pgId = singlePG.productGroup?.recordId;
-      
-    //       const fakeClickEvent = {
-    //           currentTarget: {
-    //               dataset: {
-    //                   id: pgId,
-    //                   index: 0
-    //               }
-    //           }
-    //       };
-    //       setTimeout(() => {
-    //       requestAnimationFrame(() => {
-    //           requestAnimationFrame(() => {
-    //               this.applySelectionStyling(pgId, 'pgSelection', 'Product Group');
-    //           });
-    //       });
-    //     }, 400)
-    //       setTimeout(() => {
-    //           this.handlePGClick(fakeClickEvent);
-      
-    //       }, 800);
-    //   }
-        
-    //   } else {
-    //     this.productGroups = [];
-    //   }
-    //   this.productSubGroups = [];
-
-    //   this.applySelectionStyling(recordId, 'buSelection', 'Business Unit');
-
-    //    setTimeout(() => {
-    //     this.activeSection = "B"
-    //     this.styleSelectedRecords()
-    //     requestAnimationFrame(() => {
-    //       const anchor = this.template.querySelector('[data-scroll-anchor="section-b"]');
-    //       if (anchor) {
-    //         anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    //       }
-    //     });
-    //   }, 300)
-
-    //   this.handleBUclickCopy()
-    // }
-
-  //   handlePGClick(event) {
-  //     this.productGroupId = event.currentTarget.dataset.id;
-  //     const index = event.currentTarget.dataset.index;
-  //     const selectedPG = this.productGroups?.[index];
-      
-  //     if (selectedPG?.productSubGroups?.length) {
-  //       this.productSubGroups = selectedPG.productSubGroups;
-  //       this.productSubGroups = (selectedPG.productSubGroups || []).map(psg => {
-  //         const psgCopy = { ...psg };
-        
-  //         if (psgCopy.Image_Dev_Name) {
-  //           psgCopy.Image_Link = `${this.baseUrl}${this.basePath}/sfsites/c/resource/${psgCopy.Image_Dev_Name}`;
-  //           psgCopy.Has_Image_Link = true;
-  //         } else {
-  //           psgCopy.Has_Image_Link = false;
-  //         }
-  //         return psgCopy;
-  //       });
-       
-  //       this.appointmentTypes = [];
-
-
-  //       if (this.productSubGroups.length === 1) {
-  //         const singlePSG = this.productSubGroups[0];
-  //         const psgId = singlePSG.productSubGroup?.recordId;
-      
-  //         const fakeClickEvent = {
-  //             currentTarget: {
-  //                 dataset: {
-  //                     id: psgId,
-  //                     index: 0
-  //                 }
-  //             }
-  //         };
-  //         setTimeout(() => {
-  //         requestAnimationFrame(() => {
-  //             requestAnimationFrame(() => {
-  //                 this.applySelectionStyling(psgId, 'psgSelection', 'Product Subgroup');
-  //             });
-  //         });
-  //       }, 400)
-  //         setTimeout(() => {
-  //             this.handlePSGClick(fakeClickEvent);
-      
-  //         }, 800);
-  //     }
-        
-  //     } else {
-  //       this.productSubGroups = [];
-  //     }
-  //     this.applySelectionStyling(this.productGroupId, 'pgSelection', 'Product Group');
-
-
-  //     setTimeout(() => {
-  //       this.activeSection = "C"
-  //       this.styleSelectedRecords();
-  //       requestAnimationFrame(() => {
-  //         const anchor = this.template.querySelector('[data-scroll-anchor="section-c"]');
-  //         if (anchor) {
-  //             anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  //         }
-  //     });
-  //   }, 300)
-  //   this.handlePGClickCopy();
-  // }
-
-
-//   handlePSGClick(event) {
-//     this.productSubGroupId = event.currentTarget.dataset.id;
-//     const index = event.currentTarget.dataset.index;
-//     const selectedPSG = this.productSubGroups?.[index];
-    
-//     if (selectedPSG?.appointmentTypes?.length) {
-//       selectedPSG.appointmentTypes.forEach(appt => {
-//         this.appointmentTypes = selectedPSG.appointmentTypes;
-//       });
-//     } 
-
-
-//     setTimeout(() => {
-//       this.activeSection = "D"
-//       this.styleSelectedRecords();
-//       requestAnimationFrame(() => {
-//         const anchor = this.template.querySelector('[data-scroll-anchor="section-d"]');
-//         if (anchor) {
-//             anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-//         }
-//       });
-//   }, 300)
-//   this.handlePSGClickCopy();
-// }
 
 
   setSectionVisibillity(){
@@ -610,7 +397,6 @@ handleATClick = (event) => {
         this.passToParent();
     })
     .catch(error => {
-        console.error('Error in getWorkType:', error);
     });
 }
 
@@ -623,7 +409,6 @@ applySelectionStyling(recordId, cardClass, label = 'Record') {
   // Find the wrapper with data-id equal to recordId
   const wrappers = this.template.querySelectorAll(`[data-id="${recordId}"]`);
   if (wrappers.length === 0) {
-    console.warn(`[${label}] No wrapper found with data-id="${recordId}"`);
     return;
   }
 
@@ -635,10 +420,6 @@ applySelectionStyling(recordId, cardClass, label = 'Record') {
       found = true;
       break;
     }
-  }
-
-  if (!found) {
-    console.warn(`[${label}] Wrapper found, but no .${cardClass} inside it.`);
   }
 }
 

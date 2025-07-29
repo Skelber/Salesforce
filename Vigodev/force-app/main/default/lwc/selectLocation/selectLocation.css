@@ -6,19 +6,14 @@
 
 .locationSelection {
     box-shadow: 0px 2px 5px grey;
+    background-color: hsl(0, 0%, 98%);
     border-radius: 15px;
     transition: 400ms;
     cursor: pointer;
 }
 
-.locationSelection:hover{
+.locationSelection:hover, .selected{
     background-color: #C1E6EF;
-    box-shadow: 10px 10px 5px 3px lightgrey;
-}
-
-.selected {
-    background-color: #C1E6EF;
-    box-shadow: 10px 10px 5px 3px lightgrey;
 }
 
 h3 {

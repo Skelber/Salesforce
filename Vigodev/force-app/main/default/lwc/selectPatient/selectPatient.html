@@ -5,7 +5,7 @@
         <div class="container slds-p-around_medium">
 
             <div class="slds-align_absolute-center">
-                <lightning-input class="input" type="toggle" label={label.BookedForSomeoneElse} checked={contact.bookedForSelf} onchange={handleToggle}></lightning-input>
+                <lightning-input class="input" type="toggle" label={label.BookedForSomeoneElse} checked={checked} onchange={handleToggle}></lightning-input>
             </div>
             <template if:true={checked}>
                 <div class="slds-align_absolute-center">

@@ -4,13 +4,28 @@
     border-radius: 15px;
 }
 lightning-textarea, lightning-file-upload, .card {
-    width: 50%;
+    width: 100%;
 }
 
-.card {
+.container {
+    width: 50%;
+    /* border-radius: 15px;
+    box-shadow: 0px 1px 4px grey;; */
+}
+
+
+.card, textarea {
     box-shadow: 0px 2px 5px grey;
     border-radius: 15px;
+    border: none;
     margin: 10px 0px;
+    width: 100%;
+    min-height: 5em;
+    background-color: hsl(0, 0%, 98%);
+}
+
+textarea {
+    padding: 15px;
 }
 
 .fileInput {
@@ -31,12 +46,19 @@ lightning-textarea, lightning-file-upload, .card {
     --slds-c-input-shadow: 0px 1px 4px grey;
 }
 
+.slds-textarea {
+    --slds-c-textarea-color-background: hsl(0, 0%, 98%);
+}
+
 lightning-icon {
     cursor: pointer;
 }
 
 @media only screen and (max-width: 600px) {
-    lightning-textarea, lightning-file-upload, .card {
+    /* lightning-textarea, lightning-file-upload, .card {
         width: 100%;
-    }
+    } */
+     .container {
+        width: 100%;
+     }
   }
