@@ -6,9 +6,7 @@ import notFoundIcon from "@salesforce/resourceUrl/notFound2";
 import clock from "@salesforce/resourceUrl/clock";
 import calendar from "@salesforce/resourceUrl/calendar";
 import getTimeSlots from '@salesforce/apex/WorktypeSelection.getPossibleTimeslot';
-import saveLead from '@salesforce/apex/WorktypeSelection.saveLead';
 import saveLeadObject from '@salesforce/apex/WorktypeSelection.saveLeadObject';
-import saveTask from '@salesforce/apex/WorktypeSelection.saveTask';
 import saveTaskObject from '@salesforce/apex/WorktypeSelection.saveTaskObject';
 import TaskModal from 'c/taskModal';
 import ScreenFourTitle from "@salesforce/label/c.pbzScreenFourTitle"
@@ -106,9 +104,17 @@ export default class SelectServiceResource extends LightningElement {
     connectedCallback() {
         this.amButtonActive = true;
         this.pmButtonActive = true;
-        const d = new Date();
-        d.setDate(d.getDate() + 1);
-        this.selectedDate = d.toISOString()
+        if(this.selectedSlot) {
+            console.log(JSON.stringify(this.selectedSlot))
+            const d = new Date(this.selectedSlot.slot);
+            this.selectedDate = d.toISOString().split('T')[0];
+            this.showSlots = true
+        } else {
+            const d = new Date();
+            d.setDate(d.getDate() + 1);
+            this.selectedDate = d.toISOString()
+            this.showSlots = true
+        }
         if(this.selectedDate != null) {
             this.callForData()
             this.showSlots = true
@@ -125,14 +131,21 @@ export default class SelectServiceResource extends LightningElement {
         });
     }
 
+    // renderedCallback() {
+    //     if (!this.selectedSlotRestored) {
+    //         this.restoreSelectedSlotStyling();
+    //     }
+    // }
+
     restoreSelectedSlotStyling() {
-        if (this.selectedSlot?.slot && this.selectedSlot?.resourceId) {
-            const selector = `[data-slot="${this.selectedSlot.slot}"][data-resourceid="${this.selectedSlot.resourceId}"]`;
-            const slotDiv = this.template.querySelector(selector);
+        if (!this.selectedSlot?.slot || !this.selectedSlot?.resourceId) return;
     
-            if (slotDiv) {
-                slotDiv.classList.add('selected');
-            } 
+        const selector = `[data-slot="${this.selectedSlot.slot}"][data-resourceid="${this.selectedSlot.resourceId}"]`;
+        console.log('Looking for selector:', selector);
+    
+        const slotDiv = this.template.querySelector(selector);
+        if (slotDiv) {
+            slotDiv.classList.add('selected');
         } 
     }
 
@@ -249,7 +262,6 @@ export default class SelectServiceResource extends LightningElement {
 
     callForData() {
         this.showSpinner = true;
-    
         getTimeSlots({
             selectedDate: this.selectedDate,
             locatonId: this.location.recordId,
@@ -274,6 +286,8 @@ export default class SelectServiceResource extends LightningElement {
                 this.notFilteredTimeslotMap = result;
                 this.filterSlotsByTime(this.timeValue);
                 this.initializePagination();
+                console.log(JSON.stringify(this.notFilteredTimeslotMap))
+                this.restoreSelectedSlotStyling()
             }
     
             this.showSpinner = false;
@@ -281,6 +295,7 @@ export default class SelectServiceResource extends LightningElement {
         .catch(error => {
             this.showSpinner = false;
         });
+
     }
 
     handleNextDate(){

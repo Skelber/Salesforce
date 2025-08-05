@@ -27,8 +27,10 @@ export default class PatientOverview extends LightningElement {
     @api location = {}
     @api timeslot = {}
     @api showFile = false
+    @api notBookedViaWebsite = false;
     previewUrl;
-    firstName;
+    name;
+    bookedForName;
     lastName;
     email;
     phone;
@@ -57,10 +59,17 @@ export default class PatientOverview extends LightningElement {
         } else {
             this.showFile = false
         }
-        this.firstName = this.contact.bookedForSomeoneElse ? this.contact.bookedForFirstName : this.contact.firstName
-        this.lastName = this.contact.bookedForSomeoneElse ? this.contact.bookedForLastName : this.contact.lastName
-        this.email = this.contact.bookedForSomeoneElse ? this.contact.bookedForEmail : this.contact.email
-        this.phone = this.contact.bookedForSomeoneElse ? this.contact.bookedForPhone : this.contact.phone
+        if(this.notBookedViaWebsite) {
+            this.name = this.contact.bookedForName
+            this.bookedForName = this.contact.yourName
+            this.email = this.contact.email
+            this.phone = this.contact.phone
+        } else {
+            this.name = this.contact.bookedForSomeoneElse ? this.contact.bookedForFirstName + ' ' + this.contact.bookedForLastName : this.contact.firstName + ' ' + this.contact.lastName
+            this.bookedForName = this.contact.firstName + ' ' + this.contact.lastName
+            this.email = this.contact.bookedForSomeoneElse ? this.contact.bookedForEmail : this.contact.email
+            this.phone = this.contact.bookedForSomeoneElse ? this.contact.bookedForPhone : this.contact.phone
+        }
         this.setLang();
     }
 

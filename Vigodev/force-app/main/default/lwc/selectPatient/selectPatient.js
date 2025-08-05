@@ -47,7 +47,9 @@ export default class SelectPatient extends LightningElement {
         bookedForEmail:null,
         bookedForPhone:null,
         relationToPatient: null,
-        relationToPatientLabel: null
+        relationToPatientLabel: null,
+        yourName: null,
+        bookedForName: null
     }
     rszRequired = false
     contactInfoComplete = false
@@ -311,6 +313,7 @@ export default class SelectPatient extends LightningElement {
             }
         });
         this.dispatchEvent(patientInfo);
+        console.log(JSON.stringify(this.contact))
     }
 
 }
