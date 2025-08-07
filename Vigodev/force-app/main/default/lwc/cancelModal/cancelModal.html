@@ -4,27 +4,27 @@
     <section class="slds-modal slds-fade-in-open slds-modal_medium" role="dialog">
         <div class="slds-modal__container slds-p-around_medium">
             <header class="slds-modal__header">
-                <h2 class="slds-m-bottom_small">Cancel modal title</h2>
+                <h2 class="slds-m-bottom_small">{label.CancelAppointment}</h2>
                 <button class="slds-button slds-button_icon slds-modal__close" style="background-color: white;" onclick={close}>×</button>
             </header>
             <div class="slds-modal__content slds-p-around_medium">
                 <lightning-combobox
                 name="cancelReason"
                 class="input"
-                label="Cancellation Reason"
+                label={label.CancelReason}
                 value={selectedCancelReason}
                 options={cancelValues}
                 onchange={handleCancelChange}></lightning-combobox>
 
                 <template if:true={showOtherReason}>
-                    <p>cancel reason</p>
+                    <p>{label.CancelDescription}</p>
                     <textarea class="cancelTextarea" name="otherReason" onchange={handleOtherReasonChange} ></textarea>
                 </template>
 
             </div>
             <footer class="slds-modal__footer">
                 <div class="slds-align_absolute-center">
-                    <lightning-button variant="destructive"  label="Annuleer afspraak" onclick={cancelAppointment} disabled={disableCancelButton}></lightning-button>
+                    <lightning-button variant="destructive"  label={label.CancelAppointment} onclick={cancelAppointment} disabled={disableCancelButton}></lightning-button>
                 </div>
             </footer>
         </div>

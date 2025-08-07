@@ -28,6 +28,7 @@ export default class PatientOverview extends LightningElement {
     @api timeslot = {}
     @api showFile = false
     @api notBookedViaWebsite = false;
+    @api attachmentsUploaded = false;
     previewUrl;
     name;
     bookedForName;

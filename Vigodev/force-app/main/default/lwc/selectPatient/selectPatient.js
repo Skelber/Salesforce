@@ -238,8 +238,7 @@ export default class SelectPatient extends LightningElement {
                 (this.contact.bookedForSomeoneElse && this.contact.bookedForEmail) ||
                 (!this.contact.bookedForSomeoneElse && this.contact.email)
             ) &&
-            // this.contact.email &&
-            // this.contact.phone &&
+
             (
                 (this.contact.bookedForSomeoneElse && this.contact.bookedForPhone) ||
                 (!this.contact.bookedForSomeoneElse && this.contact.phone)
@@ -247,6 +246,9 @@ export default class SelectPatient extends LightningElement {
             (
               (this.contact.RSZ && !this.hasNoRSZ) ||
               (this.hasNoRSZ && this.contact.birthdate)
+            ) &&
+            (
+                !this.contact.bookedForSomeoneElse || this.contact.relationToPatient
             )
           ) {
             this.contactInfoComplete = true;

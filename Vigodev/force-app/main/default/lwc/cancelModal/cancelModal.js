@@ -1,6 +1,9 @@
 import { LightningElement, wire, api } from 'lwc';
 import { getPicklistValues } from "lightning/uiObjectInfoApi";
 import CANCELLATION_FIELD from "@salesforce/schema/ServiceAppointment.Cancellation_Reason__c";
+import CancelAppointment from "@salesforce/label/c.pbzButonCancelAppointment"
+import CancelReason from "@salesforce/label/c.pbzCancelReason"
+import CancelDescription from "@salesforce/label/c.pbzCancelDescription"
 
 
 
@@ -11,6 +14,12 @@ export default class CancelModal extends LightningElement {
     showOtherReason = false;
     otherReason = ''
     disableCancelButton = false;
+
+    label = {
+        CancelAppointment: CancelAppointment,
+        CancelReason: CancelReason,
+        CancelDescription: CancelDescription
+    }
 
     @wire(getPicklistValues, { recordTypeId: "012000000000000AAA", fieldApiName: CANCELLATION_FIELD })
     picklistValues({error, data}){

@@ -3,95 +3,111 @@
 <template>
     <div class="slds-scope container">
         <!-- <lightning-card>        -->
-            <template if:false={notBookedViaWebsite}>
-                <c-appointment-progress
-                show-default-progress={showDefaultProgress}>
-            </c-appointment-progress>
+            <template if:true={appointmentHasPassed}>
+                <div class="slds-align_absolute-center slds-m-top_large" style="height: 60vh;">
+                    <p>{label.AppointmentHasPassed}</p>
+                </div>
             </template>
-                <template if:true={showScreenOne}>
-                    <c-select-patient 
-                    onpatientdetails={receiveContact}
-                    onscreenonecompleted={validateScreenOne}>
-                </c-select-patient>
-            </template>
+            <template if:false={appointmentHasPassed}>
 
-            <template if:true={showScreenTwo}>
-                <c-select-worktype
-                business-unit-id={selectedBusinessUnitId}
-                product-group-id={selectedProductGroupId}
-                product-sub-group-id={selectedProductSubGroupId}
-                appointment-type-id={selectedAppointmentTypeId}
-                onworktypedetails={receiveWorktypeDetails}></c-select-worktype>
+                <template if:false={notBookedViaWebsite}>
+                    <c-appointment-progress
+                    show-default-progress={showDefaultProgress}>
+                </c-appointment-progress>
             </template>
-            <template if:true={showScreenThree}>
-                <c-select-location
-                worktype={receivedWorktype}
-                selected-location={receivedLocation}
-                onlocationdetails={receiveLocation}></c-select-location>
+            <template if:true={showScreenOne}>
+                <c-select-patient 
+                onpatientdetails={receiveContact}
+                onscreenonecompleted={validateScreenOne}>
+            </c-select-patient>
+        </template>
+        
+        <template if:true={showScreenTwo}>
+            <c-select-worktype
+            business-unit-id={selectedBusinessUnitId}
+            product-group-id={selectedProductGroupId}
+            product-sub-group-id={selectedProductSubGroupId}
+            appointment-type-id={selectedAppointmentTypeId}
+            onworktypedetails={receiveWorktypeDetails}></c-select-worktype>
+        </template>
+        <template if:true={showScreenThree}>
+            <c-select-location
+            worktype={receivedWorktype}
+            selected-location={receivedLocation}
+            onlocationdetails={receiveLocation}></c-select-location>
+        </template>
+        <template if:true={showScreenFour}>
+            <c-select-service-resource
+            contact={receivedContact}
+            worktype={receivedWorktype}
+            location={receivedLocation}
+            selected-slot={receivedSlot}
+            onslotdetails={receiveSlotDetails}
+            ></c-select-service-resource>  
+        </template>
+        <template if:true={showScreenFive}>
+            <c-additional-info
+            additional-info={receivedAdditionalInfo}
+            onadditionalinfodetails={receiveAdditionalInfo}></c-additional-info>
+        </template>
+        <template if:true={showScreenSix}>
+            <template if:true={notBookedViaWebsite}>
+                <template if:true={showChangeButton}>
+                    <div class="slds-align_absolute-center editMessage">
+                        <p>{label.ChangeNotConfirmed}</p>
+                    </div>
+                </template>
             </template>
-            <template if:true={showScreenFour}>
-                <c-select-service-resource
-                contact={receivedContact}
-                worktype={receivedWorktype}
-                location={receivedLocation}
-                selected-slot={receivedSlot}
-                onslotdetails={receiveSlotDetails}
-                ></c-select-service-resource>  
+            <c-patient-overview 
+            onscreenchange={receiveScreenChange} 
+            contact={receivedContact}
+            worktype={receivedWorktype}
+            location={receivedLocation}
+            timeslot={receivedSlot}
+            additionalinfo={receivedAdditionalInfo}
+            not-booked-via-website={notBookedViaWebsite}
+            attachments-uploaded={attachmentsUploaded}>
+        </c-patient-overview>
+    </template>
+    
+    
+    <footer>
+        <div class="slds-grid slds-grid_align-end">
+            <template if:false={showScreenOne}>
+                <template if:false={notBookedViaWebsite}>
+                    <lightning-button label={label.Previous} onclick={handlePrevious} disabled={disableButtons} class="slds-m-right_small"></lightning-button>
+                </template>
             </template>
-            <template if:true={showScreenFive}>
-                <c-additional-info
-                additional-info={receivedAdditionalInfo}
-                onadditionalinfodetails={receiveAdditionalInfo}></c-additional-info>
+            <template if:false={showScreenSix}>
+                <template if:false={notBookedViaWebsite}>
+                    <template if:true={showNextButton}>
+                        <lightning-button variant="brand"  label={label.Next} onclick={handleNext} class="slds-m-right_small" disabled={disableNextButton}></lightning-button>
+                    </template>
+                </template>
             </template>
             <template if:true={showScreenSix}>
-                <c-patient-overview 
-                onscreenchange={receiveScreenChange} 
-                contact={receivedContact}
-                worktype={receivedWorktype}
-                location={receivedLocation}
-                timeslot={receivedSlot}
-                additionalinfo={receivedAdditionalInfo}
-                not-booked-via-website={notBookedViaWebsite}>
-            </c-patient-overview>
-            </template>
-            
-            
-            <footer>
-                <div class="slds-grid slds-grid_align-end">
-                    <template if:false={showScreenOne}>
-                        <template if:false={notBookedViaWebsite}>
-                            <lightning-button label={label.Previous} onclick={handlePrevious} disabled={disableButtons} class="slds-m-right_small"></lightning-button>
-                        </template>
-                    </template>
-                    <template if:false={showScreenSix}>
-                        <template if:false={notBookedViaWebsite}>
-                            <template if:true={showNextButton}>
-                                <lightning-button variant="brand"  label={label.Next} onclick={handleNext} class="slds-m-right_small" disabled={disableNextButton}></lightning-button>
-                            </template>
-                        </template>
-                    </template>
-                    <template if:true={showScreenSix}>
-                        <template if:false={notBookedViaWebsite}>
-                            <lightning-button variant="brand"  label={label.BookAnAppointment} disabled={disableButtons} onclick={handleSubmit} class="slds-m-right_small"></lightning-button>
-                        </template>
-                    </template>    
-                </div>
-                <template if:true={notBookedViaWebsite}>
-                    <div class="slds-align_absolute-center">
-                        <template if:false={showScreenSix}>
-                            <lightning-button variant="brand"  label={label.Next} onclick={handleNext}></lightning-button>
-                        </template>
-                        <template if:true={showScreenSix}>
-                            <lightning-button class="slds-m-horizontal_xx-small" variant="brand-outline"  label="Wijzig Afspraak" onclick={handleAppointmentEdit}></lightning-button>
-                            <lightning-button class="slds-m-horizontal_xx-small" variant="destructive-text"  label="Annuleer afspraak" onclick={handleCancellation}></lightning-button>
-                            <template if:true={showChangeButton}>
-                                <lightning-button class="slds-m-horizontal_xx-small" variant="brand"  label="Wijzig afspraak" onclick={handleAppointmentUpdate}></lightning-button>
-                            </template>
-                        </template>
-                        </div>
+                <template if:false={notBookedViaWebsite}>
+                    <lightning-button variant="brand"  label={label.BookAnAppointment} disabled={disableButtons} onclick={handleSubmit} class="slds-m-right_small"></lightning-button>
                 </template>
-            </footer>
-            
+            </template>    
+        </div>
+        <template if:true={notBookedViaWebsite}>
+            <div class="slds-align_absolute-center">
+                <template if:false={showScreenSix}>
+                    <lightning-button variant="brand"  label={label.Next} onclick={handleNext}></lightning-button>
+                </template>
+                <template if:true={showScreenSix}>
+                    <lightning-button class="slds-m-horizontal_xx-small" variant="brand-outline"  label={label.EditAppointment} onclick={handleAppointmentEdit}></lightning-button>
+                    <lightning-button class="slds-m-horizontal_xx-small" variant="destructive-text"  label={label.CancelAppointment} onclick={handleCancellation}></lightning-button>
+                    <template if:true={showChangeButton}>
+                        <lightning-button class="slds-m-horizontal_xx-small" variant="brand"  label={label.ConfirmChange} onclick={handleAppointmentUpdate}></lightning-button>
+                    </template>
+                </template>
+            </div>
+        </template>
+    </footer>
+</template>
+    
         <!-- </lightning-card> -->
         
     </div>

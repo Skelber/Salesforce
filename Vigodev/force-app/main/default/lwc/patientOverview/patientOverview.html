@@ -117,6 +117,9 @@
                             <template for:each={fileNames} for:item="fileName">
                                 <p key={fileName}>{fileName}</p>
                             </template>
+                            <template if:true={attachmentsUploaded}>
+                                <p>Er werden reeds bestanden opgeladen</p>
+                            </template>
                         </div>
                     </div>
                 </div>

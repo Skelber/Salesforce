@@ -2,7 +2,16 @@ import { LightningElement, track, api, wire } from 'lwc';
 import locale from '@salesforce/i18n/locale';
 import Next from "@salesforce/label/c.pbzButtonNext"
 import Previous from "@salesforce/label/c.pbzButtonPrevious"
+import CancelAppointment from "@salesforce/label/c.pbzButonCancelAppointment"
+import EditAppointment from "@salesforce/label/c.pbzButtonEditAppointment"
+import ConfirmChange from "@salesforce/label/c.pbzButtonConfirmChange"
+import CancelSuccess from "@salesforce/label/c.pbzTextCancellationSuccess"
+import Error from "@salesforce/label/c.pbzButtonConfirmChange"
+import CreateSuccess from "@salesforce/label/c.pbzTextAppointmentCreationSuccess"
+import UpdateSuccess from "@salesforce/label/c.pbzTextUpdateSuccessfull"
 import BookAnAppointment from "@salesforce/label/c.pbzButtonBookAppointment"
+import ChangeNotConfirmed from "@salesforce/label/c.pbzTextChangeNotConfirmed"
+import AppointmentHasPassed from "@salesforce/label/c.pbzTextAppointmentHasPassed"
 import saveLeadObject from '@salesforce/apex/WorktypeSelection.saveLeadObject';
 import updateServiceAppointment from '@salesforce/apex/AppointmentCreation.updateServiceAppointmentObject';
 import cancelServiceAppointment from '@salesforce/apex/AppointmentCreation.cancelServiceAppointmentObject';
@@ -19,6 +28,8 @@ export default class BookAppointment extends LightningElement {
     showDefaultProgress = false;
     showNextButton = false;
     showChangeButton = false;
+    attachmentsUploaded = false
+    appointmentHasPassed = false;
     showScreenOne;
     showScreenTwo;
     showScreenThree;
@@ -88,7 +99,16 @@ export default class BookAppointment extends LightningElement {
     label = {
         Next: Next,
         Previous: Previous,
-        BookAnAppointment: BookAnAppointment
+        BookAnAppointment: BookAnAppointment,
+        CancelAppointment: CancelAppointment,
+        EditAppointment: EditAppointment,
+        ConfirmChange: ConfirmChange,
+        CancelSuccess: CancelSuccess,
+        UpdateSuccess: UpdateSuccess,
+        Error: Error,
+        CreateSuccess: CreateSuccess,
+        ChangeNotConfirmed: ChangeNotConfirmed,
+        AppointmentHasPassed: AppointmentHasPassed,
     }
 
     @track response = {
@@ -122,13 +142,11 @@ export default class BookAppointment extends LightningElement {
             this.showDefaultProgress = false;
             this.getServiceAppointmentInfo();
         } else {
-            console.log('setting step one')
             this.setToStepOne();
         }
     }
 
     getServiceAppointmentInfo() {
-        console.log('account Id: ' + this.accountId + ' service appointment Id: ' + this.serviceAppointmentId )
         // setTimeout(() => {
         getServiceAppointment({ 
             parentId: this.accountId, 
@@ -136,6 +154,8 @@ export default class BookAppointment extends LightningElement {
         }) .then(result => {
                 console.log(JSON.stringify(result));
                 this.notBookedViaWebsite = true;
+                this.appointmentHasPassed = result.matchInPast;
+                this.attachmentsUploaded = result.appInfo.attachments;
                 this.serviceAppointmentToUpdate.AssignedResourceId = result.appInfo.assignedResourceId;
                 if(!this.receivedContact) this.receivedContact = {};
                 this.receivedContact.yourName = result.yourName;
@@ -144,7 +164,7 @@ export default class BookAppointment extends LightningElement {
                 this.receivedContact.phone = result.yourPhone
                 this.receivedContact.relationToPatientLabel = result.Relation;
                 this.receivedContact.bookedForSomeoneElse = result.bookedForName ? true : false;
-                if (!this.receiveAdditionalInfo) this.receiveAdditionalInfo = {};
+                if (!this.receivedAdditionalInfo) this.receivedAdditionalInfo = {};
                 this.receivedAdditionalInfo.comment = result.appInfo.remarks;
                 if (!this.serviceAppointment) this.serviceAppointment = {};
                 this.serviceAppointment.resourceId = result.appInfo.resourceId;
@@ -271,7 +291,7 @@ export default class BookAppointment extends LightningElement {
 
     receiveContact(event) {
         this.receivedContact = event.detail;
-        this.serviceAppointment.RSZ = event.detail.RSZ
+        this.serviceAppointment.rrNr = event.detail.RSZ
         this.serviceAppointment.email = event.detail.bookedForSomeoneElse ? event.detail.bookedForEmail : event.detail.email;
     }
 
@@ -346,11 +366,11 @@ export default class BookAppointment extends LightningElement {
      handleSubmit() {
             this.showSpinner = true;
             this.disableButtons = true;
-
             saveLeadObject({
                 lead: JSON.stringify(this.receivedContact)
             }).then(result => {
                 this.serviceAppointment.leadId = result
+                console.log('service app to create ' + JSON.stringify(this.serviceAppointment))
                 saveServiceAppointmentObject({
                     serviceappointment: JSON.stringify(this.serviceAppointment)
                 }).then(SAResult => {
@@ -364,34 +384,36 @@ export default class BookAppointment extends LightningElement {
                       });
                     this.showSpinner = false;
                     this.response.type = 'success';
-                    this.response.message = 'Request succesfully created';
+                    this.response.message = this.label.CreateSuccess;
                     this.showModal = true;
                 }).catch(error => {
                     this.showSpinner = false;
                     this.response.type = 'error';
-                    this.response.message = 'Something went wrong, please try again';
+                    this.response.message = this.label.Error;
                     this.showModal = true;
                 })
             }).catch(error => {
                 this.response.type = 'error';
-                this.response.message = 'Something went wrong, please try again';
+                this.response.message = this.label.Error;
                 this.showModal = true;
             })
      }
 
      handleAppointmentUpdate() {
-        console.log(JSON.stringify(this.serviceAppointmentToUpdate))
+        this.showSpinner = true
          updateServiceAppointment({
              serviceappointment: JSON.stringify(this.serviceAppointmentToUpdate)
         }).then(result => {
             console.log(result)
             this.response.type = 'success';
-            this.response.message = 'Request succesfully updated';
+            this.response.message = this.label.UpdateSuccess
+            this.showSpinner = false
             this.showModal = true;
         }).catch(error => {
             console.log(error)
             this.response.type = 'error';
-            this.response.message = 'Something went wrong, please try again';
+            this.response.message = this.label.Error;
+            this.showSpinner = false
             this.showModal = true;
         })
      }
@@ -405,12 +427,12 @@ export default class BookAppointment extends LightningElement {
              serviceappointment: JSON.stringify(this.serviceAppointmentToCancel)
             }).then(result => {
                 this.response.type = 'success';
-                this.response.message = 'Request succesfully cancelled';
+                this.response.message = this.label.CancelSuccess;
                 this.showSpinner = false
                 this.showModal = true;
             }). catch(error => {
                 this.response.type = 'error';
-                this.response.message = 'Something went wrong, please try again';
+                this.response.message = this.label.Error;
                 this.showSpinner = false;
                 this.showModal = true
             })
