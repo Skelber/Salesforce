@@ -137,7 +137,6 @@ export default class BookAppointment extends LightningElement {
             this.serviceAppointmentId = pageRef.state.c__serviceAppointmentId;
             this.serviceAppointmentToUpdate.saId = pageRef.state.c__serviceAppointmentId;
             this.serviceAppointmentToCancel.saId = pageRef.state.c__serviceAppointmentId;
-            console.log('pagerefs ' + this.accountId + ' ' + this.serviceAppointmentId)
             this.showGetInfoSpinner = true;
             this.showDefaultProgress = false;
             this.getServiceAppointmentInfo();

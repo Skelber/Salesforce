@@ -97,10 +97,10 @@
                     <lightning-button variant="brand"  label={label.Next} onclick={handleNext}></lightning-button>
                 </template>
                 <template if:true={showScreenSix}>
-                    <lightning-button class="slds-m-horizontal_xx-small" variant="brand-outline"  label={label.EditAppointment} onclick={handleAppointmentEdit}></lightning-button>
-                    <lightning-button class="slds-m-horizontal_xx-small" variant="destructive-text"  label={label.CancelAppointment} onclick={handleCancellation}></lightning-button>
+                    <button class="slds-m-horizontal_xx-small slds-button slds-button_outline-brand customButton" onclick={handleAppointmentEdit}>{label.EditAppointment}</button>
+                    <button class="slds-m-horizontal_xx-small slds-button slds-button_text-destructive customButton" onclick={handleCancellation}>{label.CancelAppointment}</button>
                     <template if:true={showChangeButton}>
-                        <lightning-button class="slds-m-horizontal_xx-small" variant="brand"  label={label.ConfirmChange} onclick={handleAppointmentUpdate}></lightning-button>
+                        <button class="slds-m-horizontal_xx-small slds-button slds-button_brand customButton" onclick={handleAppointmentUpdate}>{label.ConfirmChange}</button>
                     </template>
                 </template>
             </div>
