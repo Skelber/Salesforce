@@ -3,16 +3,27 @@
 <template>
     <div class="slds-scope container">
         <!-- <lightning-card>        -->
-            <template if:true={appointmentHasPassed}>
-                <div class="slds-align_absolute-center slds-m-top_large" style="height: 60vh;">
-                    <p>{label.AppointmentHasPassed}</p>
-                </div>
+            <template if:true={appointmentHasError}>
+                <template if:true={appointmentHasPassed}>
+                    <div class="slds-align_absolute-center slds-m-top_large" style="height: 60vh;">
+                        <p>{label.AppointmentHasPassed}</p>
+                    </div>
+                </template>
+                <template if:true={appointmentHasError}>
+                    <template if:false={appointmentHasPassed}>
+                        <div class="slds-align_absolute-center slds-grid slds-grid_vertical slds-m-top_large" style="height: 60vh;">
+                            <p>{label.AppointmentNotfound}</p>
+                            <img class="largeIcon" src={notFoundIcon} alt="Not found image">
+                        </div>
+                    </template>
+                </template>
             </template>
-            <template if:false={appointmentHasPassed}>
+            <template if:false={appointmentHasError}>
 
                 <template if:false={notBookedViaWebsite}>
                     <c-appointment-progress
-                    show-default-progress={showDefaultProgress}>
+                    show-default-progress={showDefaultProgress}
+                    currentstep={currentStep}>
                 </c-appointment-progress>
             </template>
             <template if:true={showScreenOne}>
@@ -43,6 +54,7 @@
             location={receivedLocation}
             selected-slot={receivedSlot}
             onslotdetails={receiveSlotDetails}
+            service-resource-id={serviceResourceId}
             ></c-select-service-resource>  
         </template>
         <template if:true={showScreenFive}>
@@ -135,9 +147,8 @@
        </template> 
 
       <template if:true={showGetInfoSpinner}>
-        <div class="modal-backdrop">
+        <div class="modal-backdropAllWhite">
             <lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
-            <p>retreiving information</p>
            </div>
        </template> 
 </template>

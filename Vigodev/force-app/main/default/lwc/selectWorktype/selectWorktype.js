@@ -254,6 +254,9 @@ export default class SelectWorktype extends LightningElement {
         item => item.productGroup.recordId === this.productGroupId
       );
 
+      this.productSubGroups = [];
+      this.appointmentTypes = [];
+
       matchedPG.productSubGroups.forEach(subGroup => {
         this.productSubGroups.push(subGroup)
       });
@@ -327,6 +330,7 @@ export default class SelectWorktype extends LightningElement {
       const matchedPSG = this.productSubGroups.find(
         item => item.productSubGroup.recordId === this.productSubGroupId
       );
+      this.appointmentTypes = [];
 
       matchedPSG.appointmentTypes.forEach(appt => {
         this.appointmentTypes.push(appt)

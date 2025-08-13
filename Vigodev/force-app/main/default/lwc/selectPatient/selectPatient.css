@@ -34,6 +34,7 @@ lightning-radio-group{
     border-radius: 12px;
     box-shadow: 0px 1px 4px grey;
     background-color: hsl(0, 0%, 99%);
+    background: linear-gradient(130deg,rgba(255, 255, 255, 1) 0%, hsl(0, 0%, 98%) 80%);
     border-top: 1px solid white;
 }
 

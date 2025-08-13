@@ -4,16 +4,21 @@
     border-radius: 15px;
 }
 
+.container {
+    min-height: 50vh;
+}
+
 .locationSelection {
     box-shadow: 0px 2px 5px grey;
-    background-color: hsl(0, 0%, 98%);
+    /* background-color: hsl(0, 0%, 98%); */
+    background: linear-gradient(130deg,rgba(255, 255, 255, 1) 0%, hsl(0, 0%, 98%) 80%);
     border-radius: 15px;
     transition: 400ms;
     cursor: pointer;
 }
 
 .locationSelection:hover, .selected{
-    background-color: #C1E6EF;
+    background: #C1E6EF;
 }
 
 h3 {

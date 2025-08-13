@@ -131,8 +131,12 @@ public class WorktypeSelection {
         try {
             List<WorkTypeGroupMember> wtgroupmember = new List<WorkTypeGroupMember>([SELECT Id, WorkTypeId, WorkTypeGroupId, WorkTypeGroup.Bookable_on_website__c,
                                                                                      WorkType.Work_Type_Name_FR__c, WorkType.EstimatedDuration, WorkType.Name,
-                                                                                     WorkTypeGroup.Appointment_Type_Translation__c, WorkTypeGroup.Appointment_Type_Translation_FR__c,
-                                                                                     WorkTypeGroup.Product_Subgroup_Translation__c, WorkTypeGroup.Product_Subgroup_Translation_FR__c
+                                                                                     WorkTypeGroup.Appointment_Type_Lookup__r.Typology_Name_NL__c, 
+                                                                                     WorkTypeGroup.Appointment_Type_Lookup__r.Typology_Name_FR__c, 
+                                                                                     WorkTypeGroup.Product_Sub_Group_Lookup__r.Typology_Name_NL__c, 
+                                                                                     WorkTypeGroup.Product_Sub_Group_Lookup__r.Typology_Name_FR__c
+//                                                                                     ,WorkTypeGroup.Appointment_Type_Translation__c, WorkTypeGroup.Appointment_Type_Translation_FR__c,
+//                                                                                     WorkTypeGroup.Product_Subgroup_Translation__c, WorkTypeGroup.Product_Subgroup_Translation_FR__c
                                                                                      FROM WorkTypeGroupMember
                                                                                      WHERE WorkTypeGroup.Appointment_Type_Lookup__c = :AppointmentId
                                                                                      AND WorkTypeGroup.Business_Unit_Lookup__c = :BusinessUnitId
@@ -144,8 +148,10 @@ public class WorktypeSelection {
             if(wtGroupMember.size() > 0) 
                 fullwt = new FullWorkType (wtgroupmember[0].WorkType.Name, wtgroupmember[0].WorkType.Work_Type_Name_FR__c, 
                                            wtgroupmember[0].WorkType.EstimatedDuration, wtgroupmember[0].WorkTypeId, wtgroupmember[0].WorkTypeGroup.Bookable_on_website__c,
-                                           wtgroupmember[0].WorkTypeGroup.Appointment_Type_Translation__c, wtgroupmember[0].WorkTypeGroup.Appointment_Type_Translation_FR__c,
-                                           wtgroupmember[0].WorkTypeGroup.Product_Subgroup_Translation__c, wtgroupmember[0].WorkTypeGroup.Product_Subgroup_Translation_FR__c);
+//                                           wtgroupmember[0].WorkTypeGroup.Appointment_Type_Translation__c, wtgroupmember[0].WorkTypeGroup.Appointment_Type_Translation_FR__c,
+//                                           wtgroupmember[0].WorkTypeGroup.Product_Subgroup_Translation__c, wtgroupmember[0].WorkTypeGroup.Product_Subgroup_Translation_FR__c);
+                                           wtgroupmember[0].WorkTypeGroup.Appointment_Type_Lookup__r.Typology_Name_NL__c, wtgroupmember[0].WorkTypeGroup.Appointment_Type_Lookup__r.Typology_Name_FR__c,
+                                           wtgroupmember[0].WorkTypeGroup.Product_Sub_Group_Lookup__r.Typology_Name_NL__c, wtgroupmember[0].WorkTypeGroup.Product_Sub_Group_Lookup__r.Typology_Name_FR__c);
             return fullwt;
         } catch (Exception e) {
             System.debug('Something went wrong: ' + e.getMessage());
@@ -204,7 +210,12 @@ public class WorktypeSelection {
     }
     
     @AuraEnabled(cacheable=true)
-    public static List<AvailableSlot> getAvailableSlots(Date selectedDate, Id locatonId, Id workTypeId ) {
+    public static List<AvailableSlot> getAvailableSlots(Date selectedDate, Id locatonId, Id workTypeId) {
+        return getAvailableSlots2(selectedDate, locatonId, workTypeId, 1, null);
+    }
+        
+    @AuraEnabled(cacheable=true)
+    public static List<AvailableSlot> getAvailableSlots2(Date selectedDate, Id locatonId, Id workTypeId, Integer numberOfDays, Id fixedResourceId) {
         
         try {
             //Get policy
@@ -221,8 +232,7 @@ public class WorktypeSelection {
                 .setWorkType(workType)
                 .setTerritoryIds(new List<String>{locatonId})
                 .setStartTime(startdatetime.format('yyyy-MM-dd\'T\'HH:mm:ssZ'))
-                .setEndTime(startdatetime.addDays(1).format('yyyy-MM-dd\'T\'HH:mm:ssZ'))
-                //  .setAccountId('001RM0000053iQgYAI')
+                .setEndTime(startdatetime.addDays(numberOfDays).format('yyyy-MM-dd\'T\'HH:mm:ssZ'))
                 .setSchedulingPolicyId(policyId[0].Id)
                 .setApiVersion(Double.valueOf('59.0'))
                 .build();
@@ -240,7 +250,7 @@ public class WorktypeSelection {
                 Map<Id, List<DateTime>> resultMap = new Map<Id, List<DateTime>>();
                 Set<Id> resourceList = new Set<Id>();
                 for (ResponseWrapper wrapper : wrapperResult) {
-                    
+                    System.debug('wrapperResult: ' + wrapperResult);
                     List<String> dateList = wrapper.startTime.split('T');
                     DateTime slot = Datetime.newInstanceGMT(Integer.valueOf(dateList[0].split('-')[0]), Integer.valueOf(dateList[0].split('-')[1]), Integer.valueOf(dateList[0].split('-')[2]), Integer.valueOf(dateList[1].split(':')[0]), Integer.valueOf(dateList[1].split(':')[1]), 0);
                     TimeZone tz = Timezone.getTimeZone('Europe/Brussels');
@@ -249,19 +259,20 @@ public class WorktypeSelection {
                     Integer offSetHours = minutes / 60;
                     slot = slot.addHours(offSetHours);
                     
-                    for (Id resourceId : wrapper.resources) {         
-                        String keyname = string.valueOf(resourceId);
-                        if(!resultMap.containsKey(keyname)){
-                            resultMap.put(keyname, new List<DateTime>());
+                    for (Id resourceId : wrapper.resources) {     
+                        if(fixedResourceId == null || fixedResourceId == resourceId) {
+                            String keyname = string.valueOf(resourceId);
+                            if(!resultMap.containsKey(keyname)){
+                                resultMap.put(keyname, new List<DateTime>());
+                            }
+                            resultMap.get(keyname).add(slot);
+                            resourceList.add(resourceId);
                         }
-                        resultMap.get(keyname).add(slot);
-                        resourceList.add(resourceId);
                     }
                     
                 }
                 
                 List<AvailableSlot> fullSlots = new List<AvailableSlot>();
-                // Map<Id, ServiceResource> resourceMap = new Map<Id, ServiceResource>([SELECT Id, Name, RelatedRecord.FirstName, RelatedRecord.LastName FROM ServiceResource WHERE Id IN :resourceList]);
                 List<ServiceResourceSkill> resourceSkillList = [SELECT ServiceResourceId, ServiceResource.Name, ServiceResource.RelatedRecord.FirstName, ServiceResource.RelatedRecord.LastName, Service_Resource_Sort_Order__c 
                                                                 FROM ServiceResourceSkill 
                                                                 WHERE ServiceResourceId IN :resourceList AND Service_Resource_Sort_Order__c > 50 AND SkillId = :skillId
@@ -278,13 +289,247 @@ public class WorktypeSelection {
                         ServiceResource2 sr = new ServiceResource2(resourceId, resourceSkillMap.get(resourceId).ServiceResource.RelatedRecord.FirstName 
                                                                    + ' ' + resourceSkillMap.get(resourceId).ServiceResource.RelatedRecord.LastName.left(1) );
                         AvailableSlot av = new AvailableSlot(sr, slots);
+                        System.debug('Available Slot: ' + av);
                         fullSlots.add(av);
                     }
                 }
-                
+                System.debug(fullSlots);
                 return fullSlots;
             }
             return null;
+        } catch (Exception e) {
+            System.debug('Something went wrong: ' + e.getMessage());
+            ApplicationLogger.logError(e, false);
+            return null;
+        }
+    }
+    
+    @auraEnabled(cacheable=true)
+    public static AllInformation getAllInformation(String parentId, String SAId) {
+        
+        try{
+            AllInformation allInfo = new AllInformation();
+            
+            List<ServiceAppointment> saList = [SELECT Id, SchedStartTime, ServiceTerritoryId, ServiceTerritory.Name, ServiceTerritory.Address,
+                                               workTypeId, workType.Name, Description, Lead__c, Lead__r.FirstName, Lead__r.LastName, 
+                                               Lead__r.Email, Lead__r.Phone, Lead__r.First_Name_Relationship__c, Lead__r.Last_Name_Relationship__c, 
+                                               Lead__r.Relationship_Type__c, workType.EstimatedDuration, workType.Work_Type_Name_EN__c,
+                                               Worktype.Work_Type_Name_FR__c
+                                               FROM ServiceAppointment 
+                                               WHERE Id = :SAId AND ParentRecordId = :parentId AND Status <> 'Canceled'];
+            
+            if(saList.size() > 0) {
+                
+                allInfo.noMatch = false;
+                if(saList[0].SchedStartTime > System.now()) {
+                    allInfo.matchInPast = false;
+                    
+                    allInfo.yourName = saList[0].Lead__r.FirstName + ' ' + saList[0].Lead__r.LastName;
+                    allInfo.yourEmail = saList[0].Lead__r.Email;
+                    allInfo.yourPhone = saList[0].Lead__r.Phone;
+                    allInfo.bookedForName = saList[0].Lead__r.First_Name_Relationship__c + ' ' + saList[0].Lead__r.Last_Name_Relationship__c;
+                    allInfo.Relation = saList[0].Lead__r.Relationship_Type__c;
+                    
+                    Location loc = new Location();
+                    loc.locName = saList[0].ServiceTerritory.Name;
+                    loc.locId = saList[0].ServiceTerritoryId;
+                    loc.locAddress = saList[0].ServiceTerritory.Address;
+                    allInfo.location = loc;
+                    
+                    List<WorkTypeGroupMember> wtgroupmember = new List<WorkTypeGroupMember>([SELECT Id,
+                                                                                     WorkTypeGroup.Appointment_Type_Lookup__r.Name, 
+                                                                                     WorkTypeGroup.Appointment_Type_Lookup__r.Typology_Name_NL__c, 
+                                                                                     WorkTypeGroup.Appointment_Type_Lookup__r.Typology_Name_FR__c, 
+                                                                                     WorkTypeGroup.Product_Sub_Group_Lookup__r.Name, 
+                                                                                     WorkTypeGroup.Product_Sub_Group_Lookup__r.Typology_Name_NL__c, 
+                                                                                     WorkTypeGroup.Product_Sub_Group_Lookup__r.Typology_Name_FR__c
+                                                                                     FROM WorkTypeGroupMember
+                                                                                     WHERE WorkTypeId = :saList[0].workTypeId]);
+                    
+                    Tool tool = new tool();
+                    tool.toolId = saList[0].workTypeId;
+                    tool.toolName = saList[0].workType.Name;
+                    tool.toolNameEN = saList[0].workType.Work_Type_Name_EN__c;
+                    tool.toolNameFR = saList[0].workType.Work_Type_Name_FR__c;
+                    tool.toolAppName = wtgroupmember[0].WorkTypeGroup.Appointment_Type_Lookup__r.Name;
+                    tool.toolAppNameFR = wtgroupmember[0].WorkTypeGroup.Appointment_Type_Lookup__r.Typology_Name_NL__c;
+                    tool.toolAppNameNL = wtgroupmember[0].WorkTypeGroup.Appointment_Type_Lookup__r.Typology_Name_FR__c;
+                    tool.toolSubGrName = wtgroupmember[0].WorkTypeGroup.Product_Sub_Group_Lookup__r.Name;
+                    tool.toolSubGrNameFR = wtgroupmember[0].WorkTypeGroup.Product_Sub_Group_Lookup__r.Typology_Name_NL__c;
+                    tool.toolSubGrNameNL = wtgroupmember[0].WorkTypeGroup.Product_Sub_Group_Lookup__r.Typology_Name_FR__c;
+                    tool.EstimatedDuration = saList[0].workType.EstimatedDuration;
+                    allInfo.tool = tool;
+                    
+                    AssignedResource res = [SELECT Id, ServiceResourceId, ServiceResource.Name FROM AssignedResource WHERE ServiceAppointmentId = :saId];
+                    
+                    TimeZone tz = Timezone.getTimeZone('Europe/Brussels');
+                    Integer milliSeconds = tz.getOffset(saList[0].SchedStartTime);
+                    Integer minutes = milliSeconds / 60000;
+                    Integer offSetHours = minutes / 60;
+                    
+                    List<ContentDocumentLink> links = [SELECT Id FROM ContentDocumentLink WHERE LinkedEntityId = :SAId];
+                    
+                    AppointmentInfo appInfo = new AppointmentInfo();
+                    appInfo.resourceName = res?.ServiceResource.Name;
+                    appInfo.AssignedResourceId = res?.Id;
+                    appInfo.resourceId = res?.ServiceResourceId;
+                    appInfo.startTime = saList[0].SchedStartTime.addHours(offSetHours);
+                    appInfo.remarks = saList[0].Description;
+                    appInfo.attachments = links.size() > 0;
+                    allInfo.appInfo = appInfo;
+                    
+                } else {
+                    allInfo.matchInPast = true;
+                }
+            } else {
+                allInfo.noMatch = true;
+            }
+            system.debug(allInfo);
+            return allInfo;
+            
+        } catch (Exception e) {
+            System.debug('Something went wrong: ' + e.getMessage());
+            ApplicationLogger.logError(e, false);
+            return null;
+        }
+    }
+    
+    @auraEnabled(cacheable=true)
+    public static InviteInformation getInviteInformation(String AccountId, String OrderLineId, String ServiceResourceId, String ServiceLocationId, String Phase) {
+        
+        try {
+            InviteInformation ii = new InviteInformation();
+            
+            //Check if ServiceResourceId is valid
+            List<ServiceResource> resources = new List<ServiceResource>();
+            if (ServiceResourceId <> null && ServiceResourceId <> '') {
+                resources = [SELECT Id FROM ServiceResource WHERE Id = :ServiceResourceId];
+                ii.validServiceResourceId = resources.size() > 0;
+            } else {
+                ii.validServiceResourceId = false;
+            }
+                        
+            List<Sales_Document_Line_Item__c>  sdlitems = [ SELECT Id, Material_Number__c, Product_Category__c, Product_Subcategory__c, Product_Hierarchy__c, 
+                                                           		   Sales_Document__r.Service_Location__c, Sales_Document__r.CPO_ServiceResource__c,
+                                                                   Sales_Document__r.Patient__r.FirstName, Sales_Document__r.Patient__r.LastName, 
+                                                                   Sales_Document__r.Patient__r.PersonEmail, Sales_Document__r.Patient__r.PersonMobilePhone
+                                                              FROM Sales_Document_Line_Item__c
+                                                             WHERE Id = :OrderLineId AND Sales_Document__r.Patient__c = :AccountId];
+
+            if(sdlitems.size() > 0) {
+                ii.firstName = sdlitems[0].Sales_Document__r.Patient__r.FirstName; 
+                ii.lastName = sdlitems[0].Sales_Document__r.Patient__r.LastName;
+                ii.email = sdlitems[0].Sales_Document__r.Patient__r.PersonEmail;
+                ii.phone = sdlitems[0].Sales_Document__r.Patient__r.PersonMobilePhone;   
+                            
+                Id worktypeId;
+                Id ServiceTerritoryId;
+                
+                Id ServiceTerritoryMappingID = Schema.SObjectType.Metadata__c.getRecordTypeInfosByName().get('ServiceTerritoryMapping').getRecordTypeId();
+                Id WorkTypeMappingID = Schema.SObjectType.Metadata__c.getRecordTypeInfosByName().get('WorkTypeMapping').getRecordTypeId();
+                
+                List<Metadata__c> metadataList = new List<Metadata__c>([SELECT Id, Name, Material_Number__c, Product_Category__c , Product_Subcategory__c , Product_Hierarchy__c, Phase__c, 
+                                                                        	   RecordTypeId, Service_Location__c, Service_Territory__c, Work_Type__c 
+                                                                          FROM Metadata__c 
+                                                                         WHERE RecordTypeId = :ServiceTerritoryMappingID OR
+                                                                        		((Material_Number__c = :sdlitems[0].Material_Number__c OR Product_Category__c = :sdlitems[0].Product_Category__c
+                                                                       			OR Product_Subcategory__c = :sdlitems[0].Product_Subcategory__c OR Product_Hierarchy__c = :sdlitems[0].Product_Hierarchy__c)
+                                                                       			AND Phase__c = :phase)]);
+                Map<Integer, List<Metadata__c >> wtmMap = new  Map<Integer, List<Metadata__c >>();
+                wtmMap.put(1, new List<Metadata__c >());
+                wtmMap.put(2, new List<Metadata__c >());
+                wtmMap.put(3, new List<Metadata__c >());
+                wtmMap.put(4, new List<Metadata__c >());
+ 
+                for (Metadata__c no : metadataList) {
+                    if(no.RecordTypeId == WorkTypeMappingID) {
+                    	if(no.Material_Number__c  == sdlitems[0].Material_Number__c && no.Product_Category__c  == sdlitems[0].Product_Category__c
+                    	   && no.Product_Subcategory__c  == sdlitems[0].Product_Subcategory__c && no.Product_Hierarchy__c  == sdlitems[0].Product_Hierarchy__c) {
+                    	       wtmMap.get(4).add(no);
+                    	} else 
+                           if ((no.Material_Number__c  == sdlitems[0].Material_Number__c && no.Product_Category__c  == sdlitems[0].Product_Category__c
+                       						&& (no.Product_Subcategory__c  == sdlitems[0].Product_Subcategory__c || no.Product_Hierarchy__c  == sdlitems[0].Product_Hierarchy__c)) 
+                                  || ((no.Material_Number__c  == sdlitems[0].Material_Number__c || no.Product_Category__c  == sdlitems[0].Product_Category__c)
+                       						&& no.Product_Subcategory__c  == sdlitems[0].Product_Subcategory__c && no.Product_Hierarchy__c  == sdlitems[0].Product_Hierarchy__c)) {
+                           wtmMap.get(3).add(no);
+                        } else
+                           if ((no.Material_Number__c  == sdlitems[0].Material_Number__c && no.Product_Category__c  == sdlitems[0].Product_Category__c) 
+                                  || (no.Material_Number__c  == sdlitems[0].Material_Number__c && no.Product_Subcategory__c  == sdlitems[0].Product_Subcategory__c)
+                                  || (no.Material_Number__c  == sdlitems[0].Material_Number__c && no.Product_Hierarchy__c  == sdlitems[0].Product_Hierarchy__c)
+                                  || (no.Product_Category__c  == sdlitems[0].Product_Category__c && no.Product_Subcategory__c  == sdlitems[0].Product_Subcategory__c)
+                                  || (no.Product_Category__c  == sdlitems[0].Product_Category__c && no.Product_Hierarchy__c  == sdlitems[0].Product_Hierarchy__c)
+                                  || (no.Product_Subcategory__c  == sdlitems[0].Product_Subcategory__c && no.Product_Hierarchy__c  == sdlitems[0].Product_Hierarchy__c) ) {
+                           wtmMap.get(2).add(no);
+                        } else
+                           if (no.Material_Number__c  == sdlitems[0].Material_Number__c || no.Product_Category__c  == sdlitems[0].Product_Category__c
+                                  || no.Product_Subcategory__c  == sdlitems[0].Product_Subcategory__c || no.Product_Hierarchy__c  == sdlitems[0].Product_Hierarchy__c) {
+                           wtmMap.get(1).add(no);  
+                        }
+                    }
+                    if(no.RecordTypeId == ServiceTerritoryMappingID && no.Service_Location__c == ServiceLocationId) {
+                        ServiceTerritoryId = no.Service_Territory__c;
+                    }
+                }
+                
+                if(wtmMap.get(4).size() > 0) {
+                    worktypeId = wtmMap.get(4)[0].Work_Type__c;
+                } else if (wtmMap.get(3).size() > 0) {
+                    worktypeId = wtmMap.get(3)[0].Work_Type__c;
+                } else if (wtmMap.get(2).size() > 0) {
+                    worktypeId = wtmMap.get(2)[0].Work_Type__c;
+                } else if (wtmMap.get(1).size() > 0) {
+                    worktypeId = wtmMap.get(1)[0].Work_Type__c;
+                }   
+                
+                
+                //Check if ServiceTerritoryId is valid
+                List<ServiceTerritory> territories = new List<ServiceTerritory>();
+                if (ServiceTerritoryId <> null) {
+                    territories = [SELECT Id, Name, Address FROM ServiceTerritory WHERE Id = :ServiceTerritoryId];
+                    ii.validServiceTerritoryId = territories.size() > 0;
+                    if(territories.size() > 0) {
+                        Location l = new Location();
+                        l.locName = territories[0].Name;
+                        l.locAddress = territories[0].Address;
+                        l.locId = territories[0].Id;
+                        ii.location = l;
+                    }
+                } else {
+                    ii.validServiceTerritoryId = false;
+                }
+                
+                List<WorkTypeGroupMember> wtgroupmember = new List<WorkTypeGroupMember>([SELECT Id, workTypeId, workType.Name, workType.Work_Type_Name_EN__c,
+                                                                                         workType.Work_Type_Name_FR__c, workType.EstimatedDuration, 
+                                                                                         WorkTypeGroup.Appointment_Type_Lookup__r.Name, 
+                                                                                         WorkTypeGroup.Appointment_Type_Lookup__r.Typology_Name_NL__c, 
+                                                                                         WorkTypeGroup.Appointment_Type_Lookup__r.Typology_Name_FR__c, 
+                                                                                         WorkTypeGroup.Product_Sub_Group_Lookup__r.Name, 
+                                                                                         WorkTypeGroup.Product_Sub_Group_Lookup__r.Typology_Name_NL__c, 
+                                                                                         WorkTypeGroup.Product_Sub_Group_Lookup__r.Typology_Name_FR__c
+                                                                                         FROM WorkTypeGroupMember
+                                                                                         WHERE WorkTypeId = :workTypeId]);
+                
+                if(workTypeId <> null) {
+                    Tool tool = new tool();
+                    tool.toolId = wtgroupmember[0].workTypeId;
+                    tool.toolName = wtgroupmember[0].workType.Name;
+                    tool.toolNameEN = wtgroupmember[0].workType.Work_Type_Name_EN__c;
+                    tool.toolNameFR = wtgroupmember[0].workType.Work_Type_Name_FR__c;
+                    tool.toolAppName = wtgroupmember[0].WorkTypeGroup.Appointment_Type_Lookup__r.Name;
+                    tool.toolAppNameFR = wtgroupmember[0].WorkTypeGroup.Appointment_Type_Lookup__r.Typology_Name_NL__c;
+                    tool.toolAppNameNL = wtgroupmember[0].WorkTypeGroup.Appointment_Type_Lookup__r.Typology_Name_FR__c;
+                    tool.toolSubGrName = wtgroupmember[0].WorkTypeGroup.Product_Sub_Group_Lookup__r.Name;
+                    tool.toolSubGrNameFR = wtgroupmember[0].WorkTypeGroup.Product_Sub_Group_Lookup__r.Typology_Name_NL__c;
+                    tool.toolSubGrNameNL = wtgroupmember[0].WorkTypeGroup.Product_Sub_Group_Lookup__r.Typology_Name_FR__c;
+                    tool.EstimatedDuration = wtgroupmember[0].workType.EstimatedDuration;
+                    ii.tool = tool;
+                }
+                            
+            }
+            
+            System.debug('ii: ' + ii);
+            return ii;
+        
         } catch (Exception e) {
             System.debug('Something went wrong: ' + e.getMessage());
             ApplicationLogger.logError(e, false);
@@ -316,8 +561,8 @@ public class WorktypeSelection {
             l.PostalCode = leadResult.postalcode;
             l.country = leadResult.country;
             
-            l.On_behalf_of_someone_else__c = !leadResult.bookedForSelf;    
-            if(!leadResult.bookedForSelf) {
+            l.On_behalf_of_someone_else__c = leadResult.bookedForSomeoneElse;    
+            if(leadResult.bookedForSomeoneElse) {
                 l.Relationship_Type__c = leadResult.relationToPatient;
                 l.First_Name_Relationship__c = leadResult.bookedForFirstName;
                 l.Last_Name_Relationship__c = leadResult.bookedForLastName;
@@ -332,97 +577,9 @@ public class WorktypeSelection {
             l.OwnerId = g[0].Id;
             
             Database.insert(l, true);
+            System.debug(l.HealthCloudGA__BirthDate__c);
+            
             return l.id;
-        } catch (Exception e) {
-            System.debug('Something went wrong: ' + e.getMessage());
-            ApplicationLogger.logError(e, false);
-            return null;
-        }
-    }
-        
-    @AuraEnabled(cacheable=false)
-    public static String saveLead(String firstName, String lastName, String email, string phone, 
-                                  string rrNr, Boolean noRrNr, Date endUserBirthdate,
-                                  String street, String postalcode, String city, String country,
-                                  Boolean onBehalveOf, String relationship, String yourFirstName, String yourLastName, String yourEmail, String yourPhone) {
-        try {
-            Lead l = new Lead();
-            l.firstName = FirstName;
-            l.LastName = LastName;
-            l.email = email;
-            l.Phone = phone;
-                                          
-            l.No_Medical_Record_Number__c = noRrNr;
-            l.HealthCloudGA__BirthDate__c = endUserBirthdate;
-            if(!noRrNr) {
-                l.HealthCloudGA__MedicalRecordNumber__c = rrNr;
-            }
-                
-            l.Street = street;   
-            l.city = city;
-            l.PostalCode = postalcode;
-            l.country = country;
-                                
-            l.On_behalf_of_someone_else__c = onBehalveOf;    
-            if(onBehalveOf) {
-                l.Relationship_Type__c = relationship;
-                l.First_Name_Relationship__c = yourFirstName;
-                l.Last_Name_Relationship__c = yourLastName;
-                l.email = yourEmail;
-                l.Phone = yourPhone;
-            }
-            
-            l.RecordTypeId = Schema.SObjectType.Lead.getRecordTypeInfosByName().get('Vigo Lead').getRecordTypeId();
-            l.OBA__c = '90463';
-            
-            List<Group> g = [SELECT Id, DeveloperName FROM Group WHERE Type = 'Queue' AND Name = 'VIGO Leads' LIMIT 1];
-            l.OwnerId = g[0].Id;
-            
-            Database.insert(l, true);
-            return l.id;
-        } catch (Exception e) {
-            System.debug('Something went wrong: ' + e.getMessage());
-            ApplicationLogger.logError(e, false);
-            return null;
-        }
-    }
-    
-    @AuraEnabled(cacheable=false)
-    public static String saveTask(Id leadid, String worktypeName, String dagdeel, String dagen, Boolean voorschrift, String opmerkingen, String serviceTerritoryName, String rrNr) {
-        try {
-            Task t = new Task();
-            
-            t.Description = 'Worktype: ' + worktypeName
-                +'\r\n \r\n'
-                + 'Preferred day: ' + dagen
-                +'\r\n \r\n'
-                + 'Preferred part of day: ' + dagdeel
-                +'\r\n \r\n'
-                + 'I have a prescription: ' + voorschrift
-                +'\r\n \r\n'
-                + 'Remarks: ' + opmerkingen;
-            
-            List<Group> g = [SELECT Id, DeveloperName FROM Group WHERE Type = 'Queue' AND Name = :serviceTerritoryName LIMIT 1];
-            if(g.size() > 0) {
-                t.OwnerId = g[0].Id;
-            } 
-            
-            List<Contact> contacts =  [SELECT Id FROM Contact WHERE Patient_Insurance_ID__c = :rrNr LIMIT 1];
-            if(contacts <> null && contacts.size() > 0 && rrNr <> '') {
-                t.WhoId = contacts[0].Id;
-            } else {
-                t.WhoId = leadid;
-            }
-            
-            
-            t.RecordTypeId = Schema.SObjectType.Task.getRecordTypeInfosByName().get('Vigo Task').getRecordTypeId();
-            t.Subject = 'Bellen voor afspraak';
-            t.Type = 'Appointment Request';
-            t.Status = 'Not Started';
-            t.Priority = 'Normal';
-            
-            Database.insert(t, true);
-            return t.Id;
         } catch (Exception e) {
             System.debug('Something went wrong: ' + e.getMessage());
             ApplicationLogger.logError(e, false);
@@ -477,6 +634,110 @@ public class WorktypeSelection {
     }
     
 /*	########################################     INNER CLASSES	   ########################################*/
+    
+    public class InviteInformation {
+        
+        @AuraEnabled
+        public Boolean validServiceResourceId {get;set;}
+        @AuraEnabled
+        public Boolean validServiceTerritoryId {get;set;}
+        
+        @AuraEnabled
+        public string firstName {get;set;}
+        @AuraEnabled
+        public string lastName {get;set;}
+        @AuraEnabled
+        public string email {get;set;}
+        @AuraEnabled
+        public string phone {get;set;}
+    
+        @AuraEnabled
+        public Location location {get;set;}
+        
+        @AuraEnabled
+        public Tool tool {get;set;}
+    }
+    
+    
+    public class AllInformation {
+        
+        @AuraEnabled
+        public Boolean noMatch {get;set;}
+        @AuraEnabled
+        public Boolean matchInPast {get;set;}        
+        
+        @AuraEnabled
+        public string yourName {get;set;}
+        @AuraEnabled
+        public string yourEmail {get;set;}
+        @AuraEnabled
+        public string yourPhone {get;set;}
+        @AuraEnabled
+        public string bookedForName {get;set;}
+        @AuraEnabled
+        public string Relation {get;set;}
+        @AuraEnabled
+        public Location location {get;set;}
+        @AuraEnabled
+        public Tool tool {get;set;}
+        @AuraEnabled
+        public AppointmentInfo appInfo {get;set;}
+    }
+    
+    public class Location {
+        
+        @AuraEnabled
+        public String locName {get;set;}
+        @AuraEnabled
+        public System.Address locAddress {get;set;}
+        @AuraEnabled
+        public Id locId {get;set;}
+        
+    }
+    
+    public class Tool {
+        
+        @AuraEnabled
+        public String toolName {get;set;}
+        @AuraEnabled
+        public String toolNameFR {get;set;}
+        @AuraEnabled
+        public String toolNameEN {get;set;}
+        @AuraEnabled
+        public String toolAppName {get;set;}
+        @AuraEnabled
+        public String toolAppNameFR {get;set;}
+        @AuraEnabled
+        public String toolAppNameNL {get;set;}
+        @AuraEnabled
+        public String toolSubGrName {get;set;}
+        @AuraEnabled
+        public String toolSubGrNameFR {get;set;}
+        @AuraEnabled
+        public String toolSubGrNameNL {get;set;}
+        @AuraEnabled
+        public Id toolId {get;set;}
+        @AuraEnabled
+        public Decimal EstimatedDuration {get;set;}
+        
+    }
+    
+    public class AppointmentInfo {
+        
+        @AuraEnabled
+        public String resourceName {get;set;}
+        @AuraEnabled
+        public Id assignedResourceId {get;set;}
+        @AuraEnabled
+        public Id resourceId {get;set;}
+        @AuraEnabled
+        public DateTime startTime {get;set;}
+        @AuraEnabled
+        public String remarks {get;set;}
+        @AuraEnabled
+        public Boolean attachments {get;set;}
+        
+    }
     
     public class BusinessUnit {
         
@@ -676,7 +937,7 @@ public class WorktypeSelection {
         @AuraEnabled
         public Date birthdate;
         @AuraEnabled
-        public Boolean bookedForSelf;
+        public Boolean bookedForSomeoneElse;
         @AuraEnabled
         public String bookedForFirstName;
         @AuraEnabled

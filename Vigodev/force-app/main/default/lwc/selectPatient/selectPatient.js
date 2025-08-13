@@ -190,15 +190,16 @@ export default class SelectPatient extends LightningElement {
         } else if(event.target.name == 'RSZ'){
             var inputCmp = this.template.querySelector('.inputCmp')
             const value = event.target.value;
-            localStorage.setItem('contactRSZ', value);
+            this.contact.RSZ = value;
             if (this.isValidRijksregisternummer(value)) {
-                this.contact.RSZ = value;
                 inputCmp.setCustomValidity('');
                 inputCmp.reportValidity();
                 this.setBirthDate(value);
+                localStorage.setItem('contactRSZ', value);
                 
             } else {
                 inputCmp.setCustomValidity('Incorrecte rijksregister nummer');
+                localStorage.removeItem('contactRSZ')
                 inputCmp.reportValidity();
                 
             }
@@ -244,7 +245,7 @@ export default class SelectPatient extends LightningElement {
                 (!this.contact.bookedForSomeoneElse && this.contact.phone)
             ) &&
             (
-              (this.contact.RSZ && !this.hasNoRSZ) ||
+              (this.isValidRijksregisternummer(this.contact.RSZ) && !this.hasNoRSZ) ||
               (this.hasNoRSZ && this.contact.birthdate)
             ) &&
             (

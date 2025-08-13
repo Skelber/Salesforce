@@ -5,10 +5,16 @@
     background-color: hsl(0, 0%, 98%);
 }
 
+.resourceContainer {
+    min-height: 50vh;
+}
+
 .overview{
     box-shadow: 0px 2px 5px grey;
     border-radius: 12px;
     background-color: hsl(0, 0%, 98%);
+    background: linear-gradient(130deg,rgba(255, 255, 255, 1) 0%, hsl(0, 0%, 98%) 80%);
+
 }
 
 .sticky {
@@ -83,7 +89,7 @@ button {
 .resourceName{
     padding: 5px 10px;
     /* background-color: hsl(0, 0%, 98%); */
-    background-color: #C1E6EF;
+    background-color: #C1E6EF; 
     color: #00167a;
     border-radius: 12px;
     /* box-shadow: 0px 2px 5px grey; */
@@ -114,9 +120,9 @@ button {
 .selectors {
     box-shadow: 0px 2px 5px grey;
     border-radius: 12px;
-    /* background-color: #fff; */
     background-color: rgba(255, 255, 255, 0.6);
     background-color: hsla(0, 0%, 96%, 0.4);
+    background: linear-gradient(130deg,rgba(255, 255, 255, 1) 0%, hsl(0, 0%, 98%) 80%);
     backdrop-filter: blur(5px);
     z-index: 1;
 }
@@ -125,7 +131,9 @@ button {
     border-radius: 12px;
     box-shadow: 0px 2px 5px grey;
     /* background-color:  rgba(255, 255, 255, 0.8); */
-    background-color: hsl(0, 0%, 98%);
+    /* background-color: hsl(0, 0%, 98%); */
+    background: linear-gradient(130deg,rgba(255, 255, 255, 1) 0%, hsl(0, 0%, 98%) 80%);
+
 
 }
 
@@ -159,6 +167,11 @@ button {
 
 .fillerSlot {
     border: 1px solid #fff;
+}
+
+.firstAvailableDate {
+    cursor: pointer;
+    text-decoration: underline;
 }
 
 /* .activeButton {

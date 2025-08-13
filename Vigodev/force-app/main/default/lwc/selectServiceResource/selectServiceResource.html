@@ -9,7 +9,7 @@
                 </div>
             </div>
                 
-            <div class="slds-grid slds-gutters slds-wrap">
+            <div class="slds-grid slds-gutters slds-wrap resourceContainer">
                 <div class="slds-grid slds-grid_vertical slds-col slds-large-size_1-of-4 slds-medium-size_4-of-4 sticky">
                     <div class="overview slds-m-vertical_medium slds-p-around_small">
 
@@ -22,7 +22,11 @@
                     <div class="overview slds-m-vertical_medium slds-p-around_small">
                         <div class="slds-m-vertical_medium">
                             <h3><strong>{label.YourAppointment}</strong></h3>
-                            <template if:false={displayFrench}>
+                            <template if:true={displayDutch}>
+                                <p>{worktype.ProdSubGroupTranslationNL}</p>
+                                <p>{worktype.AppTypeTranslationNL}</p>
+                            </template>
+                            <template if:true={displayEnglish}>
                                 <p>{worktype.ProdSubGroupTranslation}</p>
                                 <p>{worktype.AppTypeTranslation}</p>
                             </template>
@@ -97,7 +101,7 @@
                             <template if:true={showNoSlotsAvailable}>
                                 <div class="slds-grid slds-wrap slds-p-top_large slds-align_absolute-center slds-grid_vertical">
                                     <img class="largeIcon" src={notFoundIcon} alt="Not found image">
-                                    <h3>Geen tijdsloten beschikbaar op deze datum. Selecteer een andere datum.</h3>
+                                    <h3>{label.NoSlotsAvailable}</h3>
                                 </div>
                                 </template>
                             <template for:each={paginatedTimeslotMap} for:item="item">
@@ -107,7 +111,7 @@
                                     </div>
                                     <div class="slds-large-size_2-of-3 slds-medium-size_3-of-3 slds-small-size_3-of-3 slds-grid slds-align_absolute-center slds-gutters">
                                         <div class="slds-col slds-size_1-of-1 slds-grid slds-align_absolute-center slotcontainer">
-                                            
+                                            <template if:false={noSlotsOnCurrentDate}>
                                             <div class="slds-col slds-size_1-of-10 slds-align_absolute-center" data-resourceid={item.resource.recordId} onclick={handlePrev}>
                                                 <div class="slds-align_absolute-center navButton">
 
@@ -155,7 +159,23 @@
                                                 </template>
                                             </div>
                                         </div>
+                                    </template>
+
+                                    <template if:true={noSlotsOnCurrentDate}>
+                                        <p>{label.FirstAvailableSlot}&nbsp; </p>
+                                        <lightning-formatted-date-time 
+                                        class="firstAvailableDate"
+                                        value={firstAvailableDate} 
+                                        year="numeric" 
+                                        month="long" 
+                                        day="2-digit" 
+                                        weekday="long"
+                                        onclick={setDate}></lightning-formatted-date-time>
+                                    </template>
+
                                     </div>
+
+                                    
                                 </div>
                             </div>
                         </template>

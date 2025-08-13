@@ -15,6 +15,7 @@ import PatientName from "@salesforce/label/c.pbzInputNamePatient"
 import PatientEmail from "@salesforce/label/c.pbzInputEmailPatient"
 import Documents from "@salesforce/label/c.pbzTextDocuments"
 import Remarks from "@salesforce/label/c.pbzTextRemarks"
+import FilesUploaded from "@salesforce/label/c.pbzTextFilesHaveBeenUploaded"
 
 export default class PatientOverview extends LightningElement {
     LANG = LANG
@@ -51,7 +52,8 @@ export default class PatientOverview extends LightningElement {
         PatientName,
         PatientEmail,
         Documents,
-        Remarks
+        Remarks,
+        FilesUploaded
     }
 
     connectedCallback(){
@@ -61,13 +63,14 @@ export default class PatientOverview extends LightningElement {
             this.showFile = false
         }
         if(this.notBookedViaWebsite) {
-            this.name = this.contact.bookedForName
+            // this.name = this.contact.bookedForName
+            this.name = this.contact.bookedForSomeoneElse ? this.contact.bookedForName : this.contact.yourName
             this.bookedForName = this.contact.yourName
             this.email = this.contact.email
             this.phone = this.contact.phone
         } else {
             this.name = this.contact.bookedForSomeoneElse ? this.contact.bookedForFirstName + ' ' + this.contact.bookedForLastName : this.contact.firstName + ' ' + this.contact.lastName
-            this.bookedForName = this.contact.firstName + ' ' + this.contact.lastName
+            this.bookedForName = this.contact.bookedForSomeoneElse ? this.contact.firstName  + ' ' + this.contact.lastName : this.contact.bookedForFirstName + ' ' + this.contact.bookedForLastName
             this.email = this.contact.bookedForSomeoneElse ? this.contact.bookedForEmail : this.contact.email
             this.phone = this.contact.bookedForSomeoneElse ? this.contact.bookedForPhone : this.contact.phone
         }

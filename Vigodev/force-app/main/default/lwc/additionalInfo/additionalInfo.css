@@ -3,6 +3,10 @@
     padding: 10px;
     border-radius: 15px;
 }
+
+.infoContainer {
+    min-height: 50vh;
+}
 lightning-textarea, lightning-file-upload, .card {
     width: 100%;
 }

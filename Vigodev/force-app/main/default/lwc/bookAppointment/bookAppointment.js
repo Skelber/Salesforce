@@ -12,24 +12,34 @@ import UpdateSuccess from "@salesforce/label/c.pbzTextUpdateSuccessfull"
 import BookAnAppointment from "@salesforce/label/c.pbzButtonBookAppointment"
 import ChangeNotConfirmed from "@salesforce/label/c.pbzTextChangeNotConfirmed"
 import AppointmentHasPassed from "@salesforce/label/c.pbzTextAppointmentHasPassed"
+import AppointmentNotfound from "@salesforce/label/c.pbzTextAppointmentNotFound"
 import saveLeadObject from '@salesforce/apex/WorktypeSelection.saveLeadObject';
 import updateServiceAppointment from '@salesforce/apex/AppointmentCreation.updateServiceAppointmentObject';
 import cancelServiceAppointment from '@salesforce/apex/AppointmentCreation.cancelServiceAppointmentObject';
 import getServiceAppointment from '@salesforce/apex/WorktypeSelection.getAllInformation';
+import getServiceAppointmentInvitation from '@salesforce/apex/WorktypeSelection.getInviteInformation';
 import saveServiceAppointmentObject from '@salesforce/apex/AppointmentCreation.saveServiceAppointmentObject';
 import uploadFile from '@salesforce/apex/FileUpload.uploadFile';
 import { CurrentPageReference } from 'lightning/navigation';
+import notFoundIcon from "@salesforce/resourceUrl/notFound2";
 
 export default class BookAppointment extends LightningElement {
 
     @api currentStep;
     accountId;
     serviceAppointmentId;
+    orderlineId;
+    phase
+    serviceResourceId;
     showDefaultProgress = false;
     showNextButton = false;
     showChangeButton = false;
     attachmentsUploaded = false
+    appointmentHasError = false;
     appointmentHasPassed = false;
+    noMatchingAppointment = false;
+    appointmentByInvitation = false;
+    notFoundIcon = notFoundIcon;
     showScreenOne;
     showScreenTwo;
     showScreenThree;
@@ -109,6 +119,7 @@ export default class BookAppointment extends LightningElement {
         CreateSuccess: CreateSuccess,
         ChangeNotConfirmed: ChangeNotConfirmed,
         AppointmentHasPassed: AppointmentHasPassed,
+        AppointmentNotfound: AppointmentNotfound
     }
 
     @track response = {
@@ -140,7 +151,17 @@ export default class BookAppointment extends LightningElement {
             this.showGetInfoSpinner = true;
             this.showDefaultProgress = false;
             this.getServiceAppointmentInfo();
-        } else {
+        } else if (pageRef?.state?.c__accountId && pageRef?.state?.c__orderline && pageRef?.state?.c__CPO && pageRef?.state?.c__LocationId && pageRef?.state?.c__fase) {
+            this.accountId = pageRef.state.c__accountId;
+            this.orderLineId = pageRef.state.c__orderline;
+            this.serviceAppointment.resourceId  = pageRef.state.c__CPO;
+            this.serviceAppointment.locationId = pageRef.state.c__LocationId;
+            this.phase = pageRef.state.c__fase;
+            this.serviceResourceId = pageRef.state.c__CPO;
+            this.showGetInfoSpinner = true;
+            this.getServiceAppointmentInviationInfo()
+        }
+        else {
             this.setToStepOne();
         }
     }
@@ -154,6 +175,8 @@ export default class BookAppointment extends LightningElement {
                 console.log(JSON.stringify(result));
                 this.notBookedViaWebsite = true;
                 this.appointmentHasPassed = result.matchInPast;
+                this.noMatchingAppointment = result.noMatch;
+                this.appointmentHasError = this.appointmentHasPassed || this.noMatchingAppointment ? true : false;
                 this.attachmentsUploaded = result.appInfo.attachments;
                 this.serviceAppointmentToUpdate.AssignedResourceId = result.appInfo.assignedResourceId;
                 if(!this.receivedContact) this.receivedContact = {};
@@ -162,7 +185,7 @@ export default class BookAppointment extends LightningElement {
                 this.receivedContact.email = result.yourEmail
                 this.receivedContact.phone = result.yourPhone
                 this.receivedContact.relationToPatientLabel = result.Relation;
-                this.receivedContact.bookedForSomeoneElse = result.bookedForName ? true : false;
+                this.receivedContact.bookedForSomeoneElse = result.bookedForName != 'null null' ? true : false;
                 if (!this.receivedAdditionalInfo) this.receivedAdditionalInfo = {};
                 this.receivedAdditionalInfo.comment = result.appInfo.remarks;
                 if (!this.serviceAppointment) this.serviceAppointment = {};
@@ -189,6 +212,8 @@ export default class BookAppointment extends LightningElement {
                 this.receivedWorktype.AppTypeTranslation = result.tool.toolAppName;
                 this.receivedWorktype.ProdSubGroupTranslationFR = result.tool.toolSubGrNameFR;
                 this.receivedWorktype.AppTypeTranslationFR = result.tool.toolAppNameFR;
+                this.receivedWorktype.ProdSubGroupTranslationNL = result.tool.toolSubGrNameNL;
+                this.receivedWorktype.AppTypeTranslationNL = result.tool.toolAppNameNL;
                 this.showScreenSix = true;
                 this.currentStep = "6";
                 this.handleScreenChange();
@@ -196,6 +221,62 @@ export default class BookAppointment extends LightningElement {
                     console.log('getServiceAppointmentinfo Error ' + error)
                 })
                 this.showGetInfoSpinner = false;
+    }
+
+    getServiceAppointmentInviationInfo(){
+        getServiceAppointmentInvitation({
+            AccountId: this.accountId,
+            OrderLineId: this.orderLineId,
+            ServiceResourceId: this.serviceAppointment.resourceId,
+            ServiceLocationId: this.serviceAppointment.locationId,
+            Phase: this.phase
+        }).then(result => {
+            console.log(JSON.stringify(result));
+            this.appointmentByInvitation = true;
+            this.showGetInfoSpinner = false;
+            if(!this.receivedContact) this.receivedContact = {};
+            if (!this.receivedLocation) this.receivedLocation = {};
+            if(!this.receivedWorktype) this.receivedWorktype = {};
+            this.notBookedViaWebsite = false
+            this.receivedContact.bookedForSomeoneElse = false
+            this.receivedContact.yourName = result.firstName + ' ' + result.lastName;
+            this.receivedContact.email = result.email;
+            this.receivedContact.phone = result.phone;
+            if(result.location) {
+                this.receivedLocation.recordName = result.location.locName;
+                this.receivedLocation.recordId = result.location.locId;
+                this.serviceAppointment.locationId = result.location.locId;
+                this.receivedLocation.recordAdress.street = result.location.locAddress.street;
+                this.receivedLocation.recordAdress.city = result.location.locAddress.city;
+                this.receivedLocation.recordAdress.postalCode = result.location.locAddress.postalCode;
+            }
+            this.receivedWorktype.Bookable = true;
+            if(result.tool) {
+            this.receivedWorktype.RecordId = result.tool.toolId;
+            this.serviceAppointment.workTypeId = result.tool.toolId;
+                this.receivedWorktype.EstimatedDuration = result.tool.EstimatedDuration;
+                this.serviceAppointment.duration = result.tool.EstimatedDuration;
+                this.serviceAppointmentToUpdate.duration = result.tool.EstimatedDuration;
+                this.receivedWorktype.ProdSubGroupTranslation = result.tool.toolSubGrName;
+                this.receivedWorktype.AppTypeTranslation = result.tool.toolAppName;
+                this.receivedWorktype.ProdSubGroupTranslationFR = result.tool.toolSubGrNameFR;
+                this.receivedWorktype.AppTypeTranslationFR = result.tool.toolAppNameFR;
+                this.receivedWorktype.ProdSubGroupTranslationNL = result.tool.toolSubGrNameNL;
+                this.receivedWorktype.AppTypeTranslationNL = result.tool.toolAppNameNL;
+            }
+            this.serviceResourceId = result.validServiceResourceId ? this.serviceAppointment.resourceId : null
+
+            if(this.receivedLocation.recordId) {
+                this.showScreenFour = true;
+                this.currentStep = "4"
+            } else {
+                this.showScreenThree = true;
+                this.currentStep = "3"
+            }
+            this.handleScreenChange()
+        }).catch(error => {
+            console.log('getServiceAppointmentInviationInfo Error ' + error)
+        })
     }
 
     receiveScreenChange(event) {
@@ -310,6 +391,7 @@ export default class BookAppointment extends LightningElement {
     
 
         this.receivedWorktype = workType;
+        console.log(JSON.stringify(this.receivedWorktype))
         this.showDefaultProgress = this.receivedWorktype.Bookable ? true : false;
         this.selectedBusinessUnitId = businessUnitId;
         this.selectedProductGroupId = productGroupId;
@@ -365,11 +447,9 @@ export default class BookAppointment extends LightningElement {
      handleSubmit() {
             this.showSpinner = true;
             this.disableButtons = true;
-            saveLeadObject({
-                lead: JSON.stringify(this.receivedContact)
-            }).then(result => {
-                this.serviceAppointment.leadId = result
-                console.log('service app to create ' + JSON.stringify(this.serviceAppointment))
+
+            if(this.appointmentByInvitation) {
+                this.serviceAppointment.leadId = this.accountId;
                 saveServiceAppointmentObject({
                     serviceappointment: JSON.stringify(this.serviceAppointment)
                 }).then(SAResult => {
@@ -391,12 +471,40 @@ export default class BookAppointment extends LightningElement {
                     this.response.message = this.label.Error;
                     this.showModal = true;
                 })
-            }).catch(error => {
-                this.response.type = 'error';
-                this.response.message = this.label.Error;
-                this.showModal = true;
-            })
-     }
+            } else {
+                saveLeadObject({
+                    lead: JSON.stringify(this.receivedContact)
+                }).then(result => {
+                    this.serviceAppointment.leadId = result
+                    console.log('service app to create ' + JSON.stringify(this.serviceAppointment))
+                    saveServiceAppointmentObject({
+                        serviceappointment: JSON.stringify(this.serviceAppointment)
+                    }).then(SAResult => {
+                        this.receivedAdditionalInfo.files.forEach(file => {
+                            uploadFile({
+                                base64: file.base64,
+                                filename: file.name,
+                                recordId: SAResult
+                            })
+                            .then((result) => {})
+                        });
+                        this.showSpinner = false;
+                        this.response.type = 'success';
+                        this.response.message = this.label.CreateSuccess;
+                        this.showModal = true;
+                    }).catch(error => {
+                        this.showSpinner = false;
+                        this.response.type = 'error';
+                        this.response.message = this.label.Error;
+                        this.showModal = true;
+                    })
+                }).catch(error => {
+                    this.response.type = 'error';
+                    this.response.message = this.label.Error;
+                    this.showModal = true;
+                })
+            }
+        }
 
      handleAppointmentUpdate() {
         this.showSpinner = true

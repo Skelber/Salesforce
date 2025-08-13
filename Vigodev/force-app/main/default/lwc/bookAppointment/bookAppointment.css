@@ -2,12 +2,18 @@
     border-radius: 15px;
 }
 
+.largeIcon {
+    margin-top: 20px;
+}
+
 .editMessage {
     position: sticky;
     text-align: center;
     top: 0;
     padding: 15px;
     background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 0 0 15px 15px;
+    border-bottom: 1px solid lightgrey;
     backdrop-filter: blur(5px);
     color: red;
 }
@@ -21,6 +27,15 @@ lightning-button {
     position: fixed;
     inset: 0;
     background: rgba(255, 255, 255, 0.4);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-backdropAllWhite {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 1);
     justify-content: center;
     align-items: center;
     z-index: 1000;
@@ -47,4 +62,5 @@ lightning-button {
         backdrop-filter: blur(5px);
         width: 100%;
     };
+
 }

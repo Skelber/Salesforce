@@ -6,6 +6,7 @@ import notFoundIcon from "@salesforce/resourceUrl/notFound2";
 import clock from "@salesforce/resourceUrl/clock";
 import calendar from "@salesforce/resourceUrl/calendar";
 import getTimeSlots from '@salesforce/apex/WorktypeSelection.getPossibleTimeslot';
+import getTimeSlotsByResource from '@salesforce/apex/WorktypeSelection.getAvailableSlots2';
 import saveLeadObject from '@salesforce/apex/WorktypeSelection.saveLeadObject';
 import saveTaskObject from '@salesforce/apex/WorktypeSelection.saveTaskObject';
 import TaskModal from 'c/taskModal';
@@ -25,6 +26,8 @@ import SubmitTask from "@salesforce/label/c.pbzSubmitTask"
 import YourAppointment from "@salesforce/label/c.pbzTextYourAppointment"
 import Minutes from "@salesforce/label/c.pbzTextMinutes"
 import Location from "@salesforce/label/c.pbzProgressStepLocation"
+import NoSlotsAvailable from "@salesforce/label/c.pbzNoAvailableSlotsOnThisDate"
+import FirstAvailableSlot from "@salesforce/label/c.pbzTextFirstAvailableSlot"
 
 
 
@@ -37,6 +40,7 @@ export default class SelectServiceResource extends LightningElement {
     @api contact = {}
     @api worktype = {};
     @api location = {};
+    @api serviceResourceId; 
     @track timeValue;
     @track dayValue;
     @track selectedDays = new Set();
@@ -59,8 +63,10 @@ export default class SelectServiceResource extends LightningElement {
     disablePrevButton = false;
 
     selectedDate;
+    noSlotsOnCurrentDate = false
     showTimeSlots = false;
     showNoSlotsAvailable = false;
+    firstAvailableDate;
 
     @track timeslotMap = [];
     @track notFilteredTimeslotMap = [];
@@ -98,6 +104,8 @@ export default class SelectServiceResource extends LightningElement {
         YourAppointment,
         Minutes,
         Location,
+        NoSlotsAvailable,
+        FirstAvailableSlot
     }
 
 
@@ -262,39 +270,93 @@ export default class SelectServiceResource extends LightningElement {
 
     callForData() {
         this.showSpinner = true;
-        getTimeSlots({
-            selectedDate: this.selectedDate,
-            locatonId: this.location.recordId,
-            workTypeId: this.worktype.RecordId
-        })
-        .then(result => {
-            if (result.length == 3) {
-                this.showNoSlotsAvailable = true;
-            } else {
-                this.showNoSlotsAvailable = false;
-            }
-    
-            if (typeof result === 'string') {
-                try {
-                    result = JSON.parse(result);
-                } catch (e) {
-                    result = [];
+        if(!this.serviceResourceId){
+
+            getTimeSlots({
+                selectedDate: this.selectedDate,
+                locatonId: this.location.recordId,
+                workTypeId: this.worktype.RecordId
+            })
+            .then(result => {
+                if (result.length == 3) {
+                    this.showNoSlotsAvailable = true;
+                } else {
+                    this.showNoSlotsAvailable = false;
                 }
-            }
-    
-            if (Array.isArray(result)) {
-                this.notFilteredTimeslotMap = result;
-                this.filterSlotsByTime(this.timeValue);
-                this.initializePagination();
-                console.log(JSON.stringify(this.notFilteredTimeslotMap))
-                this.restoreSelectedSlotStyling()
-            }
-    
-            this.showSpinner = false;
-        })
-        .catch(error => {
-            this.showSpinner = false;
-        });
+                
+                if (typeof result === 'string') {
+                    try {
+                        result = JSON.parse(result);
+                    } catch (e) {
+                        result = [];
+                    }
+                }
+                
+                if (Array.isArray(result)) {
+                    this.notFilteredTimeslotMap = result;
+                    this.filterSlotsByTime(this.timeValue);
+                    this.initializePagination();
+                    console.log(JSON.stringify(this.notFilteredTimeslotMap))
+                    this.restoreSelectedSlotStyling()
+                }
+                
+                this.showSpinner = false;
+            })
+            .catch(error => {
+                this.showSpinner = false;
+            });
+        } else {
+            getTimeSlotsByResource({
+                selectedDate: this.selectedDate,
+                locatonId: this.location.recordId,
+                workTypeId: this.worktype.RecordId,
+                numberOfDays: 2,
+                fixedResourceId: this.serviceResourceId
+            }).then(result => {
+                console.log('timeslots by resource')
+                if (result.length == 3) {
+                    this.showNoSlotsAvailable = true;
+                } else {
+                    this.showNoSlotsAvailable = false;
+                }
+                
+                if (typeof result === 'string') {
+                    try {
+                        result = JSON.parse(result);
+                    } catch (e) {
+                        result = [];
+                    }
+                }
+                
+                if (Array.isArray(result)) {
+                    this.notFilteredTimeslotMap = result;
+                    this.filterSlotsByTime(this.timeValue);
+                    this.initializePagination();
+                    console.log(JSON.stringify(this.notFilteredTimeslotMap))
+                    this.restoreSelectedSlotStyling()
+                }
+
+                const receivedDate = this.notFilteredTimeslotMap[0].slots[0];
+
+                function getDateOnly(isoString) {
+                    const date = new Date(isoString);
+                    return date.toISOString().split('T')[0]; // "YYYY-MM-DD"
+                }
+
+                if (getDateOnly(receivedDate) === getDateOnly(this.selectedDate)) {
+                    this.noSlotsOnCurrentDate = false
+                } else {
+                    this.noSlotsOnCurrentDate = true;
+                    this.firstAvailableDate = new Date(receivedDate).toISOString();
+                    console.log(this.firstAvailableDate)
+                }
+                
+                this.showSpinner = false;
+            })
+            .catch(error => {
+                this.showSpinner = false;
+            });
+        }
 
     }
 
@@ -309,6 +371,11 @@ export default class SelectServiceResource extends LightningElement {
         const d = new Date(this.selectedDate);
         d.setDate(d.getDate() - 1);
         this.selectedDate = d.toISOString()
+        this.handleDateChange({target: {value: this.selectedDate}})
+    }
+
+    setDate(){
+        this.selectedDate = this.firstAvailableDate;
         this.handleDateChange({target: {value: this.selectedDate}})
     }
 
