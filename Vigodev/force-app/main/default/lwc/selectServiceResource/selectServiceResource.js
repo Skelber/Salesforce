@@ -113,7 +113,6 @@ export default class SelectServiceResource extends LightningElement {
         this.amButtonActive = true;
         this.pmButtonActive = true;
         if(this.selectedSlot) {
-            console.log(JSON.stringify(this.selectedSlot))
             const d = new Date(this.selectedSlot.slot);
             this.selectedDate = d.toISOString().split('T')[0];
             this.showSlots = true
@@ -149,7 +148,6 @@ export default class SelectServiceResource extends LightningElement {
         if (!this.selectedSlot?.slot || !this.selectedSlot?.resourceId) return;
     
         const selector = `[data-slot="${this.selectedSlot.slot}"][data-resourceid="${this.selectedSlot.resourceId}"]`;
-        console.log('Looking for selector:', selector);
     
         const slotDiv = this.template.querySelector(selector);
         if (slotDiv) {
@@ -296,7 +294,6 @@ export default class SelectServiceResource extends LightningElement {
                     this.notFilteredTimeslotMap = result;
                     this.filterSlotsByTime(this.timeValue);
                     this.initializePagination();
-                    console.log(JSON.stringify(this.notFilteredTimeslotMap))
                     this.restoreSelectedSlotStyling()
                 }
                 
@@ -313,7 +310,6 @@ export default class SelectServiceResource extends LightningElement {
                 numberOfDays: 2,
                 fixedResourceId: this.serviceResourceId
             }).then(result => {
-                console.log('timeslots by resource')
                 if (result.length == 3) {
                     this.showNoSlotsAvailable = true;
                 } else {
@@ -332,7 +328,6 @@ export default class SelectServiceResource extends LightningElement {
                     this.notFilteredTimeslotMap = result;
                     this.filterSlotsByTime(this.timeValue);
                     this.initializePagination();
-                    console.log(JSON.stringify(this.notFilteredTimeslotMap))
                     this.restoreSelectedSlotStyling()
                 }
 
@@ -348,7 +343,6 @@ export default class SelectServiceResource extends LightningElement {
                 } else {
                     this.noSlotsOnCurrentDate = true;
                     this.firstAvailableDate = new Date(receivedDate).toISOString();
-                    console.log(this.firstAvailableDate)
                 }
                 
                 this.showSpinner = false;

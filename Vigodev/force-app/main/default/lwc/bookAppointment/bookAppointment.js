@@ -172,7 +172,6 @@ export default class BookAppointment extends LightningElement {
             parentId: this.accountId, 
             SAId: this.serviceAppointmentId
         }) .then(result => {
-                console.log(JSON.stringify(result));
                 this.notBookedViaWebsite = true;
                 this.appointmentHasPassed = result.matchInPast;
                 this.noMatchingAppointment = result.noMatch;
@@ -218,7 +217,6 @@ export default class BookAppointment extends LightningElement {
                 this.currentStep = "6";
                 this.handleScreenChange();
             }).catch(error => {
-                    console.log('getServiceAppointmentinfo Error ' + error)
                 })
                 this.showGetInfoSpinner = false;
     }
@@ -231,7 +229,6 @@ export default class BookAppointment extends LightningElement {
             ServiceLocationId: this.serviceAppointment.locationId,
             Phase: this.phase
         }).then(result => {
-            console.log(JSON.stringify(result));
             this.appointmentByInvitation = true;
             this.showGetInfoSpinner = false;
             if(!this.receivedContact) this.receivedContact = {};
@@ -275,7 +272,6 @@ export default class BookAppointment extends LightningElement {
             }
             this.handleScreenChange()
         }).catch(error => {
-            console.log('getServiceAppointmentInviationInfo Error ' + error)
         })
     }
 
@@ -391,7 +387,6 @@ export default class BookAppointment extends LightningElement {
     
 
         this.receivedWorktype = workType;
-        console.log(JSON.stringify(this.receivedWorktype))
         this.showDefaultProgress = this.receivedWorktype.Bookable ? true : false;
         this.selectedBusinessUnitId = businessUnitId;
         this.selectedProductGroupId = productGroupId;
@@ -408,7 +403,6 @@ export default class BookAppointment extends LightningElement {
 
     receiveLocation(event){
         this.receivedLocation = event.detail
-        console.log(JSON.stringify(this.receivedLocation))
         this.serviceAppointment.locationId = this.receivedLocation.recordId,
         this.enableNextButton();
         setTimeout(() => {
@@ -418,7 +412,6 @@ export default class BookAppointment extends LightningElement {
 
     receiveSlotDetails(event){
         this.receivedSlot = event.detail
-        console.log(JSON.stringify(this.receivedSlot))
         this.serviceAppointment.startTime = new Date(event.detail.slot);
         this.serviceAppointment.resourceId = event.detail.resourceId;
         this.serviceAppointmentToUpdate.startTime = new Date(event.detail.slot);
@@ -476,7 +469,6 @@ export default class BookAppointment extends LightningElement {
                     lead: JSON.stringify(this.receivedContact)
                 }).then(result => {
                     this.serviceAppointment.leadId = result
-                    console.log('service app to create ' + JSON.stringify(this.serviceAppointment))
                     saveServiceAppointmentObject({
                         serviceappointment: JSON.stringify(this.serviceAppointment)
                     }).then(SAResult => {
@@ -511,13 +503,11 @@ export default class BookAppointment extends LightningElement {
          updateServiceAppointment({
              serviceappointment: JSON.stringify(this.serviceAppointmentToUpdate)
         }).then(result => {
-            console.log(result)
             this.response.type = 'success';
             this.response.message = this.label.UpdateSuccess
             this.showSpinner = false
             this.showModal = true;
         }).catch(error => {
-            console.log(error)
             this.response.type = 'error';
             this.response.message = this.label.Error;
             this.showSpinner = false

@@ -30,7 +30,6 @@ export default class SelectLocation extends LightningElement {
 
              if (Array.isArray(result)) {
                this.locations = result;
-               console.log(JSON.stringify(this.locations))
                window.requestAnimationFrame(() => {
                 this.restoreSelectedStyling();
             });
