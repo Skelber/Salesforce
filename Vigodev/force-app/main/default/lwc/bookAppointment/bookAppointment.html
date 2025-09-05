@@ -21,10 +21,10 @@
             <template if:false={appointmentHasError}>
 
                 <template if:false={notBookedViaWebsite}>
-                    <c-appointment-progress
-                    show-default-progress={showDefaultProgress}
-                    currentstep={currentStep}>
-                </c-appointment-progress>
+                        <c-appointment-progress
+                        show-default-progress={showDefaultProgress}
+                        currentstep={currentStep}>
+                    </c-appointment-progress>
             </template>
             <template if:true={showScreenOne}>
                 <c-select-patient 
@@ -129,6 +129,8 @@
     <template if:true={showModal}>
         <c-success-modal 
         response={response}
+        service-appointment-number={serviceAppointmentNumber}
+        double-booked={doubleBooked}
         onclose={handleModalClose}
         ></c-success-modal>
       </template>

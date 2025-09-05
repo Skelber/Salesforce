@@ -267,6 +267,7 @@ export default class SelectServiceResource extends LightningElement {
     }
 
     callForData() {
+        console.log('calling for data')
         this.showSpinner = true;
         if(!this.serviceResourceId){
 
@@ -296,13 +297,18 @@ export default class SelectServiceResource extends LightningElement {
                     this.initializePagination();
                     this.restoreSelectedSlotStyling()
                 }
-                
+                console.log('notFilteredTimeslotMap: ' + JSON.stringify(result))
                 this.showSpinner = false;
             })
             .catch(error => {
                 this.showSpinner = false;
             });
         } else {
+            console.log('calling for data by resource')
+            console.log('serviceResourceId: ' + this.serviceResourceId)
+            console.log('locationId: ' + this.location.recordId)
+            console.log('workTypeId: ' + this.worktype.RecordId)
+            console.log('selectedDate: ' + this.selectedDate)
             getTimeSlotsByResource({
                 selectedDate: this.selectedDate,
                 locatonId: this.location.recordId,

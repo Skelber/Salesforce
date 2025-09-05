@@ -23,6 +23,7 @@ import Other from "@salesforce/label/c.pbzOtherPicklistLabel"
 import Parent from "@salesforce/label/c.pbzParentPicklistLabel"
 import Guardian from "@salesforce/label/c.pbzGuardianPicklistLabel"
 import FamilyMember from "@salesforce/label/c.pbzFamilyMemberPicklistlabel"
+import AddressPlaceholder from "@salesforce/label/c.pbzAddressPlaceholder"
 
 export default class SelectPatient extends LightningElement {
     @track checked;
@@ -41,6 +42,7 @@ export default class SelectPatient extends LightningElement {
         postalCode: null,
         address: null,
         birthdate: null,
+        language: null,
         bookedForSomeoneElse: null,
         bookedForFirstName : null,
         bookedForLastName: null,
@@ -58,6 +60,7 @@ export default class SelectPatient extends LightningElement {
     lang = LANG
 
     connectedCallback() {
+        console.log('Lang ' + this.lang)
         const storedValue = localStorage.getItem('checked');
         this.contact.bookedForSomeoneElse = storedValue === 'true'  ? true : false;
         this.checked = storedValue === 'true'  ? true : false;
@@ -79,7 +82,17 @@ export default class SelectPatient extends LightningElement {
         this.contact.province = localStorage.getItem('contactProvince') || '';
         const storedHasRSZ = localStorage.getItem('hasRSZ');
         this.hasNoRSZ = storedHasRSZ === 'true';
+        const storedRelation = localStorage.getItem('relationToPatient');
+        if (storedRelation) {
+            this.contact.relationToPatient = storedRelation;
+            const selectedOption = this.options.find(
+                opt => opt.value === storedRelation
+            );
+            this.contact.relationToPatientLabel =
+                selectedOption?.label || null;
+        }
         this.checkCompletion(); 
+        this.setLang();
     }
 
     label = {
@@ -106,12 +119,14 @@ export default class SelectPatient extends LightningElement {
         Parent: Parent,
         Guardian: Guardian,
         FamilyMember: FamilyMember,
+        AddressPlaceholder: AddressPlaceholder,
     }
 
     disconnectedCallback() {
         if(!this.contact.birthdate){
             this.setBirthDate(this.contact.RSZ)
         }
+        console.log('contact', JSON.stringify(this.contact));
         this.passToParent();
     }
 
@@ -132,6 +147,16 @@ export default class SelectPatient extends LightningElement {
             { label: this.label.Other, value: 'Other' },
         ];
     }
+
+    setLang() {
+        if (this.lang == 'en-US') {
+          this.contact.language = 'English'
+        } else if (this.lang == 'fr') {
+          this.contact.language = 'French'
+        } else {
+          this.contact.language = 'Dutch'
+        }
+      }
     
     handleToggle() {
         if(this.contact.bookedForSomeoneElse) {
@@ -208,24 +233,23 @@ export default class SelectPatient extends LightningElement {
     }
     
     isValidRijksregisternummer(value) {
-        const numericValue = value.replace(/\D/g, '');
-    
-        if (numericValue.length !== 11) {
+        // Require exactly 11 digits, nothing else
+        if (!/^\d{11}$/.test(value)) {
             return false;
         }
     
-        const firstNineDigits = parseInt(numericValue.substring(0, 9), 10);
-        const lastTwoDigits = parseInt(numericValue.substring(9, 11), 10);
+        const firstNineDigits = parseInt(value.substring(0, 9), 10);
+        const lastTwoDigits = parseInt(value.substring(9, 11), 10);
     
         // Calculate checksum for birth before 2000
         let checksum = 97 - (firstNineDigits % 97);
     
-        // If the checksum does not match, check for birth after 2000
         if (checksum !== lastTwoDigits) {
+            // Try for birth after 2000
             checksum = 97 - ((2000000000 + firstNineDigits) % 97);
-            this.birthyearPrefix = "20"
+            this.birthyearPrefix = "20";
         } else {
-            this.birthyearPrefix = "19"
+            this.birthyearPrefix = "19";
         }
     
         return checksum === lastTwoDigits;
@@ -308,6 +332,8 @@ export default class SelectPatient extends LightningElement {
     }
     
     @api passToParent() {
+        const selectedOption = this.options.find(opt => opt.value === this.relationToPatient);
+        this.contact.relationToPatientLabel = selectedOption?.label || null;
         const patientInfo = new CustomEvent('patientdetails',{
             detail: {
                 ...this.contact,
@@ -316,7 +342,6 @@ export default class SelectPatient extends LightningElement {
             }
         });
         this.dispatchEvent(patientInfo);
-        console.log(JSON.stringify(this.contact))
     }
 
 }

@@ -9,7 +9,10 @@
                 <button class="slds-button slds-button_icon slds-modal__close" onclick={close}>×</button>
             </header>
             <div class="slds-modal__content slds-p-around_medium">
-                <p>{label.RedirectToSite} {counter}</p>
+                <template if:true={isSuccess}>
+                    <p>{label.RedirectToSite} {counter}</p>
+                    <p>Afspraak nummer: {serviceAppointmentNumber}</p>
+                </template>
 
 
             
@@ -23,9 +26,16 @@
                         </div>
                     </template>
                     <template if:false={isSuccess}>
-                        <div class="slds-align_absolute-center">
-                            <p>{response.message}</p>
-                        </div>
+                        <template if:true={doubleBooked}>
+                            <div class="slds-align_absolute-center">
+                                <p>{label.DoubleBooked}</p>
+                            </div>
+                        </template>
+                        <template if:true={doubleBooked}>
+                            <div class="slds-align_absolute-center">
+                                <p>{response.message}</p>
+                            </div>
+                        </template>
                         <div class="slds-align_absolute-center slds-p-around_medium">
                             <img src={errorIcon} alt="errorImage">
                         </div>

@@ -16,6 +16,10 @@ import PatientEmail from "@salesforce/label/c.pbzInputEmailPatient"
 import Documents from "@salesforce/label/c.pbzTextDocuments"
 import Remarks from "@salesforce/label/c.pbzTextRemarks"
 import FilesUploaded from "@salesforce/label/c.pbzTextFilesHaveBeenUploaded"
+import Other from "@salesforce/label/c.pbzOtherPicklistLabel"
+import Parent from "@salesforce/label/c.pbzParentPicklistLabel"
+import Guardian from "@salesforce/label/c.pbzGuardianPicklistLabel"
+import FamilyMember from "@salesforce/label/c.pbzFamilyMemberPicklistlabel"
 
 export default class PatientOverview extends LightningElement {
     LANG = LANG
@@ -53,10 +57,33 @@ export default class PatientOverview extends LightningElement {
         PatientEmail,
         Documents,
         Remarks,
-        FilesUploaded
+        FilesUploaded,
+        Other,
+        Parent,
+        Guardian,
+        FamilyMember,
+    }
+
+    get options() {
+        return [
+            { label: this.label.Parent, value: 'Parent' },
+            { label: this.label.FamilyMember, value: 'Family member' },
+            { label: this.label.Guardian, value: 'Guardian' },
+            { label: this.label.Other, value: 'Other' },
+        ];
+    }
+
+    get relationToPatientLabel() {
+        if (!this.contact?.relationToPatient) return null;
+        const selectedOption = this.options.find(
+            opt => opt.value === this.contact.relationToPatient
+        );
+        return selectedOption?.label || null;
     }
 
     connectedCallback(){
+        console.log('contact: ' + JSON.stringify(this.contact))
+     
         if(this.additionalinfo?.files) {
             this.showFile = true
         } else {
@@ -68,6 +95,7 @@ export default class PatientOverview extends LightningElement {
             this.bookedForName = this.contact.yourName
             this.email = this.contact.email
             this.phone = this.contact.phone
+            
         } else {
             this.name = this.contact.bookedForSomeoneElse ? this.contact.bookedForFirstName + ' ' + this.contact.bookedForLastName : this.contact.firstName + ' ' + this.contact.lastName
             this.bookedForName = this.contact.bookedForSomeoneElse ? this.contact.firstName  + ' ' + this.contact.lastName : this.contact.bookedForFirstName + ' ' + this.contact.bookedForLastName

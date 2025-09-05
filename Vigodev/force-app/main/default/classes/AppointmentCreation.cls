@@ -46,7 +46,13 @@ public without sharing class AppointmentCreation {
             asrec.IsRequiredResource = true;
             Database.insert(asrec, true);
             
-            return sa.Id;
+            sa = [SELECT Id, AppointmentNumber FROM ServiceAppointment WHERE Id = :sa.Id];
+            
+            CreatedSA csa = new CreatedSA();
+            csa.saId = sa.Id;
+            csa.saName = sa.AppointmentNumber ;
+            
+            return JSON.serializePretty(csa);
         } catch (Exception e) {
             System.debug('Something went wrong: ' + e.getMessage());
             ApplicationLogger.logError(e, false);
@@ -120,7 +126,12 @@ public without sharing class AppointmentCreation {
         }
     }
     
-    
+    public class CreatedSA {
+        @AuraEnabled
+         public Id saId;
+        @AuraEnabled
+         public String saName;
+    }
     
     public class ResponseSA {
          

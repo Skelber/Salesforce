@@ -313,7 +313,8 @@ public class WorktypeSelection {
             List<ServiceAppointment> saList = [SELECT Id, SchedStartTime, ServiceTerritoryId, ServiceTerritory.Name, ServiceTerritory.Address,
                                                workTypeId, workType.Name, Description, Lead__c, Lead__r.FirstName, Lead__r.LastName, 
                                                Lead__r.Email, Lead__r.Phone, Lead__r.First_Name_Relationship__c, Lead__r.Last_Name_Relationship__c, 
-                                               Lead__r.Relationship_Type__c, workType.EstimatedDuration, workType.Work_Type_Name_EN__c,
+                                               Lead__r.Relationship_Type__c, AccountId, Account.FirstName, Account.LastName, Account.AccountEmail__c,
+                                               Account.Phone, workType.EstimatedDuration, workType.Work_Type_Name_EN__c,
                                                Worktype.Work_Type_Name_FR__c
                                                FROM ServiceAppointment 
                                                WHERE Id = :SAId AND ParentRecordId = :parentId AND Status <> 'Canceled'];
@@ -324,11 +325,17 @@ public class WorktypeSelection {
                 if(saList[0].SchedStartTime > System.now()) {
                     allInfo.matchInPast = false;
                     
-                    allInfo.yourName = saList[0].Lead__r.FirstName + ' ' + saList[0].Lead__r.LastName;
-                    allInfo.yourEmail = saList[0].Lead__r.Email;
-                    allInfo.yourPhone = saList[0].Lead__r.Phone;
-                    allInfo.bookedForName = saList[0].Lead__r.First_Name_Relationship__c + ' ' + saList[0].Lead__r.Last_Name_Relationship__c;
-                    allInfo.Relation = saList[0].Lead__r.Relationship_Type__c;
+                    if(saList[0].Lead__c <> null) {
+                        allInfo.yourName = saList[0].Lead__r.FirstName + ' ' + saList[0].Lead__r.LastName;
+                        allInfo.yourEmail = saList[0].Lead__r.Email;
+                        allInfo.yourPhone = saList[0].Lead__r.Phone;
+                        allInfo.bookedForName = saList[0].Lead__r.First_Name_Relationship__c + ' ' + saList[0].Lead__r.Last_Name_Relationship__c;
+                        allInfo.Relation = saList[0].Lead__r.Relationship_Type__c;
+                    } else if(saList[0].AccountId <> null) {
+                        allInfo.yourName = saList[0].Account.FirstName + ' ' + saList[0].Account.LastName;
+                        allInfo.yourEmail = saList[0].Account.AccountEmail__c;
+                        allInfo.yourPhone = saList[0].Account.Phone;
+                    }
                     
                     Location loc = new Location();
                     loc.locName = saList[0].ServiceTerritory.Name;
@@ -549,6 +556,7 @@ public class WorktypeSelection {
             l.LastName = leadResult.lastName;
             l.email = leadResult.email;
             l.Phone = leadResult.phone;
+            l.HealthCloudGA__Language__c = leadResult.language;
             
             l.No_Medical_Record_Number__c = leadResult.hasNoRSZ;
             l.HealthCloudGA__BirthDate__c = leadResult.birthdate;
@@ -948,6 +956,8 @@ public class WorktypeSelection {
         public String bookedForPhone;
         @AuraEnabled
         public String relationToPatient;
+        @AuraEnabled
+        public String language;
         
     }
     

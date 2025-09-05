@@ -92,6 +92,7 @@ public with sharing class ShiftFromPatternControllerTest {
         Shift_Pattern__c sp = new Shift_Pattern__c();
         sp.Name = 'Testing';
         sp.Service_Territory__c = st.Id;
+        sp.Automatically_create_shifts__c = true;
         insert sp;
         
         Shift_Pattern_Entry__c spe = new Shift_Pattern_Entry__c();

@@ -26,6 +26,7 @@ export default class CancelModal extends LightningElement {
         if (data) {
             console.log(JSON.stringify(data))
             this.cancelValues = data.values;
+            console.log(JSON.stringify(this.cancelValues));
         }
     };
 
