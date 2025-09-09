@@ -3,6 +3,7 @@ import BackToWebsite from "@salesforce/label/c.pbzTextBackToWebsite"
 import RedirectToSite from "@salesforce/label/c.pbzTextRedirectToWebsite"
 import ModalTitle from "@salesforce/label/c.pbzScreen6ModalTitle"
 import Redirect from "@salesforce/label/c.pbzTextRedirect"
+import appointmentNumber from "@salesforce/label/c.pbzTextAppointmentNumber"
 import successIcon from "@salesforce/resourceUrl/success";
 import errorIcon from "@salesforce/resourceUrl/error";
 import LANG from '@salesforce/i18n/lang';
@@ -13,7 +14,8 @@ export default class SuccessModal extends LightningElement {
         BackToWebsite,
         RedirectToSite,
         ModalTitle,
-        Redirect
+        Redirect,
+        appointmentNumber,
     }
     LANG = LANG
     isSuccess = false
@@ -26,20 +28,6 @@ export default class SuccessModal extends LightningElement {
 
     connectedCallback() {
         this.isSuccess = this.response.type == 'success'? true : false;
-        if(this.isSuccess) {
-            const countDown = setInterval(() => {
-                if (this.counter > 0) {
-                    this.counter = this.counter - 1;
-                } else {
-                    clearInterval(countDown);
-                    if (this.LANG == 'fr') {
-                        location.replace("https://www.vigogroup.eu/fr/")
-                    } else {
-                        location.replace("https://www.vigogroup.eu/")
-                    }
-                }
-            }, 1000);
-        }
     }
 
     close() {

@@ -33,6 +33,7 @@ export default class PatientOverview extends LightningElement {
     @api timeslot = {}
     @api showFile = false
     @api notBookedViaWebsite = false;
+    @api appointmentByInvitation = false;
     @api attachmentsUploaded = false;
     previewUrl;
     name;
@@ -97,7 +98,7 @@ export default class PatientOverview extends LightningElement {
             this.phone = this.contact.phone
             
         } else {
-            this.name = this.contact.bookedForSomeoneElse ? this.contact.bookedForFirstName + ' ' + this.contact.bookedForLastName : this.contact.firstName + ' ' + this.contact.lastName
+            this.name = this.contact.bookedForSomeoneElse ? this.contact.bookedForFirstName + ' ' + this.contact.bookedForLastName : this.contact.firstName ? this.contact.firstName + ' ' + this.contact.lastName :  this.contact.yourName
             this.bookedForName = this.contact.bookedForSomeoneElse ? this.contact.firstName  + ' ' + this.contact.lastName : this.contact.bookedForFirstName + ' ' + this.contact.bookedForLastName
             this.email = this.contact.bookedForSomeoneElse ? this.contact.bookedForEmail : this.contact.email
             this.phone = this.contact.bookedForSomeoneElse ? this.contact.bookedForPhone : this.contact.phone

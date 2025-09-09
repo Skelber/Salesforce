@@ -4,9 +4,6 @@
     border-radius: 15px;
 }
 
-.infoContainer {
-    min-height: 50vh;
-}
 lightning-textarea, lightning-file-upload, .card {
     width: 100%;
 }
@@ -59,9 +56,6 @@ lightning-icon {
 }
 
 @media only screen and (max-width: 600px) {
-    /* lightning-textarea, lightning-file-upload, .card {
-        width: 100%;
-    } */
      .container {
         width: 100%;
      }

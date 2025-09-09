@@ -33,6 +33,7 @@ export default class BookAppointment extends LightningElement {
     orderlineId;
     phase
     serviceResourceId;
+    showProgressbar = false;
     showDefaultProgress = false;
     showNextButton = false;
     showChangeButton = false;
@@ -52,6 +53,8 @@ export default class BookAppointment extends LightningElement {
     showModal = false;
     showCancelModal = false;
     showSpinner = false;
+    hidePreviousButton = false
+    hideButtonOnScreenNumber;
     showGetInfoSpinner = false;
     screenOneComplete;
     screenTwoComplete;
@@ -132,7 +135,7 @@ export default class BookAppointment extends LightningElement {
     }
 
     connectedCallback() {
-        // this.setToStepOne();
+        this.showProgressbar = true;
     }
     
     
@@ -227,7 +230,10 @@ export default class BookAppointment extends LightningElement {
             ServiceResourceId: this.serviceAppointment.resourceId,
             ServiceLocationId: this.serviceAppointment.locationId,
         }).then(result => {
-            console.log(JSON.stringify(result));
+            console.log('result ' + JSON.stringify(result));
+            if(!result){
+                this.appointmentHasError = true;
+            }
             this.appointmentByInvitation = true;
             this.showGetInfoSpinner = false;
             if(!this.receivedContact) this.receivedContact = {};
@@ -259,6 +265,8 @@ export default class BookAppointment extends LightningElement {
                 this.receivedWorktype.AppTypeTranslationFR = result.tool.toolAppNameFR;
                 this.receivedWorktype.ProdSubGroupTranslationNL = result.tool.toolSubGrNameNL;
                 this.receivedWorktype.AppTypeTranslationNL = result.tool.toolAppNameNL;
+            } else {
+                this.appointmentHasError = true;
             }
             this.serviceResourceId = result.validServiceResourceId ? this.serviceAppointment.resourceId : null
 
@@ -269,6 +277,7 @@ export default class BookAppointment extends LightningElement {
                 this.showScreenThree = true;
                 this.currentStep = "3"
             }
+            this.hideButtonOnScreenNumber = this.currentStep
             this.handleScreenChange()
         }).catch(error => {
         })
@@ -290,6 +299,7 @@ export default class BookAppointment extends LightningElement {
         this.currentStep == "5" ? this.showScreenFive = true : this.showScreenFive = false;
         this.currentStep == "6" ? this.showScreenSix = true : this.showScreenSix = false;
         this.enableNextButton();
+        this.setPreviousButtonState(this.hideButtonOnScreenNumber);
     }
 
     enableNextButton() {
@@ -311,6 +321,14 @@ export default class BookAppointment extends LightningElement {
             this.showNextButton = true
         }
 
+    }
+
+    setPreviousButtonState(screenNumber){
+        if(this.appointmentByInvitation && this.currentStep == screenNumber) {
+            this.hidePreviousButton = true
+        } else {
+            this.hidePreviousButton = false
+        }
     }
 
     setToStepOne() {
@@ -444,6 +462,7 @@ export default class BookAppointment extends LightningElement {
 
             if(this.appointmentByInvitation) {
                 this.serviceAppointment.leadId = this.accountId;
+                console.log('account to link SA + ' + this.accountId)
                 saveServiceAppointmentObject({
                     serviceappointment: JSON.stringify(this.serviceAppointment)
                 }).then(SAResult => {
@@ -466,6 +485,7 @@ export default class BookAppointment extends LightningElement {
                     this.response.type = 'error';
                     this.response.message = this.label.Error;
                     this.showModal = true;
+                    console.log('SA invitation error ' + error)
                 })
             } else {
                 saveLeadObject({

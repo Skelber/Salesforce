@@ -19,12 +19,13 @@
                 </template>
             </template>
             <template if:false={appointmentHasError}>
-
-                <template if:false={notBookedViaWebsite}>
+                <template if:false={showGetInfoSpinner}>
+                    <template if:false={notBookedViaWebsite}>
                         <c-appointment-progress
                         show-default-progress={showDefaultProgress}
                         currentstep={currentStep}>
                     </c-appointment-progress>
+                </template>
             </template>
             <template if:true={showScreenOne}>
                 <c-select-patient 
@@ -78,6 +79,7 @@
             timeslot={receivedSlot}
             additionalinfo={receivedAdditionalInfo}
             not-booked-via-website={notBookedViaWebsite}
+            appointment-by-invitation={appointmentByInvitation}
             attachments-uploaded={attachmentsUploaded}>
         </c-patient-overview>
     </template>
@@ -87,7 +89,9 @@
         <div class="slds-grid slds-grid_align-end">
             <template if:false={showScreenOne}>
                 <template if:false={notBookedViaWebsite}>
-                    <lightning-button label={label.Previous} onclick={handlePrevious} disabled={disableButtons} class="slds-m-right_small"></lightning-button>
+                    <template if:false={hidePreviousButton}>
+                        <lightning-button label={label.Previous} onclick={handlePrevious} disabled={disableButtons} class="slds-m-right_small"></lightning-button>
+                    </template>
                 </template>
             </template>
             <template if:false={showScreenSix}>
@@ -151,6 +155,7 @@
       <template if:true={showGetInfoSpinner}>
         <div class="modal-backdropAllWhite">
             <lightning-spinner alternative-text="Loading" variant="brand" size="large"></lightning-spinner>
+            <p style="color: red">show spinner</p>
            </div>
        </template> 
 </template>

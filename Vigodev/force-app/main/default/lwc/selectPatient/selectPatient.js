@@ -332,8 +332,6 @@ export default class SelectPatient extends LightningElement {
     }
     
     @api passToParent() {
-        const selectedOption = this.options.find(opt => opt.value === this.relationToPatient);
-        this.contact.relationToPatientLabel = selectedOption?.label || null;
         const patientInfo = new CustomEvent('patientdetails',{
             detail: {
                 ...this.contact,

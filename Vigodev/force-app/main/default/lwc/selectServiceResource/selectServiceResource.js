@@ -66,6 +66,7 @@ export default class SelectServiceResource extends LightningElement {
     noSlotsOnCurrentDate = false
     showTimeSlots = false;
     showNoSlotsAvailable = false;
+    noWorktype = false;
     firstAvailableDate;
 
     @track timeslotMap = [];
@@ -267,7 +268,6 @@ export default class SelectServiceResource extends LightningElement {
     }
 
     callForData() {
-        console.log('calling for data')
         this.showSpinner = true;
         if(!this.serviceResourceId){
 
@@ -304,18 +304,14 @@ export default class SelectServiceResource extends LightningElement {
                 this.showSpinner = false;
             });
         } else {
-            console.log('calling for data by resource')
-            console.log('serviceResourceId: ' + this.serviceResourceId)
-            console.log('locationId: ' + this.location.recordId)
-            console.log('workTypeId: ' + this.worktype.RecordId)
-            console.log('selectedDate: ' + this.selectedDate)
             getTimeSlotsByResource({
                 selectedDate: this.selectedDate,
                 locatonId: this.location.recordId,
                 workTypeId: this.worktype.RecordId,
-                numberOfDays: 2,
+                numberOfDays: 30,
                 fixedResourceId: this.serviceResourceId
             }).then(result => {
+                console.log('length ' + result.length)
                 if (result.length == 3) {
                     this.showNoSlotsAvailable = true;
                 } else {
@@ -350,7 +346,6 @@ export default class SelectServiceResource extends LightningElement {
                     this.noSlotsOnCurrentDate = true;
                     this.firstAvailableDate = new Date(receivedDate).toISOString();
                 }
-                
                 this.showSpinner = false;
             })
             .catch(error => {
