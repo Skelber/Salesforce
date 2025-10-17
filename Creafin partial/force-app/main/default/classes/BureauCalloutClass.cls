@@ -58,7 +58,7 @@ public with sharing class BureauCalloutClass {
                     if (broker_type == '')
                         theBody += '"broker_type": {"id": null},';
                     else
-                        theBody += '"broker_type": {"id": ' + broker_type + '},';
+                        theBody += '"broker_type": {"definition": "' + broker_type + '"},';
                     theBody += '"account_manager": {"id":"' + newContact.Account_Manager_Creanet_Id__c + '"},';
                     theBody += '"external_id":"' + newContact.Id + '",';
                     theBody += '"parent_external_id":"' + newContact.AccountId + '"}';

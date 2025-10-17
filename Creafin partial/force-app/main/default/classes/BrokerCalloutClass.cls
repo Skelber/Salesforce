@@ -75,17 +75,17 @@ public with sharing class BrokerCalloutClass {
                     theBody += '"country": {"id": 2}},';
                     theBody += '"external_id":"' + newAccount.Id + '",';
                     if (fsma_status == '')
-                        theBody += '"fsma_status": {"id": null},';
+                        theBody += '"fsma_status": {"definition": null},';
                     else
-                        theBody += '"fsma_status": {"id": ' + fsma_status + '},';
+                        theBody += '"fsma_status": {"definition": "' + fsma_status + '"},';
                     if (broker_type == '')
-                        theBody += '"broker_type": {"id": null},';
+                        theBody += '"broker_type": {"definition": null},';
                     else
-                        theBody += '"broker_type": {"id": ' + broker_type + '},';
+                        theBody += '"broker_type": {"definition": "' + broker_type + '"},';
                     if (company_type == '')
-                        theBody += '"company_type": {"id": null},';
+                        theBody += '"company_type": {"definition": null},';
                     else
-                        theBody += '"company_type": {"id": ' + company_type + '},';
+                        theBody += '"company_type": {"definition": "' + company_type + '"},';
                     theBody += '"account_manager": {"id":"' + newAccount.Account_Manager_Creanet_Id__c + '"},';
                     //theBody += '"account_manager": {"id":"158"},';
                     theBody += '"bank_account":"' + newAccount.Rekeningnummer__c + '",';
