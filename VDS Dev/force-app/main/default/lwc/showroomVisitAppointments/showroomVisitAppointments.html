@@ -1,0 +1,23 @@
+<template>
+    <lightning-spinner if:true={loading} variant="brand" alternative-text="Loading"></lightning-spinner>
+
+    <lightning-tabset variant="vertical" lwc:if={showroomOptions.data}>
+        <template for:each={showroomOptions.data.values} for:item="showroom">
+            <lightning-tab  key={showroom.value} label={showroom.label} value={showroom.value} onactive={handleShowroomChange}>
+                <template if:true={showRelatedList}>
+                    <c-related-list
+                        related-list-data={visitReports}
+                        show-new-button={showNewButton}
+                        new-action-type="custom"
+                        onnewclick={createNewAppointment}
+                        max-row-selection="1" 
+                        onrowselectionchange={handleVisitReportSelection}></c-related-list>
+                </template>
+            </lightning-tab>
+        </template>
+    </lightning-tabset>
+    
+    <div class="slds-var-m-top_large" style="display: flex; justify-content: flex-end">
+        <lightning-button variant="brand" label="Next" onclick={goNext} class="slds-var-m-left_medium"></lightning-button>
+    </div>
+</template>

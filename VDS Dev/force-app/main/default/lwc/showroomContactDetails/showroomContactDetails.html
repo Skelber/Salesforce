@@ -1,0 +1,72 @@
+<template>
+    <lightning-spinner if:true={saving} variant="brand" alternative-text="Loading"></lightning-spinner>
+
+    <c-lookup onsearch={handleContactSearch} onselectionchange={handleContactLookupChange}
+        variant="label-hidden"
+        selection={selectedEntity}
+        placeholder="Search for contacts and leads">
+    </c-lookup>
+
+    <div style="display: flex; justify-content: center" if:true={isLeadSelected} class="slds-var-m-top_medium">
+        <lightning-button
+                type="button"
+                name="submit"
+                onclick={handleConvertLead}
+                label={saveButtonLabel}
+        >
+        </lightning-button>
+    </div>
+
+    <lightning-record-edit-form
+        if:false={isLeadSelected}
+        object-api-name="Contact"
+        record-id={contactId}
+        onsuccess={handleSaveSuccess}
+        onsubmit={handleSubmit}
+        onerror={handleError}
+    >
+        <lightning-messages></lightning-messages>
+        <div style="display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; grid-gap: 20px" class="slds-var-m-top_medium">
+            <div class="slds-var-m-top_xx-small">
+                <c-lookup onsearch={handleAccountSearch} onselectionchange={handleAccountLookupChange}
+                    selection={selectedAccount}
+                    label="Account"
+                    required
+                    placeholder="Search by name, address or client number">
+                </c-lookup>
+                <lightning-input-field field-name="Name" required variant="label-stacked"></lightning-input-field>
+                <lightning-input-field field-name="MCAE_ShowroomInterest__c" variant="label-stacked"></lightning-input-field>
+                <lightning-input-field field-name="MCAE_ContactVia__c" variant="label-stacked"></lightning-input-field>
+                <lightning-input type="checkbox" variant="label-stacked" label="Create extra Contact" checked={createExtraContact} onchange={handleCreateExtraContactChange} ></lightning-input>
+            </div>
+            <div>
+                <lightning-input-field field-name="Email" required variant="label-stacked"></lightning-input-field>
+                <lightning-input-field field-name="Phone" variant="label-stacked"></lightning-input-field>
+                <lightning-input-field field-name="Language__c" required variant="label-stacked"></lightning-input-field>
+                <lightning-input-address
+                                required
+                                variant="label-stacked"
+                                show-address-lookup
+                                address-label="Adres"
+                                street-label="Straat"
+                                street={selectedAddress.street}
+                                city-label="Stad"
+                                city={selectedAddress.city}
+                                province-label="Provincie"
+                                country-label="Land"
+                                country={selectedAddress.countryCode}
+                                country-options={countries}
+                                postal-code-label="Postcode"
+                                postal-code={selectedAddress.postalCode}></lightning-input-address>
+            </div>
+        </div>
+        <div style="display:flex; justify-content: center" class="slds-var-m-top_medium">
+            <lightning-button
+                type="submit"
+                name="submit"
+                label={saveButtonLabel}
+            >
+            </lightning-button>
+        </div>
+    </lightning-record-edit-form>
+</template>

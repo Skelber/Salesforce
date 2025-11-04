@@ -1,0 +1,54 @@
+<!--
+ - Created by Tom Vanhouche on 10/04/2024.
+ -->
+
+<!-- Related List -->
+<template>
+    <lightning-card class="related-list-card slds-card_boundary" variant="base">
+        <h3 slot="title" class="slds-card__header-title">
+            <lightning-icon
+                icon-name={icon}
+                size="small"
+                class="slds-var-m-right_small"
+            ></lightning-icon>
+            {title} ({recordCount})
+        </h3>
+        <div slot="actions" class="slds-col slds-no-flex slds-grid slds-align-bottom">
+            <lightning-button-icon
+                lwc:if={hasFilters}
+                icon-name="utility:filterList"
+                variant="border-filled"
+                onclick={openFilterModal}
+            ></lightning-button-icon>
+            <lightning-button
+                lwc:if={showNewButton}
+                label={labels.newRecord}
+                variant="border-filled"
+                onclick={newRecord}
+                class="slds-var-p-left_x-small"
+            ></lightning-button>
+        </div>
+        <p class="slds-text-body_small slds-var-m-left_medium slds-var-m-bottom_large" role="status">
+            {recordCount} {labels.items}
+            <template lwc:if={sortedByLabel}> • {labels.sortedBy} {sortedByLabel}</template>
+            <template lwc:if={activeFiltersLabel}> • {labels.filteredBy} {activeFiltersLabel}</template>
+        </p>
+        <div class="card-content">
+            <lightning-datatable
+                key-field="Id"
+                columns={columns}
+                data={filteredRecords}
+                column-widths-mode="auto"
+                min-column-width="100"
+                max-row-selection={maxRowSelection}
+                onrowselection={handleRowSelection}
+                hide-checkbox-column={hideCheckboxColumn}
+                show-row-number-column="true"
+                sorted-direction={sortDirection}
+                sorted-by={sortedBy}
+                onsort={sortRecords}
+            >
+            </lightning-datatable>
+        </div>
+    </lightning-card>
+</template>

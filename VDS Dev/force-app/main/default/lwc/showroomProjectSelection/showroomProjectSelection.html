@@ -1,0 +1,60 @@
+<template>
+    <lightning-spinner if:true={showSpinner} variant="brand" alternative-text="Loading"></lightning-spinner>
+
+    <c-lookup onsearch={handleProjectSearch}
+            onselectionchange={handleProjectSelectionChange}
+            is-multi-entry="true"
+            hide-selection="true"
+            variant="label-hidden"
+            placeholder="Search for projects">
+    </c-lookup>
+
+    <div class="slds-var-m-bottom_xx-large"></div>
+
+    <lightning-tabset variant="vertical" active-tab-value={selectedProjectVisitId}>
+        <template for:each={projectVisits} for:item="projectVisit">
+            <lightning-tab  key={projectVisit.id} label={projectVisit.projectName} value={projectVisit.id} onactive={handleSelectedProjectChange}>
+                <div style="display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; grid-gap: 20px" class="slds-var-m-top_medium">
+                    <div>
+                        <lightning-record-form
+                                record-id={projectVisit.projectId}
+                                object-api-name="Opportunity"
+                                fields={projectFields}
+                                mode="readonly"
+                        >
+                        </lightning-record-form>
+                        <lightning-button class="slds-var-m-top_medium" variant="base" label="Remove project from the list" onclick={removeProject} data-id={projectVisit.id}></lightning-button>
+                    </div>
+                    <div>
+                        <c-lookup onsearch={handleProductSearch} onselectionchange={handleProductSelectionChange}
+                                    is-multi-entry="true"
+                                    hide-selection="true"
+                                    label="Products"
+                                    placeholder="Search for products">
+                        </c-lookup>
+
+                        <table class="slds-var-m-top_medium">
+                            <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Amount m<sup>2</sup></th>
+                                <th>Sample provided</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tr for:each={lineItems} for:item="lineItem" key={lineItem.id}>
+                                <td>{lineItem.productName}</td>
+                                <td><lightning-input style="width: 50%" type="number" variant="label-hidden" data-id={lineItem.id} value={lineItem.amountM2} onchange={handleLineItemAmountM2Change}></lightning-input></td>
+                                <td><lightning-input type="toggle" variant="label-hidden" checked={lineItem.sampleProvided} data-id={lineItem.id} onchange={handleLineItemSampleProvidedChange}></lightning-input></td>
+                                <td><lightning-button-icon icon-name="action:delete" variant="bare" data-id={lineItem.id} onclick={removeLineItem}></lightning-button-icon></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </lightning-tab>
+        </template>
+        <lightning-tab label="+ create new project" onactive={handleNewProject}>
+            <lightning-flow flow-api-name="SCREEN_Showroom_Create_Project" flow-input-variables={flowInput} onstatuschange={handleFlowStatusChange}> </lightning-flow>
+        </lightning-tab>
+    </lightning-tabset>
+</template>

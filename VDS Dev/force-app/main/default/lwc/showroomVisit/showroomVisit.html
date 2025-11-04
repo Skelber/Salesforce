@@ -1,0 +1,23 @@
+<!--
+ - Created by Tom Vanhouche on 09/09/2024.
+ -->
+<!-- Showroom Visit -->
+<template>
+    <lightning-card title="Showroom Visit">
+        <div class="slds-var-p-left_x-large slds-var-m-bottom_large">
+            <lightning-progress-indicator current-step={currentStage} type="path" variant="base">
+                <lightning-progress-step label="Appointment" value={STAGE_APPOINTMENT}></lightning-progress-step>
+                <lightning-progress-step label="Contact details" value={STAGE_CONTACT_DETAILS}></lightning-progress-step>
+                <lightning-progress-step label="Projects" value={STAGE_PROJECTS}></lightning-progress-step>
+                <lightning-progress-step label="Summary" value={STAGE_SUMMARY}></lightning-progress-step>
+            </lightning-progress-indicator>
+        </div>
+
+        <div class="slds-var-p-around_large">
+            <c-showroom-visit-appointments if:true={showAppointments} onvisitreportchange={handleVisitReportChange} onnext={handleNext}></c-showroom-visit-appointments>
+            <c-showroom-contact-details if:true={showContactDetails} visit-report-id={visitReportId} onprevious={handlePrevious} onnext={handleNext}></c-showroom-contact-details>
+            <c-showroom-project-selection if:true={showProjects} visit-report-id={visitReportId}  onprevious={handlePrevious} onnext={handleNext}></c-showroom-project-selection>
+            <c-showroom-visit-summary if:true={showSummary} visit-report-id={visitReportId}  onprevious={handlePrevious} onnext={handleNext}></c-showroom-visit-summary>
+        </div>
+    </lightning-card>
+</template>

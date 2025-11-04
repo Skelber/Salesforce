@@ -1,0 +1,47 @@
+<!--
+ - Created by Tom Vanhouche on 09/09/2024.
+ -->
+<!-- Showroom Visit Summary -->
+<template>
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_2-of-3">
+            <lightning-record-form
+                record-id={visitReportId}
+                object-api-name="Visit_Report__c"
+                fields={visitReportFields}
+                mode="readonly"
+            >
+            </lightning-record-form>
+
+            <div class="slds-var-p-around_x-large"></div>
+
+            <lightning-record-form
+                if:true={contactId}
+                record-id={contactId}
+                object-api-name="Contact"
+                fields={contactFields}
+                mode="readonly"
+            >
+            </lightning-record-form>
+        </div>
+        <div class="slds-col slds-size_1-of-3">
+            <p class="slds-text-heading_small">Projects discussed</p>
+            <ol if:true={projectVisits} class="slds-list_dotted">
+                <template for:each={projectVisits} for:item="projectVisit">
+                    <li key={projectVisit.id} class="slds-var-p-bottom_medium">
+                        {projectVisit.projectName}
+                    </li>
+                </template>
+            </ol>
+
+            <p class="slds-text-heading_small slds-var-p-top_medium">Samples</p>
+            <ol if:true={projectVisits} class="slds-list_dotted">
+                <template for:each={projectVisits} for:item="projectVisit">
+                    <template for:each={projectVisit.lineItems} for:item="lineItem">
+                        <li lwc:if={lineItem.sampleprovided}  key={lineItem.id}>{lineItem.productName}</li>
+                    </template>
+                </template>
+            </ol>
+        </div>
+    </div>
+</template>

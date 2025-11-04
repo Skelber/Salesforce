@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <isExposed>true</isExposed>
+    <description>Showroom Visit Contact Details</description>
+    <masterLabel>Showroom Visit Contact Details</masterLabel>
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <property name="visitReportId" label="Visit Report Id" type="String" role="inputOnly" />
+            <property name="firstContactLinked" label="First Contact Linked?" type="Boolean" role="inputOnly" />
+            <property name="createExtraContact" label="Create extra contact?" type="Boolean" role="outputOnly" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
