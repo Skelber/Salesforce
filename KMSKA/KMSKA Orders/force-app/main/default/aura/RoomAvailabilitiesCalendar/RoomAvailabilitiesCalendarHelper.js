@@ -1,5 +1,5 @@
 ({
-    loadData : function(cmp,evt){
+    /*loadData : function(cmp,evt){
         var self = this;
         var params = {'selRoom' : cmp.get('v.room')};
         return new Promise(
@@ -14,7 +14,7 @@
                 );
             }
         );
-    },
+    }, */
     
     drawCalendar: function(cmp,evt) {
         const Wdays = ["zo","ma","di","wo","do","vr","za"];
@@ -53,6 +53,16 @@
             eventRender: function (info) {},
             header: false,
             events: self.loadCalendarData(cmp,evt),
+            
+            eventSources: [
+                {
+                    events: function(info,successCallback, failureCallback){
+                        return self.eventSourceHandler(cmp,evt,info,successCallback, failureCallback);
+                    },
+                    id: "custom"
+                }
+            ],
+            
             selectable: false,
             
             eventMouseEnter: function (info) {
@@ -109,7 +119,22 @@
         self.setCalendarLabel(cmp,calendar);
     },
     
-    loadCalendarData : function(cmp,evt) {
+    eventSourceHandler: function(cmp,evt,info, successCallback, failureCallback) {
+        cmp.set('v.isSpinner',true);
+        var self = this;
+        var params = {'selRoom' : cmp.get('v.room'),'startDate' : info.start,'endDate' : info.end};
+        
+        this.apexCallHandler(cmp,'getData',params)
+        .then(result =>{
+            cmp.set('v.dataLst', result);
+            successCallback(self.loadCalendarData(cmp,evt));
+        }).catch(error =>{
+            cmp.set('v.isSpinner',false);
+            failureCallback(error);
+        });
+   	},
+   
+  	loadCalendarData : function(cmp,evt) {
         var result = cmp.get('v.dataLst');
         var dataSet = [];
         for(var i=0; i<result.length; i++){
@@ -126,6 +151,7 @@
                 textColor 		: data.eventTextColor
             });
         }
+        cmp.set('v.isSpinner',false);
         return dataSet;
     },
     
@@ -188,6 +214,8 @@
     handleDatachange: function(cmp,evt){
         var self = this;
         var calendar = cmp.get('v.calendar');
+        calendar.refetchEvents();
+        /*
         self.loadData(cmp,evt)
         .then(function(result){
             calendar.removeAllEvents();
@@ -195,6 +223,7 @@
             calendar.render();
             self.setCalendarLabel(cmp,calendar);
         });
+        */
     },
     
     handleCalFunction: function(cmp,fName){

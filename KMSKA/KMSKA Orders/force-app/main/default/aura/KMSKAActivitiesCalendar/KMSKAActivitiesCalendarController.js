@@ -52,13 +52,17 @@
     },
     
     refresh: function(cmp, evt,helper) {
+        cmp.set('v.isSpinner',true);
         var calendar = cmp.get('v.calendar');
         helper.loadData(cmp,evt)
         .then(function(result){
+            calendar.refetchEvents();
+            /* 
             calendar.removeAllEvents();
             calendar.addEventSource(helper.loadCalendarData(cmp,evt));
             calendar.render();
             helper.setCalendarLabel(cmp,calendar);
+            */
         });
     },
 })

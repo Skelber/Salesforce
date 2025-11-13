@@ -6,7 +6,7 @@ public class PlanningWizardController {
     
     @AuraEnabled
     public static Planning__c getPlanningRecord(Id recordId){
-        Planning__c plan = [SELECT Id, Name, End__c, Start__c, KMSKA_Activity__c, Description__c, 
+        Planning__c plan = [SELECT Id, Name, End__c, Start__c, KMSKA_Activity__c, Description__c, Main_Stage__c,
                             Room__c,Room__r.Name
                             FROM Planning__c
                             WHERE Id =:recordId
@@ -18,7 +18,7 @@ public class PlanningWizardController {
     public static Map<Date, List<Plannings>> getPlannings(Id oppId){
         Map<Date, List<Plannings>> planningMap = new Map<Date, List<Plannings>>();
         
-        List<Planning__c> plannings = [SELECT Id, Name, End__c, Start__c, KMSKA_Activity__c, Description__c, 
+        List<Planning__c> plannings = [SELECT Id, Name, End__c, Start__c, KMSKA_Activity__c, Description__c, Main_Stage__c,
                                        Room__c,Room__r.Name
                                        FROM Planning__c
                                        WHERE KMSKA_Activity__c =:oppId
@@ -62,6 +62,7 @@ public class PlanningWizardController {
             p.description = plan.Description__c;
             p.RoomId = plan.Room__c;
             p.Room = plan.Room__r.Name;
+            p.mainStage = plan.Main_Stage__c;
             
             if(plan.Start__c!=null && plan.End__c!=null 
                && (plan.Start__c).Date()!=(plan.End__c).Date())
@@ -110,7 +111,7 @@ public class PlanningWizardController {
     
     @AuraEnabled
     public static List<Planning__c> getAssignedResources(Planning__c planning){
-        List<Planning__c> plannings = [SELECT Id, Name, End__c, Start__c, Type__c,Description__c, 
+        List<Planning__c> plannings = [SELECT Id, Name, End__c, Start__c, Type__c,Description__c, Main_Stage__c, 
                                        Room__c,KMSKA_Activity__c,KMSKA_Activity__r.Name,KMSKA_Activity__r.StageName 
                                        FROM Planning__c
                                        WHERE Room__c!=null 
@@ -175,5 +176,6 @@ public class PlanningWizardController {
         @AuraEnabled public String      description {get;set;}
         @AuraEnabled public String      Room {get;set;}
         @AuraEnabled public Id          RoomId {get;set;}
+        @AuraEnabled public Boolean     mainStage {get;set;}
     }
 }

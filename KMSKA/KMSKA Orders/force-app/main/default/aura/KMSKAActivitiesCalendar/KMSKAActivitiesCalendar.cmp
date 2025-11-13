@@ -42,7 +42,6 @@
     <aura:attribute name="showTooltip" type="Boolean" default="false" />
     <aura:attribute name="tooltipStyle" type="string" default="display:none;" />
     
-    
     <aura:attribute name="calendarStyleHeight" type="string" default="" />
     <aura:attribute name="calendar" type="object" />
     <aura:attribute name="calendarLabel" type="string" default="" />
@@ -58,12 +57,14 @@
     <aura:attribute name="oppAccount" type="string" default="" />
     <aura:attribute name="createdBy" type="string" />
     <aura:attribute name="zaal" type="string" />
+    <aura:attribute name="product" type="string" default="" />
     
     
     <div aura:id="calendarHome" class="calendarHome slds-is-relative">
         <aura:if isTrue="{!v.isSpinner}">
-        	<lightning:spinner alternativeText="Loading" size="medium" />
+            <lightning:spinner alternativeText="Loading" size="medium" />
         </aura:if>
+        
         <aura:if isTrue="{!v.showTooltip}">
             <div>
                 <section  aura:id="calendar-event-tooltip" aria-labelledby="panel-heading-id" class="slds-popover slds-popover_panel slds-nubbin_bottom-left" 
@@ -131,6 +132,7 @@
                                         <dd>{!v.oppAccount}</dd>
                                     </dl>
                                 </div>
+                        
                             </aura:if>
                             <aura:if isTrue="{!(v.calType=='Opportunity')}">
                                 <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
@@ -198,6 +200,18 @@
                                             </p>
                                         </dt>
                                         <dd>{!v.zaal}</dd>
+                                    </dl>
+                                </div>
+                            </aura:if>
+                            <aura:if isTrue="{!(v.calType!='Opportunity')}">
+                                <div class="slds-p-horizontal_small slds-size_1-of-2 slds-p-bottom_x-small">
+                                    <dl>
+                                        <dt>
+                                            <p class="slds-popover_panel__label slds-truncate" title="Product">
+                                                Product
+                                            </p>
+                                        </dt>
+                                        <dd>{!v.product}</dd>
                                     </dl>
                                 </div>
                             </aura:if>

@@ -70,6 +70,7 @@
                 backgroundColor : data.ebgColor,
                 textColor 		: data.eventTextColor,
                 guide			: data.guide,
+                product         : data.product,
                 oppAccount		: data.oppAccount,
                 allDay 			: data.isAllDay,
                 createdBy		: data.createdBy,
@@ -151,6 +152,7 @@
             eventOverlap: false,
             eventRender: function (info) {},
             header: false,
+            
             //events: self.loadCalendarData(cmp,evt),
             eventSources: [
                 {
@@ -160,6 +162,7 @@
                     id: "custom"
                 }
             ],
+            
             dayRender : function (info){
                 let isupdated = false;
                 if(info.date.getDay()==0 || info.date.getDay()==6){
@@ -187,12 +190,14 @@
                     }
                 }
             },
+            
             eventMouseEnter: function (info) {
                 if(info.event.extendedProps.eType!='holidayevent'){
                     cmp.set('v.showTooltip',true);
                     var evtData = info.event.extendedProps.data;
                     var Sdate = new Date(evtData.startDatetime);
-                    var Edate = new Date(evtData.endDatetime);
+                    //var Edate = new Date(evtData.endDatetime);
+                    var Edate = new Date(evtData.actualEndDatetime);
                     
                     const startDate = self.formatTwoDigits(Sdate.getDate())+"/"+self.formatTwoDigits(Sdate.getMonth()+1)+"/"+Sdate.getFullYear();
                     const endDate = self.formatTwoDigits(Edate.getDate())+"/"+self.formatTwoDigits(Edate.getMonth()+1)+"/"+Edate.getFullYear();
@@ -209,6 +214,7 @@
                     cmp.set('v.oppAccount', info.event.extendedProps.oppAccount);
                     cmp.set('v.createdBy', info.event.extendedProps.createdBy);
                     cmp.set('v.zaal', info.event.extendedProps.data.zaal);
+                    cmp.set('v.product', info.event.extendedProps.product);
                     
                     const calendarHome =  cmp.find("calendar").getElement();
                     const eleRect = info.el.getBoundingClientRect();
@@ -254,20 +260,19 @@
         cmp.set('v.isSpinner',true);
         var self = this;
         var params = {
-            'startDate' : info.start,
-            'endDate' : info.end,
             'calType' : cmp.get('v.calType'),
             'oppType': cmp.get('v.oppType'),
             'isCommunity': cmp.get('v.isCommunity'),
-            'APtype' : cmp.get('v.calTypeCommunity')
+            'APtype' : cmp.get('v.calTypeCommunity'),
+            'startDate' : info.start,
+            'endDate' : info.end,
         };
         
         this.apexCallHandler(cmp,'getData',params)
-        .then(result => {
+        .then(result =>{
             cmp.set('v.dataLst', result);
             successCallback(self.loadCalendarData(cmp,evt));
-        })
-        .catch(error => {
+        }).catch(error =>{
             cmp.set('v.isSpinner',false);
             failureCallback(error);
         });
@@ -292,14 +297,18 @@
     },
     
     handleDatachange: function(cmp,evt){
+        cmp.set('v.isSpinner',true);
         var self = this;
         var calendar = cmp.get('v.calendar');
         self.loadData(cmp,evt)
         .then(function(result){
+            calendar.refetchEvents();
+            /*
             calendar.removeAllEvents();
             calendar.addEventSource(self.loadCalendarData(cmp,evt));
             calendar.render();
             self.setCalendarLabel(cmp,calendar);
+            */
         });
     },
     

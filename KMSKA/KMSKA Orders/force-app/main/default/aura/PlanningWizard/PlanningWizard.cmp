@@ -70,7 +70,12 @@
                             <span class="slds-truncate"  title="Omschrijving">
                                 Omschrijving
                             </span>  
-                        </th> 
+                        </th>
+                        <th class="slds-is-sortable slds-text-title--caps" scope="col" style="width:101px;">
+                            <span class="slds-truncate"  title="Omschrijving">
+                                Main Stage
+                            </span>  
+                        </th>
                         <th class="slds-is-sortable slds-text-title--caps" scope="col" style="width:101px;">
                             <span class="slds-truncate"  title="Zaal">
                                 Zaal
@@ -118,6 +123,11 @@
                                     <td class="slds-cell-wrap" style="width:101px;word-break: break-all;">   
                                         <div class="slds-line-clamp">
                                             {!p.description}
+                                        </div>
+                                    </td>
+                                    <td style="width:101px;word-break: break-all;padding-left:20px;">    
+                                        <div class="slds-truncate" >
+                                            <lightning:input type="checkbox" variant="label-hidden" label="#" name="input2" checked="{!p.mainStage}" disabled="true"/>
                                         </div>
                                     </td>
                                     <td style="width:101px;word-break: break-all;">    
@@ -213,6 +223,12 @@
                                                            />
                                         </lightning:layoutItem>
                                         
+                                        <lightning:layoutItem size="6" padding="around-small">
+                                            <h2 class="header">
+                                                Main Stage
+                                            </h2>
+                                            <lightning:input type="checkbox" name="MainStage" variant="label-hidden" label="Main Stage" checked="{!v.newPlanning.Main_Stage__c}"/>
+                                        </lightning:layoutItem>
                                     </lightning:layout>
                                     
                                     <div class="slds-m-top--small" style="min-height:60px">

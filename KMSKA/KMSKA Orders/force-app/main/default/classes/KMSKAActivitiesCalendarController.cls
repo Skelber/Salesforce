@@ -31,14 +31,12 @@ public class KMSKAActivitiesCalendarController {
     }
     
     @AuraEnabled
-    public static List<calendarData> getData(Date startDate, Date endDate, String calType, String oppType, Boolean isCommunity, String APtype){
+    public static List<calendarData> getData(String calType, String oppType, Boolean isCommunity, String APtype, Date startDate, Date endDate){
         startDate = startDate.addDays(-1);
         endDate = endDate.addDays(1);
         
-        System.debug('calType : ' + calType);
         List<calendarData> dataLst = new List<calendarData>();
         if(calType=='Opportunity'){
-            
             Map<String,String> colors = getCalendarColors(calType);
             List<Opportunity> oppLst = getActivities(oppType,startDate,endDate);
             for(Opportunity opp: oppLst){
@@ -48,6 +46,7 @@ public class KMSKAActivitiesCalendarController {
                 data.title = opp.Name + (' For : ' + opp.Account.Name);
                 data.startDatetime = opp.Start_Time__c;
                 data.endDatetime = opp.End_Time__c;
+                data.actualEndDatetime = opp.End_Time__c;
                 data.name = opp.Name;
                 data.parent = opp.Account.Name;
                 data.eType = opp.Type;
@@ -65,9 +64,24 @@ public class KMSKAActivitiesCalendarController {
                 
                 data.participants = String.valueof(opp.Participants__c);
                 data.isAllDay = (opp.All_Day_Event__c)?true:false;
+                if(data.isAllDay){
+                    data.endDatetime = (opp.End_Time__c).addDays(1);
+                }
                 
-                if(opp.Order_lines__r.size()>0){
-                    data.zaal = opp.Order_lines__r[0].Sub_Type__c;
+                
+                if(opp.Planningen__r.size()>0){
+                    String zaal = '';
+                    for(Planning__c p : opp.Planningen__r){
+                        if(p.Room__c != NULL){
+                            zaal += p.Room__r.Name + ', ';
+                        }
+                    }
+                    if(zaal != ''){
+                        zaal = zaal.substring(0, zaal.length()-2);
+                    }else{
+                        zaal = 'Geen zaal geselecteerd';
+                    }
+                    data.zaal = zaal;
                 }else{
                     data.zaal = 'Geen zaal geselecteerd';
                 }
@@ -76,6 +90,7 @@ public class KMSKAActivitiesCalendarController {
             }
         }else{
             List<Activity_Product__c> products = getActivitieProducts(isCommunity,APtype,startDate,endDate);
+            Map<String,String> colors = getCalendarColors('Opportunity');
             for(Activity_Product__c pro: products){
                 calendarData data = new calendarData();
                 data.recordId = pro.Id;
@@ -88,9 +103,11 @@ public class KMSKAActivitiesCalendarController {
                 
                 data.startDatetime = pro.Start_Time__c;
                 data.endDatetime = pro.End_Time__c;
+                data.actualEndDatetime = pro.End_Time__c;
                 data.name = pro.Name;
                 data.parent = pro.Opportunity__r.Name;
                 data.oppAccount = pro.Opportunity__r.Account.Name;
+                data.product = pro.KMSKA_Product__r.Name;
                 
                 if(pro.Assigned_Guide__c != null){
                     String guideName = pro.Assigned_Guide__c;
@@ -108,8 +125,19 @@ public class KMSKAActivitiesCalendarController {
                 }
                 
                 data.eType = '';
-                data.ebgColor = System.Label.Default_Activity_Calendar_Color;
-                data.eventTextColor = 'white';
+               // data.ebgColor = colors.get(pro.Opportunity__r.Type);
+                 if(pro.Opportunity__r.StageName=='In optie'){
+                    data.ebgColor = System.Label.In_optie_Opps_Calendar_Color;
+                    data.eventTextColor = 'black';
+                }else{
+                    if(colors.containsKey(pro.Opportunity__r.Type)){
+                        data.ebgColor = colors.get(pro.Opportunity__r.Type);
+                    }else{
+                        data.ebgColor = System.Label.Default_Activity_Calendar_Color;
+                    }
+                    data.eventTextColor = 'white';
+                }
+               // data.eventTextColor = 'white';
                 data.participants = String.valueof(pro.Opportunity__r.Participants__c);
                 data.isAllDay = false;
                 dataLst.add(data);
@@ -124,32 +152,28 @@ public class KMSKAActivitiesCalendarController {
         if(oppType!=null && oppType!=''){
             opps = [SELECT Id, Name, StageName, Amount, Probability, Type, RecordTypeId, RecordType.Name,
                     Account.Name,Start_Time__c, End_Time__c,Participants__c,All_Day_Event__c,CreatedBy.Name,
-                    (SELECT Id, Sub_Type__c FROM Order_lines__r WHERE Type__c = 'Zaal' ORDER BY CreatedDate)
+                    (SELECT Id, Name, Main_Stage__c, Room__c, Room__r.Name, KMSKA_Activity__c FROM Planningen__r WHERE Main_Stage__c = true)
                     FROM Opportunity
                     WHERE RecordType.Name='KMSKA Activities' AND Type =:oppType
                     AND StageName !='Aangekocht'
                     AND StageName !='Afgewezen' AND StageName !='Withdrawn'
                     AND StageName !='Geannuleerd' AND StageName !='Geweigerd'
-                    AND (
-                        (Start_Time__c >= :startDate AND Start_Time__c <= :endDate)
-                        OR 
-                        (End_Time__c >= :startDate AND End_Time__c <= :endDate)
-                    )
+                    AND (((Start_Time__c >= :startDate AND Start_Time__c <= :endDate) OR (End_Time__c >= :startDate AND End_Time__c <= :endDate)) 
+                         OR (Start_Time__c <= :startDate AND End_Time__c >= :startDate AND Start_Time__c <= :endDate AND End_Time__c >= :endDate)
+                        )
                    ];
         }else{
             opps = [SELECT Id, Name, StageName, Amount, Probability, Type, RecordTypeId, RecordType.Name,
                     Account.Name,Start_Time__c, End_Time__c,Participants__c,All_Day_Event__c,CreatedBy.Name,
-                    (SELECT Id, Sub_Type__c FROM Order_lines__r WHERE Type__c = 'Zaal' ORDER BY CreatedDate)
+                    (SELECT Id, Name, Main_Stage__c, Room__c, Room__r.Name, KMSKA_Activity__c FROM Planningen__r WHERE Main_Stage__c = true)
                     FROM Opportunity
                     WHERE RecordType.Name='KMSKA Activities'
                     AND StageName !='Aangekocht'
                     AND StageName !='Afgewezen' AND StageName !='Withdrawn'
                     AND StageName !='Geannuleerd' AND StageName !='Geweigerd'
-                    AND (
-                        (Start_Time__c >= :startDate AND Start_Time__c <= :endDate)
-                        OR 
-                        (End_Time__c >= :startDate AND End_Time__c <= :endDate)
-                    )
+                    AND (((Start_Time__c >= :startDate AND Start_Time__c <= :endDate) OR (End_Time__c >= :startDate AND End_Time__c <= :endDate)) 
+                         OR (Start_Time__c <= :startDate AND End_Time__c >= :startDate AND Start_Time__c <= :endDate AND End_Time__c >= :endDate)
+                        )
                    ];
         }
         
@@ -161,48 +185,42 @@ public class KMSKAActivitiesCalendarController {
         List<Activity_Product__c> activityProducts = new List<Activity_Product__c>();
         if(isCommunity){
             if(APtype=='Alle'){
-                activityProducts = [SELECT Id, Name, Opportunity__c, Opportunity__r.Name, KMSKA_Product__c, Assigned_Guide__c,
-                                    KMSKA_Product__r.Name, Start_Time__c, End_Time__c, Opportunity__r.Participants__c,
+                activityProducts = [SELECT Id, Name, Opportunity__c, Opportunity__r.Name, KMSKA_Product__c, Assigned_Guide__c,Opportunity_Type__c,
+                                    KMSKA_Product__r.Name, Start_Time__c, Opportunity__r.StageName, End_Time__c, Opportunity__r.Participants__c, Opportunity__r.Type,
                                     Availablility__c, Availablility__r.Guide__c,Availablility__r.Guide__r.FirstName,Availablility__r.Guide__r.LastName,
                                     Opportunity__r.Account.Name,CreatedBy.Name
                                     FROM Activity_Product__c
                                     WHERE Start_Time__c!=null AND End_Time__c!=null AND Status__c != 'Annulatie'
                                     AND (Type__c ='rondleiding' OR Type__c ='Atelier')
-                                    AND (
-                                        (Start_Time__c >= :startDate AND Start_Time__c <= :endDate)
-                                        OR 
-                                        (End_Time__c >= :startDate AND End_Time__c <= :endDate)
-                                    )
+                                    AND (((Start_Time__c >= :startDate AND Start_Time__c <= :endDate) OR (End_Time__c >= :startDate AND End_Time__c <= :endDate)) 
+                                         OR (Start_Time__c <= :startDate AND End_Time__c >= :startDate AND Start_Time__c <= :endDate AND End_Time__c >= :endDate)
+                                        )
                                    ];
             }else{
                 String APT = (APtype=='Rondleiding')?'rondleiding':'Atelier';
                 if(APtype=='Groepsevents')APT = 'groepsevents';
-                activityProducts = [SELECT Id, Name, Opportunity__c, Opportunity__r.Name, KMSKA_Product__c, Assigned_Guide__c,
-                                    KMSKA_Product__r.Name, Start_Time__c, End_Time__c, Opportunity__r.Participants__c,
+                activityProducts = [SELECT Id, Name, Opportunity__c, Opportunity__r.Name, KMSKA_Product__c, Assigned_Guide__c, Opportunity__r.Type,
+                                    KMSKA_Product__r.Name, Opportunity__r.StageName, Start_Time__c, End_Time__c, Opportunity__r.Participants__c,Opportunity_Type__c,
                                     Availablility__c, Availablility__r.Guide__c,Availablility__r.Guide__r.FirstName,Availablility__r.Guide__r.LastName,
                                     Opportunity__r.Account.Name,CreatedBy.Name
                                     FROM Activity_Product__c
                                     WHERE Start_Time__c!=null AND End_Time__c!=null AND Status__c != 'Annulatie'
                                     AND Type__c =: APT
-                                    AND (
-                                        (Start_Time__c >= :startDate AND Start_Time__c <= :endDate)
-                                        OR 
-                                        (End_Time__c >= :startDate AND End_Time__c <= :endDate)
-                                    )
+                                    AND (((Start_Time__c >= :startDate AND Start_Time__c <= :endDate) OR (End_Time__c >= :startDate AND End_Time__c <= :endDate)) 
+                                         OR (Start_Time__c <= :startDate AND End_Time__c >= :startDate AND Start_Time__c <= :endDate AND End_Time__c >= :endDate)
+                                        )
                                    ];
             }
         }else{
-            activityProducts = [SELECT Id, Name, Opportunity__c, Opportunity__r.Name, KMSKA_Product__c, Assigned_Guide__c,
-                                KMSKA_Product__r.Name, Start_Time__c, End_Time__c, Opportunity__r.Participants__c,
+            activityProducts = [SELECT Id, Name, Opportunity__c, Opportunity__r.Name, KMSKA_Product__c, Assigned_Guide__c,Opportunity__r.Type,
+                                KMSKA_Product__r.Name, Opportunity__r.StageName, Start_Time__c, End_Time__c, Opportunity__r.Participants__c,
                                 Availablility__c, Availablility__r.Guide__c,Availablility__r.Guide__r.FirstName,Availablility__r.Guide__r.LastName, Opportunity__r.Accountid,
                                 Opportunity__r.Account.Name,CreatedBy.Name
                                 FROM Activity_Product__c
                                 WHERE Start_Time__c!=null AND End_Time__c!=null AND Status__c != 'Annulatie'
-                                AND (
-                                    (Start_Time__c >= :startDate AND Start_Time__c <= :endDate)
-                                    OR 
-                                    (End_Time__c >= :startDate AND End_Time__c <= :endDate)
-                                )
+                                AND (((Start_Time__c >= :startDate AND Start_Time__c <= :endDate) OR (End_Time__c >= :startDate AND End_Time__c <= :endDate)) 
+                                     OR (Start_Time__c <= :startDate AND End_Time__c >= :startDate AND Start_Time__c <= :endDate AND End_Time__c >= :endDate)
+                                    )
                                ];
         }
         return activityProducts;
@@ -210,6 +228,7 @@ public class KMSKAActivitiesCalendarController {
     
     @AuraEnabled
     public static Map<String,String> getCalendarColors(String calType){
+        If(calType == 'Activity product') calType = 'Opportunity';
         List<Calendar_Colour_Configuration__c> Calcolors = [SELECT Id, Name, Calendar__c, Type__c, Color__c 
                                                             FROM Calendar_Colour_Configuration__c
                                                             WHERE Calendar__c =: calType
@@ -222,21 +241,24 @@ public class KMSKAActivitiesCalendarController {
         return colors;
     }
     
+    
     public class calendarData {
-        @AuraEnabled public Id 			recordId 		{get;set;}
-        @AuraEnabled public String 		title 			{get;set;}
-        @AuraEnabled public DateTime 	startDatetime 	{get;set;}
-        @AuraEnabled public DateTime 	endDatetime 	{get;set;}
-        @AuraEnabled public String 		name 			{get;set;}
-        @AuraEnabled public String 		parent 			{get;set;}
-        @AuraEnabled public String 		eType 			{get;set;}
-        @AuraEnabled public String 		ebgColor  		{get;set;}
-        @AuraEnabled public String 		participants  	{get;set;}
-        @AuraEnabled public String 		guide  			{get;set;}
-        @AuraEnabled public String 		oppAccount  	{get;set;}
-        @AuraEnabled public Boolean 	isAllDay	  	{get;set;}
-        @AuraEnabled public String 		eventTextColor	{get;set;}
-        @AuraEnabled public String 		createdBy 		{get;set;}
-        @AuraEnabled public String 		zaal 			{get;set;}
+        @AuraEnabled public Id 			recordId 			{get;set;}
+        @AuraEnabled public String 		title 				{get;set;}
+        @AuraEnabled public DateTime 	startDatetime 		{get;set;}
+        @AuraEnabled public DateTime 	endDatetime 		{get;set;}
+        @AuraEnabled public String 		name 				{get;set;}
+        @AuraEnabled public String 		parent 				{get;set;}
+        @AuraEnabled public String 		eType 				{get;set;}
+        @AuraEnabled public String 		ebgColor  			{get;set;}
+        @AuraEnabled public String 		participants  		{get;set;}
+        @AuraEnabled public String 		guide  				{get;set;}
+        @AuraEnabled public String 		oppAccount  		{get;set;}
+        @AuraEnabled public Boolean 	isAllDay	  		{get;set;}
+        @AuraEnabled public String 		eventTextColor		{get;set;}
+        @AuraEnabled public String 		createdBy 			{get;set;}
+        @AuraEnabled public String 		zaal 				{get;set;}
+        @AuraEnabled public DateTime 	actualEndDatetime 	{get;set;}
+        @AuraEnabled public String   	product          	{get;set;}
     }
 }

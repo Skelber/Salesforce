@@ -1,0 +1,15 @@
+<template>
+    <lightning-card title="Status historiek" icon-name="utility:loop">
+        <div class="slds-m-around_medium">
+            <lightning-datatable
+                key-field="Id"
+                data={rows}
+                columns={columns}
+                hide-checkbox-column
+                sorted-by={sortedBy}
+                sorted-direction={sortedDirection}
+                show-row-number-column>
+            </lightning-datatable>
+        </div>
+    </lightning-card>
+</template>

@@ -5,12 +5,9 @@
         .then(
             function(result){
                 cmp.set('v.isLUGuide',result);
-                helper.loadData(cmp,evt)
-                .then(function(result){
-                    helper.drawCalendar(cmp,evt);
-                    helper.getZalenValue(cmp,evt);
-                    helper.getColorsMap(cmp,evt);
-                }); 
+                helper.drawCalendar(cmp,evt);
+                helper.getZalenValue(cmp,evt);
+                helper.getColorsMap(cmp,evt); 
             }
         );
     },
@@ -45,6 +42,8 @@
     
     refresh: function(cmp, evt,helper) {
         var calendar = cmp.get('v.calendar');
+        calendar.refetchEvents();
+        /*
         helper.loadData(cmp,evt)
         .then(function(result){
             calendar.removeAllEvents();
@@ -52,5 +51,6 @@
             calendar.render();
             helper.setCalendarLabel(cmp,calendar);
         });
+        */
     },
 })

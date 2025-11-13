@@ -28,7 +28,7 @@
     <aura:attribute name="room" type="String" default="all"/>
     
     <aura:attribute name="dataLst" type="List" />
-    <aura:attribute name="isDataLoaded" type="Boolean" default="false" />
+    <aura:attribute name="isSpinner" type="Boolean" default="false" />
     <aura:attribute name="isCalenderLoaded" type="Boolean" default="false" />
     
     <aura:attribute name="calendar" type="object" />
@@ -53,6 +53,10 @@
     <aura:attribute name="errorMessage" type="String" default="" />
     
     <div aura:id="calendarHome" class="calendarHome slds-is-relative">
+        <aura:if isTrue="{!v.isSpinner}">
+            <lightning:spinner alternativeText="Loading" size="medium" />
+        </aura:if>
+        
         <aura:if isTrue="{!v.showTooltip}">
             <div>
                 <section  aura:id="calendar-event-tooltip" aria-labelledby="panel-heading-id" class="slds-popover slds-popover_panel slds-nubbin_bottom-left" 
