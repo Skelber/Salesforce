@@ -1,0 +1,27 @@
+<!--
+ - Created by Tom Vanhouche on 22/04/2024.
+ -->
+
+<!-- Pmc Info -->
+<template>
+    <lightning-tabset lwc:if={hasPMCs}>
+        <template for:each={pmcList} for:item="pmc">
+            <lightning-tab label={pmc.label} key={pmc.id}>
+                <lightning-record-view-form object-api-name="PMC__c" record-id={pmc.id}>
+                    <div style="display: flex; width: 100%; justify-content: end">
+                        <lightning-button variant="base" label={labels.viewPMC} icon-name="utility:share" icon-position="right" onclick={viewPMC} value={pmc.id}></lightning-button>
+                    </div>
+                    <lightning-accordion for:each={pmc.sections} for:item="section" key={section.label} class="pmc-accordion" allow-multiple-sections-open active-section-name="General">
+                        <lightning-accordion-section name={section.identifier} label={section.label}>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_1-of-2 column" for:each={section.columns} for:item="fields" for:index="index" key={fields.index}>
+                                    <lightning-output-field class="field" for:each={fields} for:item="field" key={field.Field_API_Name__c} field-name={field.Field_API_Name__c}></lightning-output-field>                                   
+                                </div>
+                            </div>                            
+                        </lightning-accordion-section>
+                    </lightning-accordion>
+                </lightning-record-view-form>
+            </lightning-tab>
+        </template>
+    </lightning-tabset>
+</template>

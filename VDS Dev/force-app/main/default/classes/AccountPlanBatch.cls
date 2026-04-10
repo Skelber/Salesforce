@@ -3,8 +3,8 @@
 @Date           4 November 2025
 @Description    CRMIMPL-2330: AccountPlan batch class calculating:
                 - Top 3 Product Groups (YTD & Y-1) based on involvements
-                - Project Win % (YTD & Y-1)
-                - Project Acquisition Win % (YTD & Y-1)
+                - Project Win % (YTD & Y-1) via Project_Relation__c.Winning_Partner__c
+                - Project Acquisition Win % (YTD & Y-1) via Orders (Quote requester)
 */
 
 public with sharing class AccountPlanBatch implements Database.Batchable<sObject> {
@@ -24,7 +24,7 @@ public with sharing class AccountPlanBatch implements Database.Batchable<sObject
         if (scope.isEmpty()) return;
 
         // -----------------------------
-        // 1️⃣ Map AccountPlan Id -> AccountId
+        // Map AccountPlan Id -> AccountId
         // -----------------------------
         Map<Id, AccountPlan> accountPlanMap = new Map<Id, AccountPlan>();
         Set<Id> accountIds = new Set<Id>();
@@ -37,13 +37,13 @@ public with sharing class AccountPlanBatch implements Database.Batchable<sObject
         if (accountIds.isEmpty()) return;
 
         // -----------------------------
-        // 2️⃣ Product Groups (YTD + Last Year)
+        // Product Groups (YTD + Last Year)
         // -----------------------------
         Map<Id, List<String>> accountToCurrentYearGroups = mapAccountToProductGroups(scope, currentYear);
         Map<Id, List<String>> accountToLastYearGroups = mapAccountToProductGroups(scope, lastYear);
 
         // -----------------------------
-        // 3️⃣ Project Win % and Acquisition Win %
+        // Project Win % and Acquisition Win %
         // -----------------------------
         Map<Id, Integer> totalProjectsCurrent = new Map<Id, Integer>();
         Map<Id, Integer> wonProjectsCurrent = new Map<Id, Integer>();
@@ -71,7 +71,7 @@ public with sharing class AccountPlanBatch implements Database.Batchable<sObject
             allOppIds.add(o.Id);
         }
 
-        // --- Query Orders linked to these opportunities ---
+        // --- Query Orders linked to these opportunities (for Acquisition) ---
         Map<Id, Set<Id>> accountToAcquiredOpps = new Map<Id, Set<Id>>();
         if (!allOppIds.isEmpty()) {
             for (Order ord : [
@@ -80,42 +80,89 @@ public with sharing class AccountPlanBatch implements Database.Batchable<sObject
                 WHERE OpportunityId IN :allOppIds
                   AND AccountId != null
             ]) {
-                if (!accountToAcquiredOpps.containsKey(ord.AccountId)) accountToAcquiredOpps.put(ord.AccountId, new Set<Id>());
+                if (!accountToAcquiredOpps.containsKey(ord.AccountId)) {
+                    accountToAcquiredOpps.put(ord.AccountId, new Set<Id>());
+                }
                 accountToAcquiredOpps.get(ord.AccountId).add(ord.OpportunityId);
             }
         }
 
-        // --- Query involvements ---
+        // --- Query involvements and include Winning_Partner__c ---
         List<Project_Relation__c> prList = [
-            SELECT Account_Ref__c, VDSProject_Ref__c
+            SELECT Account_Ref__c, VDSProject_Ref__c, Winning_Partner__c
             FROM Project_Relation__c
             WHERE Account_Ref__c IN :accountIds
               AND VDSProject_Ref__c IN :allOppIds
         ];
 
+        // --- Dedup trackers per account per year ---
+        Map<Id, Set<Id>> seenOppsCurrent = new Map<Id, Set<Id>>();
+        Map<Id, Set<Id>> seenOppsLast = new Map<Id, Set<Id>>();
+
+        Map<Id, Set<Id>> seenWinsCurrent = new Map<Id, Set<Id>>();
+        Map<Id, Set<Id>> seenWinsLast = new Map<Id, Set<Id>>();
+
+        Map<Id, Set<Id>> seenAcqWinsCurrent = new Map<Id, Set<Id>>();
+        Map<Id, Set<Id>> seenAcqWinsLast = new Map<Id, Set<Id>>();
+
+        // --- Process involvements (dedup per account/opp) ---
         for (Project_Relation__c pr : prList) {
             Opportunity o = oppIdToOpp.get(pr.VDSProject_Ref__c);
-            if (o == null) continue;
-
-            // Project Win %
-            Map<Id, Integer> totalMap = (o.CloseDate.year() == currentYear) ? totalProjectsCurrent : totalProjectsLast;
-            Map<Id, Integer> wonMap = (o.CloseDate.year() == currentYear) ? wonProjectsCurrent : wonProjectsLast;
-            totalMap.put(pr.Account_Ref__c, totalMap.get(pr.Account_Ref__c) == null ? 1 : totalMap.get(pr.Account_Ref__c) + 1);
-            if (accountToAcquiredOpps.containsKey(pr.Account_Ref__c) && accountToAcquiredOpps.get(pr.Account_Ref__c).contains(o.Id)) {
-                wonMap.put(pr.Account_Ref__c, wonMap.get(pr.Account_Ref__c) == null ? 1 : wonMap.get(pr.Account_Ref__c) + 1);
+            if (o == null) {
+                continue;
             }
 
-            // Project Acquisition Win %
-            Map<Id, Integer> totalAcqMap = (o.CloseDate.year() == currentYear) ? totalAcquisitionCurrent : totalAcquisitionLast;
-            Map<Id, Integer> wonAcqMap = (o.CloseDate.year() == currentYear) ? wonAcquisitionCurrent : wonAcquisitionLast;
-            totalAcqMap.put(pr.Account_Ref__c, totalAcqMap.get(pr.Account_Ref__c) == null ? 1 : totalAcqMap.get(pr.Account_Ref__c) + 1);
-            if (accountToAcquiredOpps.containsKey(pr.Account_Ref__c) && accountToAcquiredOpps.get(pr.Account_Ref__c).contains(o.Id)) {
-                wonAcqMap.put(pr.Account_Ref__c, wonAcqMap.get(pr.Account_Ref__c) == null ? 1 : wonAcqMap.get(pr.Account_Ref__c) + 1);
+            Id accId = pr.Account_Ref__c;
+            Integer year = o.CloseDate.year();
+
+            // choose maps based on year
+            Map<Id, Integer> totalMap = (year == currentYear) ? totalProjectsCurrent : totalProjectsLast;
+            Map<Id, Integer> wonMap = (year == currentYear) ? wonProjectsCurrent : wonProjectsLast;
+            Map<Id, Integer> totalAcqMap = (year == currentYear) ? totalAcquisitionCurrent : totalAcquisitionLast;
+            Map<Id, Integer> wonAcqMap = (year == currentYear) ? wonAcquisitionCurrent : wonAcquisitionLast;
+
+            Map<Id, Set<Id>> seenOppsMap = (year == currentYear) ? seenOppsCurrent : seenOppsLast;
+            Map<Id, Set<Id>> seenWinsMap = (year == currentYear) ? seenWinsCurrent : seenWinsLast;
+            Map<Id, Set<Id>> seenAcqWinsMap = (year == currentYear) ? seenAcqWinsCurrent : seenAcqWinsLast;
+
+            // ensure sets exist
+            if (!seenOppsMap.containsKey(accId)) {
+                seenOppsMap.put(accId, new Set<Id>());
+            }
+            if (!seenWinsMap.containsKey(accId)) {
+                seenWinsMap.put(accId, new Set<Id>());
+            }
+            if (!seenAcqWinsMap.containsKey(accId)) {
+                seenAcqWinsMap.put(accId, new Set<Id>());
+            }
+
+            Id oppId = o.Id;
+
+            // If this opportunity hasn't been counted yet for totals -> count once
+            if (!seenOppsMap.get(accId).contains(oppId)) {
+                seenOppsMap.get(accId).add(oppId);
+
+                totalMap.put(accId, totalMap.containsKey(accId) ? totalMap.get(accId) + 1 : 1);
+                totalAcqMap.put(accId, totalAcqMap.containsKey(accId) ? totalAcqMap.get(accId) + 1 : 1);
+            }
+
+            // Project Win: use Winning_Partner__c on Project_Relation__c (count once per acc/opp)
+            if (pr.Winning_Partner__c == true && !seenWinsMap.get(accId).contains(oppId)) {
+                seenWinsMap.get(accId).add(oppId);
+                wonMap.put(accId, wonMap.containsKey(accId) ? wonMap.get(accId) + 1 : 1);
+            }
+
+            // Project Acquisition Win: check if this account has an Order on this opp (accountToAcquiredOpps)
+            if (accountToAcquiredOpps.containsKey(accId) && accountToAcquiredOpps.get(accId).contains(oppId)) {
+                if (!seenAcqWinsMap.get(accId).contains(oppId)) {
+                    seenAcqWinsMap.get(accId).add(oppId);
+                    wonAcqMap.put(accId, wonAcqMap.containsKey(accId) ? wonAcqMap.get(accId) + 1 : 1);
+                }
             }
         }
 
         // -----------------------------
-        // 4️⃣ Update AccountPlan Records
+        // Update AccountPlan Records
         // -----------------------------
         List<AccountPlan> toUpdate = new List<AccountPlan>();
         for (AccountPlan ap : scope) {
@@ -131,7 +178,9 @@ public with sharing class AccountPlanBatch implements Database.Batchable<sObject
             toUpdate.add(ap);
         }
 
-        if (!toUpdate.isEmpty()) update toUpdate;
+        if (!toUpdate.isEmpty()) {
+            update toUpdate;
+        }
     }
 
     public void finish(Database.BatchableContext bc) {
@@ -147,16 +196,24 @@ public with sharing class AccountPlanBatch implements Database.Batchable<sObject
         Map<String, Integer> counts = new Map<String, Integer>();
         for (String g : groups) {
             if (String.isBlank(g)) continue;
-            counts.put(g, counts.containsKey(g) ? counts.get(g) + 1 : 1);
+            if (counts.containsKey(g)) {
+                counts.put(g, counts.get(g) + 1);
+            } else {
+                counts.put(g, 1);
+            }
         }
 
         List<GroupCount> gcList = new List<GroupCount>();
-        for (String k : counts.keySet()) gcList.add(new GroupCount(k, counts.get(k)));
+        for (String k : counts.keySet()) {
+            gcList.add(new GroupCount(k, counts.get(k)));
+        }
         gcList.sort();
 
         List<String> topNames = new List<String>();
         Integer take = Math.min(3, gcList.size());
-        for (Integer i = 0; i < take; i++) topNames.add(gcList[i].name);
+        for (Integer i = 0; i < take; i++) {
+            topNames.add(gcList[i].name);
+        }
         return String.join(topNames, ', ');
     }
 

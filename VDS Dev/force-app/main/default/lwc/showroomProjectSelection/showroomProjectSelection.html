@@ -23,6 +23,13 @@
                                 mode="readonly"
                         >
                         </lightning-record-form>
+                        <lightning-record-form
+                        record-id={projectVisit.id}
+                        object-api-name="Project_Visit__c"
+                        fields={projectVisitFields}
+                        mode="edit"
+                >
+                </lightning-record-form>
                         <lightning-button class="slds-var-m-top_medium" variant="base" label="Remove project from the list" onclick={removeProject} data-id={projectVisit.id}></lightning-button>
                     </div>
                     <div>

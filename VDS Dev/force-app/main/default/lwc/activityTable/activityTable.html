@@ -1,0 +1,27 @@
+<template>
+    <lightning-spinner if:true={showSpinner} alternative-text="Loading" size="large"></lightning-spinner>
+    <c-activity-filter
+        all-types={types} 
+        all-owners={allOwners} 
+        onrefresh={refreshData} 
+        onresetfilter={resetFilter}
+        onactivityfilter={processActivityFilter}>
+    </c-activity-filter>
+    <lightning-datatable 
+        sorted-by={sortBy} 
+        sorted-direction={sortDirection} 
+        onsort={doSorting}
+        style="width: 66.6666666667%;" 
+        column-widths-mode="auto" 
+        if:true={showTable} 
+        data={activities} 
+        columns={columns}
+        key-field="id" 
+        hide-checkbox-column>
+    </lightning-datatable>
+    <lightning-badge 
+        class="slds-m-top_small slds-align_absolute-center slds-badge_inverse"
+        if:true={showNoResultsMessage} 
+        label={label.noResultsMessage}>
+    </lightning-badge>
+</template>

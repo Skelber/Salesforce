@@ -9,6 +9,8 @@ import ACCOUNT_FIELD from '@salesforce/schema/Opportunity.AccountId';
 import START_DATE_FIELD from '@salesforce/schema/Opportunity.CloseDate';
 import FOLLOW_UP_DATE_FIELD from '@salesforce/schema/Opportunity.Follow_Up_Date__c';
 import VISIT_REPORT_ACCOUNT_FIELD from '@salesforce/schema/Visit_Report__c.Contact__r.Account.RecordType.DeveloperName';
+import VISIT_REPORT_NAME_FIELD from '@salesforce/schema/Project_Visit__c.NAME';
+import VISIT_REPORT_DETAILS_FIELD from '@salesforce/schema/Project_Visit__c.Project_Visit_details__c';
 import searchProducts from '@salesforce/apex/ShowroomVisitCreationHelper.searchProducts';
 import getProjectVisits from '@salesforce/apex/ShowroomVisitCreationHelper.getProjectVisits';
 import addProductToProject from '@salesforce/apex/ShowroomVisitCreationHelper.addProductToProject';
@@ -42,6 +44,9 @@ export default class ShowroomProjectSelection extends NavigationMixin(LightningE
         FOLLOW_UP_DATE_FIELD,
         ADDRESS_FIELD
     ];
+    projectVisitFields = [
+        VISIT_REPORT_DETAILS_FIELD
+    ]
     loading = false;
     saving = false;
     @track products = [];

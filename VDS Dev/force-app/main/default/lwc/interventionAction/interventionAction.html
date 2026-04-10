@@ -1,0 +1,92 @@
+<!--
+ - Created by admin on 15/05/2025.
+ -->
+
+<!-- Intervention Action -->
+<template>
+    <div class="slds-is-relative">
+        <lightning-spinner variant="brand" lwc:if={loading} size="medium"></lightning-spinner>
+
+        <div lwc:if={interventionActionWrapper}>
+            <div class="slds-p-around_small slds-align_absolute-center">
+                <h1>{interventionActionWrapper.name}</h1>
+            </div>
+            <lightning-accordion allow-multiple-sections-open active-section-name={activeSections}>
+                <lightning-accordion-section name="general" label={label.detailsExecutedWorksLabel}>
+                    <lightning-textarea label={label.problemLocationLabel} name="location" value={interventionAction.Problem_Location__c} required onchange={handleProblemLocationChange}></lightning-textarea>
+
+                    <template if:false= {interventionActionWrapper.isTestSurface}>
+                        <lightning-input type="number" label={label.treatedSurfaceLabel} name="treatedSurface" value={interventionAction.Treated_Surface__c} required onchange={handleTreatedSurfaceChange}></lightning-input>
+                    </template>
+                    <lightning-textarea label={label.executedWorksLabel} name="description" value={interventionAction.Description__c} required onchange={handleDescriptionChange}></lightning-textarea>
+
+                    <template lwc:if={showCombinationPigments}>
+                        <lightning-textarea label={label.combinationPigmentsLabel} name="combinationPigments" value={interventionAction.Combination_pigments_final__c} required onchange={handleCombinationPigmentsChange}></lightning-textarea>
+                    </template>
+                   
+                </lightning-accordion-section>
+
+                <lightning-accordion-section name="Vehicle" label="Vehicle">
+                    <lightning-input type="toggle" label="Camionette"></lightning-input>
+                    <lightning-input type="toggle" label="Vrachtwagen"></lightning-input>
+                    <lightning-input type="toggle" label="Aanhangwagen"></lightning-input>
+                </lightning-accordion-section>
+                <!-- <lightning-accordion-section name="Material" label="Materiaal">
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input type="toggle" label="Compressor"></lightning-input>
+                            <lightning-input type="toggle" label="Spin-hoogtewerker"></lightning-input>
+                            <lightning-input type="toggle" label="Hoogwerker (huur)"></lightning-input>
+                            <lightning-input type="toggle" label="Stelling (huur)"></lightning-input>
+                            <lightning-input type="toggle" label="Ladder"></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-input type="toggle" label="Hogedrukreiniger"></lightning-input>
+                            <lightning-input type="toggle" label="Stoomreiniger"></lightning-input>
+                            <lightning-input type="toggle" label="Straaltoestel"></lightning-input>
+                            <lightning-input type="toggle" label="Handstraler"></lightning-input>
+                        </div>
+                    </div>
+                </lightning-accordion-section> -->
+                <template if:true= {interventionActionWrapper.isTestSurface}>
+                    <lightning-accordion-section name="productsConsumed" label={label.productsConsumedLabel} if:false={interventionActionWrapper.isTestSurface}>
+                        <table class="slds-table">
+                            <thead>
+                                <tr>
+                                    <th>{label.productLabel}</th>
+                                    <th>{label.colourLabel}</th>
+                                    <th>{label.quantityLabel}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={productsConsumed} for:item="productConsumed" for:index="index">
+                                    <tr key={productConsumed.pricebookEntryId}>
+                                        <td>{productConsumed.productFamily} - {productConsumed.productName}</td>
+                                        <td>{productConsumed.colour}</td>
+                                        <td>
+                                            <lightning-input type="number" label="" step="0.01" name="quantity" variant="label-hidden" value={productConsumed.quantity} onchange={handleQuantityChange} data-idx={index} ></lightning-input>
+                                        </td>
+                                    </tr>
+                                </template>                    
+                            </tbody>
+                        </table>
+                    </lightning-accordion-section>
+                </template>
+                <lightning-accordion-section name="Time" label="Time">
+                    <div class="slds-grid">
+                        <div class="slds-col slds-size_2-of-6">
+                            <lightning-input required type="time" label="Start hour" onchange={handleStartTime}></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-6"></div>
+                        <div class="slds-col slds-size_2-of-6">
+                            <lightning-input required type="time" label="End hour" onchange={handleEndTime}></lightning-input>
+                        </div>
+                    </div>
+                </lightning-accordion-section>
+            </lightning-accordion>
+        </div>
+        <div style="display:flex; justify-content: end" class="slds-p-around_medium">
+            <lightning-button label={label.saveLabel} onclick={save} variant="brand"></lightning-button>
+        </div>
+    </div>
+</template>
