@@ -1,0 +1,50 @@
+<!--
+ - Created by tomva on 17/03/2025.
+ -->
+
+<!-- Worksite Attendances -->
+<template>
+    <div class="slds-is-relative">
+        <lightning-spinner variant="brand" lwc:if={loading} size="medium"></lightning-spinner>
+
+        <table class="slds-table">
+            <thead>
+                <tr>
+                    <th>{label.contactLabel}</th>
+                    <th>{label.roleLabel}</th>
+                    <th>{label.presentLabel}</th>
+                    <th>{label.reportLabel}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={workSiteAttendances} for:item="attendance" for:index="index">
+                    <tr key={attendance.key}>
+                        <td>
+                            <lightning-input variant="label-hidden" if:false={attendance.contactId} data-idx={index} value={attendance.contactName} onchange={handleContactNameChange}></lightning-input>
+                            <span if:true={attendance.contactId}>{attendance.contactName}</span>
+                        </td>
+                        <td>
+                            <span if:true={attendance.contactId}>{attendance.roleLabel}</span>
+                            <template if:false={attendance.contactId}>
+                                <lightning-combobox
+                                        name="role"
+                                        variant="label-hidden"
+                                        value={attendance.role}
+                                        options={rolePicklistValues.data.values}
+                                        data-idx={index}
+                                        onchange={handleRoleChange}>
+                                </lightning-combobox>
+                            </template>
+                        </td>
+                        <td><lightning-input type="toggle" checked={attendance.present} variant="label-hidden" name="present" data-idx={index} onchange={handlePresentChange}></lightning-input></td>
+                        <td><lightning-input type="toggle" checked={attendance.report} variant="label-hidden" name="report" data-idx={index} onchange={handleReportChange}></lightning-input></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+        <div style="display:flex; justify-content: end" class="slds-var-p-around_medium">
+            <lightning-button label={label.addAttendanceLabel} onclick={addAttendance} variant="neutral" class="slds-m-right_small"></lightning-button>
+            <lightning-button label={label.saveLabel} onclick={save} variant="brand"></lightning-button>
+        </div>
+    </div>
+</template>

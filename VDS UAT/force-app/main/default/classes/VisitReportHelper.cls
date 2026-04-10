@@ -24,18 +24,26 @@ public class VisitReportHelper {
         for (Visit_Report__c visitReport : visitReports) {
             if (visitReport.Visit_Date__c != null && String.isNotBlank(visitReport.Visit_Time__c) && visitReport.Start_Date__c == null && visitReport.End_Date__c == null) {
                 try {
-                    List<String> timeParts = visitReport.Visit_Time__c.split(' - ');
-                    List<String> startTimeParts = timeParts[0].split(':');
-                    List<String> endTimeParts = timeParts[1].split(':');
+                    // List<String> timeParts = visitReport.Visit_Time__c.split(' - ');
+                    // List<String> startTimeParts = timeParts[0].split(':');
+                    // List<String> endTimeParts = timeParts[1].split(':');
 
-                    Integer startHour = Integer.valueOf(startTimeParts[0]);
-                    Integer startMinutes = Integer.valueOf(startTimeParts[1]);
-                    Integer endHour = Integer.valueOf(endTimeParts[0]);
-                    Integer endMinutes = Integer.valueOf(endTimeParts[1]);
+                    // Integer startHour = Integer.valueOf(startTimeParts[0]);
+                    // Integer startMinutes = Integer.valueOf(startTimeParts[1]);
+                    // Integer endHour = Integer.valueOf(endTimeParts[0]);
+                    // Integer endMinutes = Integer.valueOf(endTimeParts[1]);
 
-                    Date visitDate = visitReport.Visit_Date__c.date();
-                    visitReport.Start_Date__c = Datetime.newInstance(visitDate, Time.newInstance(startHour,startMinutes,0,0));
-                    visitReport.End_Date__c = Datetime.newInstance(visitDate, Time.newInstance(endHour,endMinutes,0,0));
+                    // Date visitDate = visitReport.Visit_Date__c.date();
+                    // visitReport.Start_Date__c = Datetime.newInstance(visitDate, Time.newInstance(startHour,startMinutes,0,0));
+                    // visitReport.End_Date__c = Datetime.newInstance(visitDate, Time.newInstance(endHour,endMinutes,0,0));
+
+                    String cleaned = visitReport.Visit_Time__c.replace('T', ' ').replace(' 0000', '');
+                    Datetime visitDateTime = Datetime.valueOf(cleaned);
+
+                    visitReport.Start_Date__c = visitDateTime;
+                    visitReport.End_Date__c = visitDateTime.addHours(1);
+
+
                 } catch (Exception e) {
                     Logger loggerInstance = new Logger();
                     loggerInstance.addFunctionName('VisitReportHelper')
